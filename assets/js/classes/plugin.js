@@ -1,6 +1,7 @@
 var isLoginUser = false;
 
-const ENDPOINT_URL = "http://localhost:8000/dev-api/";
+const ENDPOINT_URL =
+  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
 
 function fetchData(url, method) {
   return fetch(url, {
@@ -152,12 +153,7 @@ class IysSearchPlugin {
         ...config,
       };
     }
-    if (this.options.ApiKey && this.options.divID) {
-      this.rapidAPIheaders = {
-        "X-RapidAPI-Key": this.options.ApiKey,
-        "X-RapidAPI-Host": "iys-skill-api.p.rapidapi.com",
-      };
-      console.log("this is the header", this.rapidAPIheaders);
+    if (this.options.divID) {
       this.selectedDiv = document.getElementById(this.options.divID);
       this.searchValue = "";
       this.searchResultsList = [];
@@ -301,10 +297,7 @@ class IysSearchPlugin {
     this.searchInputBox.classList.add("loading");
     this.searchInputBox.type = "text";
     if (this.searchValue.length > 1) {
-      fetch(
-        `${ENDPOINT_URL}ISOT/?q=${this.searchValue}&limit=10`,
-        this.rapidAPIheaders
-      )
+      fetch(`${ENDPOINT_URL}ISOT/?q=${this.searchValue}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -439,10 +432,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   SkillChildrenAPI(skillFileId) {
-    fetch(
-      window.location.origin + "/api-child/?id=" + skillFileId,
-      this.rapidAPIheaders
-    )
+    fetch(window.location.origin + "/api-child/?id=" + skillFileId)
       .then((response) => response.json())
       .then((response) => {
         console.log(response);
@@ -603,11 +593,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     } else {
       console.log("user not login adding skills");
 
-      fetchData(
-        `${ENDPOINT_URL}ISOT/details/?ids=${skillDetail._id}`,
-        "GET",
-        this.rapidAPIheaders
-      )
+      fetchData(`${ENDPOINT_URL}ISOT/details/?ids=${skillDetail._id}`, "GET")
         .then((response) => {
           addTolocalStorage({
             comment: commentValue,
@@ -817,11 +803,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
   createListProfileSkills() {
     if (isLoginUser) {
-      fetchData(
-        window.location.origin + "/get-skills/",
-        "GET",
-        this.rapidAPIheaders
-      )
+      fetchData(window.location.origin + "/get-skills/", "GET")
         .then((response) => {
           let skillList = response.data;
 
