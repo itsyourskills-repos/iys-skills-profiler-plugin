@@ -1,7 +1,6 @@
 var isLoginUser = false;
 
-const ENDPOINT_URL =
-  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
+const ENDPOINT_URL = "http://localhost:8000/dev-api/";";
 
 function fetchData(url, method) {
   return fetch(url, {
