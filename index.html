@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plugin Demo</title>
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <style src="{% static 'css/main.css' %}"></style>
+    <script src="https://cdn.rawgit.com/kimmobrunfeldt/progressbar.js/0.5.6/dist/progressbar.js"></script>
+
+    <style>
+      div.noUi-base > div.noUi-origin > div {
+        box-shadow: none;
+        border: #3b71ca;
+        background: #3b71ca;
+        color: #3b71ca;
+      }
+
+      .checkedstar {
+        color: orange !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>IYS SKills Plugin</h1>
+      <div id="serachid"></div>
+
+      <div class="tab-content" id="pills-tabContent">
+        <div id="skillPlayground"></div>
+        <div id="selectSkill"></div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal top fade"
+      id="RateSkillModel"
+      tabindex="-1"
+      aria-labelledby="RateSkillModelLabel"
+      aria-hidden="true"
+      data-mdb-backdrop="true"
+      data-mdb-keyboard="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="RateSkillModelLabel">Modal title</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-mdb-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <br />
+            <br />
+
+            <div
+              id="spanElementForStar"
+              style="margin-left: 30px; margin-right: 30px"
+            ></div>
+            <br />
+            <br />
+            <br />
+            <hr />
+            <div class="form-outline">
+              <textarea
+                class="form-control form-control-lg"
+                id="rateSkillCommentBox"
+                rows="4"
+                data-mdb-showcounter="true"
+                maxlength="200"
+              ></textarea>
+              <label class="form-label" for="rateSkillCommentBox"
+                >Write Your Note To Qualify Rating</label
+              >
+              <div class="form-helper"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-mdb-dismiss="modal"
+              id="RateCloseButton"
+            >
+              Close
+            </button>
+            <span id="spanElementForSaveButton"> </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"
+    ></script>
+    <script src="assets/js/classes/plugin.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
