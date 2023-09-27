@@ -1,6 +1,6 @@
 var isLoginUser = false;
-
-const ENDPOINT_URL = "http://localhost:8000/dev-api/";";
+const ENDPOINT_URL =
+  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
 
 function fetchData(url, method) {
   return fetch(url, {
@@ -172,6 +172,11 @@ class IysSearchPlugin {
   createSearchBox() {
     const div = document.createElement("div");
     div.classList.add("input-group", "input-group-lg");
+    div.style.display = "flex";
+    div.style.flexDirection = "row";
+    div.style.borderRadius = "30px";
+    div.style.border = "1px solid #007DFC1A";
+
     const input = document.createElement("input");
     this.searchInputBox = input;
     input.id = "plugin-search-id";
@@ -179,15 +184,46 @@ class IysSearchPlugin {
     input.classList.add("form-control");
 
     input.setAttribute("aria-label", "Sizing example input");
-    input.setAttribute("placeholder", "Search Skills");
+    input.setAttribute(
+      "placeholder",
+      "Search Profile / Skill / Technology / Domain / Activity"
+    );
     input.setAttribute("aria-describedby", "inputGroup-sizing-lg");
-    input.style.fontSize = "1.5rem";
+    input.style.fontSize = "1rem";
     input.style.height = "auto";
+    input.style.borderRadius = "30px";
+    input.style.border = "none";
+    input.style.padding = "15px";
     input.type = "search";
     div.appendChild(input);
+
+    // Format the search text to Title Case
+    const searchText = "search"; // Replace with your desired text
+    const formattedText =
+      searchText.charAt(0).toUpperCase() + searchText.slice(1).toLowerCase();
+
+    // Create the search button
+    const button = document.createElement("button");
+    button.style.padding = "0px 14px";
+    button.style.borderRadius = "30px";
+    button.style.margin = "6px";
+    button.style.border = "none";
+    button.style.background = "#007DFC";
+    button.style.color = "white";
+
+    button.innerHTML = `<i class="fas fa-search" style="margin-right: 8px;"></i> ${formattedText}`; // Add your icon HTML here
+    button.setAttribute("aria-label", "Search");
+    div.appendChild(button);
     this.selectedDiv.appendChild(div);
     const divDropDown = document.createElement("div");
     divDropDown.id = "dropdown-plugin-div";
+    divDropDown.style.maxHeight = "270px";
+    divDropDown.style.overflow = "auto";
+    divDropDown.style.boxShadow = "0px 0px 12px 0px #0000000F";
+    divDropDown.style.marginTop = "12px";
+    // divDropDown.style.padding= "18px 12px 18px 12px"
+    divDropDown.style.borderRadius = "12px";
+
     this.selectedDiv.appendChild(divDropDown);
   }
   setupCreateSearchTriggers() {
@@ -248,16 +284,19 @@ class IysSearchPlugin {
   }
 
   createSkillSearchList(searchResultsList) {
+    console.log(searchResultsList, "eeee list");
     const div = document.getElementById("dropdown-plugin-div");
+    div.style.textAlign = "center";
     this.searchResultsList = searchResultsList;
     if (searchResultsList.length > 0) {
       const ul = document.createElement("ul");
+      ul.style.padding = "30px";
       ul.classList.add("dropdown-menu");
 
       // create the list item elements and append them to the unordered list
       for (let i = 0; i < searchResultsList.length; i++) {
         const li = document.createElement("li");
-
+        li.style.borderBottom = "1px solid #E0E0E0";
         li.addEventListener("click", (event) => {
           this.skillClick(i);
         });
@@ -277,6 +316,40 @@ class IysSearchPlugin {
       div.appendChild(ul);
     } else {
       div.innerHTML = "";
+      // Create the first paragraph
+      const paragraph1 = document.createElement("p");
+      const icon1 = document.createElement("i");
+      icon1.classList.add("far", "fa-frown"); // Assuming "fa-frown" is a thin sad, frown icon in Font Awesome
+      icon1.style.padding = "0 10px";
+      // Add the icon to the paragraph
+      paragraph1.appendChild(icon1);
+
+      // Add text to the first paragraph
+      paragraph1.innerHTML += " No search results found!";
+      paragraph1.style.fontSize = "16px";
+      paragraph1.style.fontWeight = 500;
+      paragraph1.style.color = "#828282";
+
+      // Create the second paragraph
+      const paragraph2 = document.createElement("p");
+      paragraph2.innerHTML =
+        "Click on the <strong>“Add skill icon”</strong> to add this new skill to your profile";
+      div.innerHTML = "";
+      // Append paragraphs to the main div
+      div.appendChild(paragraph1);
+      div.appendChild(paragraph2);
+
+      // Create a button with an icon
+      const button = document.createElement("button");
+      button.innerHTML = '<i class="fas fa-plus"></i> Add Skill'; // Add your icon HTML here
+      button.style.padding = "5px 15px";
+      button.style.borderRadius = "5px";
+      button.style.border = "1px solid #007DFC";
+      button.style.background = "transparent";
+      button.style.color = "#007DFC";
+
+      // Append the button to the main div
+      div.appendChild(button);
     }
 
     this.searchInputBox.classList.remove("loading");
@@ -444,23 +517,27 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   createSkillButton(htmlElement, skillDetail, isFuncSkill) {
     // console.log("these are some chnages",skillDetail)
     var functionAreaDiv = document.getElementById("functional-area-button");
-    var button = document.createElement("button");
+    var identifierData =
+      isFuncSkill || skillDetail.child_count > 0 ? "div" : "button";
+      
+    var div = document.createElement(identifierData);
 
     if (isFuncSkill) {
-      button.innerHTML =
-        `<i class="fas fa-plus mr-1" style="color:#404040"></i> ` +
+      div.innerHTML =
+        `<i class="fas fa-plus mr-1" style="color:#007DFC; padding-left:5px;"></i> ` +
         skillDetail.name;
     } else if (skillDetail.child_count > 0) {
-      button.innerHTML =
-        `<i class="fas fa-plus mr-1"  style="color:#404040" ></i> ` +
+      div.innerHTML =
+        `<i class="fas fa-plus mr-1"  style="color:#007DFC;  padding:0px 10px;" ></i> ` +
         skillDetail.name;
     } else {
-      button.textContent = skillDetail.name;
+      div.textContent = skillDetail.name;
     }
 
-    button.addEventListener("click", (event) => {
+    div.addEventListener("click", (event) => {
       console.log("these are some chnages", skillDetail);
       if (isFuncSkill) {
+        console.log("if function");
         // clearsessionStorage();
         addTosessionStorage(skillDetail);
 
@@ -469,25 +546,24 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         this.experienceProfileCard.classList.remove("active");
         this.createSkillSelectBox(skillDetail);
       } else if (skillDetail.child_count > 0) {
+        console.log("elseif");
         addTosessionStorage(skillDetail);
         this.createSkillSelectBox(skillDetail);
       } else {
+        console.log("else");
         this.changeRateModelElement(skillDetail);
       }
     });
 
-    button.setAttribute("type", "button");
-    button.setAttribute("class", "btn btn-secondary btn-rounded");
-    button.setAttribute("data-mdb-toggle", "popover");
-    button.setAttribute(
-      "data-mdb-content",
-      "nknjdnfdfbhjvbhjfb ndn jhnndjfgdjhnfnh hjdghj"
-    );
-    button.setAttribute("data-mdb-trigger", "hover");
+    // div.setAttribute("type", "div");
+    // div.setAttribute("class", "btn btn-secondary btn-rounded");
+    div.setAttribute("data-mdb-toggle", "popover");
+    div.setAttribute("data-mdb-content", "its mdb content");
+    div.setAttribute("data-mdb-trigger", "hover");
 
     if (skillDetail.description) {
-      button.addEventListener("mouseover", function () {
-        const popover = new mdb.Popover(button, {
+      div.addEventListener("mouseover", function () {
+        const popover = new mdb.Popover(div, {
           container: "body",
           placement: "top",
           content: skillDetail.description,
@@ -502,20 +578,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       });
     }
 
-    button.style.border = "solid 2px #000000a6";
-    button.style.color = "rgb(33, 36, 41)";
-    button.style.background = "white";
-    button.style.borderRadius = "10px";
+    div.style.color = "#333333";
+    div.style.background = "white";
+    div.style.borderRadius = "4px 4px 0px 0px";
+    div.style.border = "0.5px solid #007DFC33";
+    div.style.padding = "10px 12px";
 
     // add text rasfrom to buuton
-    button.style.fontSize = "105%";
-    button.style.textTransform = "capitalize";
-    button.style.marginLeft = "5px";
-    button.style.marginTop = "5px";
-    button.style.fontFamily =
+    div.style.fontSize = "105%";
+    div.style.marginLeft = "5px";
+    div.style.marginTop = "5px";
+    div.style.fontFamily =
       'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
 
-    htmlElement.appendChild(button);
+    htmlElement.appendChild(div);
   }
 
   createSkillSearchButtonList(htmlElement, fuctionalAreasList, isFuncSkill) {
@@ -1093,7 +1169,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   createSkillSelectBox(skillDetail) {
-    console.log("createSkillSelectBox", skillDetail);
+    console.log("createSkillSelectBox --------- ", skillDetail);
     this.selectedASkillBox.innerHTML = "";
     const cardDiv = document.createElement("div");
     cardDiv.classList.add("card");

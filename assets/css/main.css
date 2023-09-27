@@ -1,4 +1,4 @@
-input[type=text] {
+/* input[type=text] {
     position: relative;
     width: 30%;
     padding: 12px 20px;
@@ -7,7 +7,7 @@ input[type=text] {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-  }
+  } */
 
   .loading {
     background-color: #ffffff;
@@ -16,3 +16,25 @@ input[type=text] {
     background-position: right center;
     background-repeat: no-repeat;
   }
+
+  ::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 30px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 30px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 30px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
