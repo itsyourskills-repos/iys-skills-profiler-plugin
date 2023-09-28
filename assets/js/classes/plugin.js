@@ -579,15 +579,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
 
     div.style.color = "#333333";
-    div.style.background = "white";
+    div.style.background = (identifierData === "div" ? "rgba(0, 125, 252, 0.1)" : "white")
     div.style.borderRadius = "4px 4px 0px 0px";
     div.style.border = "0.5px solid #007DFC33";
-    div.style.padding = "10px 12px";
+    div.style.padding = "8px 12px 10px 12px";
 
     // add text rasfrom to buuton
     div.style.fontSize = "105%";
     div.style.marginLeft = "5px";
-    div.style.marginTop = "5px";
+    div.style.marginTop = "15px";
     div.style.fontFamily =
       'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
 
@@ -753,6 +753,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       innerDiv.classList.add("card");
       const cardBody = document.createElement("div");
       cardBody.classList.add("card-body");
+      cardBody.style.padding = "10px 20px 20px 20px";
       // cardBody.textContent = "skill list";
       innerDiv.appendChild(cardBody);
       this.createSkillSearchButtonList(cardBody, skillList);
@@ -1479,25 +1480,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .then((response) => {
           console.log("delete_skill", response);
 
-          // this.createSkillPath(cardBodyDiv, response.ancestors);
-          // if (response.siblings.length > 0) {
-          //   this.createSelectSkillsChildBox(this.cardBodyDiv, response.siblings);
-          // } else {
-          //   this.childrenSkillAPI(skillId);
-          // }
         })
         .catch((err) => console.error(err));
     } else {
       console.log("delete_skill", skill_id);
       removeItemFromlocalStorage(skill_id);
       console.log("deleted_skill");
-      // // TODO: delete skill from local storage FOR NOT login user
-      // console.log("delete_skill",skill_id)
-      // let skill_list = JSON.parse(localStorage.getItem("skill_list"));
-      // console.log("delete_skill",skill_list)
-      // let new_skill_list = skill_list.filter((skill) => skill.id !== skill_id);
-      // console.log("delete_skill",new_skill_list)
-      // localStorage.setItem("skill_list", JSON.stringify(new_skill_list));
+
     }
   }
 
@@ -1529,40 +1518,3 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .catch((err) => console.error(err));
   }
 }
-
-// fetch(url, {
-
-//   constructor(config) {
-//     this.config = config;
-//     this.options = {
-//       ApiKey: null,
-//       divID: null,
-//       onSearchSkillClick: null,
-//     };
-//     if (typeof config == "object") {
-//       this.options = {
-//         ...this.options,
-//         ...config,
-//       };
-//     }
-//     if (this.options.ApiKey && this.options.divID) {
-//       this.rapidAPIheaders = {
-//         method: "GET",
-//         headers: {
-//           "X-RapidAPI-Key": this.options.ApiKey,
-//           "X-RapidAPI-Host": "iys-skill-api.p.rapidapi.com",
-//         },
-//       };
-//       this.selectedDiv = document.getElementById(this.options.divID);
-//       this.currentSkill = null;
-//       this.init();
-//     } else {
-//       console.error("ApiKey  divID not set correctly ");
-//     }
-//   }
-
-//   init() {
-//     this.createFunctionalAreaBox();
-//     this.functionalAreaAPI();
-//     // this.setupCreateSearchTriggers()
-//   }
