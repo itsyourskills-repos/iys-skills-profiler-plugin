@@ -1,6 +1,6 @@
 var isLoginUser = false;
 
-const ENDPOINT_URL = "http://localhost:8000/dev-api/";";
+const ENDPOINT_URL = "http://localhost:8000/dev-api/";
 
 function fetchData(url, method) {
   return fetch(url, {
@@ -83,8 +83,6 @@ function addTolocalStorage(userRatedSkill) {
 
   // Save the updated list in localStorage
   localStorage.setItem("userRatedSkills", JSON.stringify(newList));
-
-  console.warn(getListFromlocalStorage());
 }
 
 function getListFromlocalStorage() {
@@ -583,7 +581,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           this.createListProfileSkills();
           document.getElementById("RateCloseButton").click();
-          this.ratedSkillEvent(skillDetail);
+          this.ratedSkillEvent(userRatedSkill);
         })
         .catch((error) => {
           // Handle network errors
@@ -603,7 +601,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           this.createListProfileSkills();
           document.getElementById("RateCloseButton").click();
-          this.ratedSkillEvent(skillDetail);
+          this.ratedSkillEvent({
+            comment: commentValue,
+            rating: ratingValue,
+            isot_file_id: skillDetail._id,
+            isot_file: response[0],
+          });
         })
         .catch((err) => console.error(err));
     }
@@ -753,8 +756,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         format: format,
         pips: { mode: "steps", format: format, density: 50 },
       });
-
-      console.log("ratingOptions", ratingOptions, noUiSlider);
     }
     // check if rateType exist in rating object
     // if (rating[rateType] !== undefined) {
@@ -910,7 +911,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         let button = document.createElement("button");
         let ratePercentage =
           (skill.rating / skill.isot_file.rating.options.length) * 100;
-        console.log("ratePercentage", ratePercentage);
         button.innerHTML = `${skill.isot_file.name}  <i class="fas fa-message" style="color:#3b71ca0;margin-left:10px;margin-right:10px"  ></i>
             
             <div style="width: 25px; height: 25px; border-radius: 50%; background: radial-gradient(closest-side, white 79%, transparent 80% 100%), conic-gradient(#2C58A0 ${ratePercentage}%, pink 0);">
