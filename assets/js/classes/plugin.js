@@ -136,20 +136,20 @@ const saveListToSessionStorage = (list) => {
 };
 
 // Helper function to create a button with an icon
-function createButton(text, iconClass,align,margin,disabled,onClick) {
+function createButton(text, iconClass, align, margin, disabled, onClick) {
   const button = document.createElement("button");
   button.innerHTML = `<i class="${iconClass}"></i> ${text}`;
   button.style.padding = "5px 15px";
   button.style.borderRadius = "5px";
-  button.style.border = (disabled ? "":"1px solid #007DFC");
+  button.style.border = disabled ? "" : "1px solid #007DFC";
   button.style.background = "transparent";
-  button.style.color = (disabled ? "": "#007DFC");
+  button.style.color = disabled ? "" : "#007DFC";
   button.style.float = align;
   button.style.marginRight = margin;
   button.disabled = disabled;
   if (!disabled) {
-  button.addEventListener("click", onClick);
-}
+    button.addEventListener("click", onClick);
+  }
 
   return button;
 }
@@ -867,11 +867,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         this.experienceProfileCard.classList.remove("active");
         this.createSkillSelectBox(skillDetail);
       } else if (skillDetail.child_count > 0) {
-        console.log("elseif");
         addTosessionStorage(skillDetail);
         this.createSkillSelectBox(skillDetail);
       } else {
-        console.log("else");
         this.changeRateModelElement(skillDetail);
       }
     });
@@ -980,7 +978,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
 
           this.createListProfileSkills();
-          document.getElementById("RateCloseButton").click();
+          // document.getElementById("RateCloseButton").click();
           this.ratedSkillEvent(skillDetail);
         })
         .catch((error) => {
@@ -1000,7 +998,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           });
 
           this.createListProfileSkills();
-          document.getElementById("RateCloseButton").click();
+          // document.getElementById("RateCloseButton").click();
           this.ratedSkillEvent(skillDetail);
         })
         .catch((err) => console.error(err));
@@ -1011,22 +1009,29 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const RateSkillModel = document.getElementById("RateSkillModel");
     const RateSkillModelLabel = document.getElementById("RateSkillModelLabel");
     const spanElementForStar = document.getElementById("spanElementForStar");
+    spanElementForStar.style.borderRadius = "10px";
+    spanElementForStar.style.height = "12px";
 
     const rateSkillCommentBox = document.getElementById("rateSkillCommentBox");
     const spanElementForSaveButton = document.getElementById(
       "spanElementForSaveButton"
     );
     spanElementForSaveButton.innerHTML = "";
+
     // Create the button element
     var button = document.createElement("button");
 
     // Set the button attributes
     button.setAttribute("type", "button");
     button.setAttribute("class", "btn btn-primary");
+    button.style.textTransform = "none";
+    button.style.background = "#007DFC";
+    button.style.fontSize = "inherit";
+    button.style.borderRadius = "6px";
     button.setAttribute("id", "saveChangesButton");
 
     // Set the button content
-    button.textContent = "Save changes";
+    button.textContent = "Save Changes";
 
     // Append the button to the document body or any desired parent element
     spanElementForSaveButton.appendChild(button);
@@ -1041,10 +1046,26 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
     }
 
+    const modalContent = RateSkillModel.querySelector(".modal-content");
+    if (modalContent) {
+      modalContent.style.padding = "20px"; // Adjust the border style as needed
+    }
+    const modalHeader = RateSkillModel.querySelector(".modal-header");
+    if (modalHeader) {
+      modalHeader.style.borderBottom = "1px solid #ccc"; // Adjust the border style as needed
+    }
+
     rateSkillCommentBox.value = "";
     spanElementForStar.innerHTML = "";
     const modalEl = new mdb.Modal(RateSkillModel);
-    RateSkillModelLabel.innerHTML = `Rate Skill <b class="text-primary"> ${titleText} </b>`;
+    RateSkillModelLabel.style.fontSize = "17px";
+
+
+
+    RateSkillModelLabel.innerHTML = `<span style="color: #333333; font-weight:600">Ratings </span>
+    <svg height="8" width="8" style="margin: 0px 15px;">
+    <circle cx="4" cy="4" r="5" stroke="white" stroke-width="3" fill="#4F4F4F" />
+  </svg> <span style="color:#4F4F4F"> ${titleText} </span>`;
 
     console.log("i am creating starts", skillDetail);
     this.createRatingElement(spanElementForStar, skillDetail);
@@ -1081,25 +1102,45 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       this.createSkillSearchButtonList(cardBody, skillList);
       // Create the three buttons in the card-body using a parent div
       const cardBodyButtonDiv = document.createElement("div");
-      cardBodyButtonDiv.style.margin= "20px 0px 0px 5px"
-      
-    const previewProfileButton = createButton("Preview Profile", "far fa-eye", 'left',"", false,() => {
-      // Add logic for preview profile button click
-    });
-    const saveProfileButton = createButton("Reset Changes", "fas fa-undo",'right',"10px",false, () => {
-      // Add logic for save profile button click
-    });
+      cardBodyButtonDiv.style.margin = "20px 0px 0px 5px";
 
-    const resetChangesButton = createButton("Save Profile","", 'right',"",true, () => {
-      // Add logic for reset changes button click
-    });
+      const previewProfileButton = createButton(
+        "Preview Profile",
+        "far fa-eye",
+        "left",
+        "",
+        false,
+        () => {
+          // Add logic for preview profile button click
+        }
+      );
+      const saveProfileButton = createButton(
+        "Reset Changes",
+        "fas fa-undo",
+        "right",
+        "10px",
+        false,
+        () => {
+          // Add logic for save profile button click
+        }
+      );
 
+      const resetChangesButton = createButton(
+        "Save Profile",
+        "",
+        "right",
+        "",
+        true,
+        () => {
+          // Add logic for reset changes button click
+        }
+      );
 
-    // Append buttons to the card body
-    cardBodyButtonDiv.appendChild(previewProfileButton);
-    cardBodyButtonDiv.appendChild(resetChangesButton);
-    cardBodyButtonDiv.appendChild(saveProfileButton);
-      cardBody.appendChild(cardBodyButtonDiv)
+      // Append buttons to the card body
+      cardBodyButtonDiv.appendChild(previewProfileButton);
+      cardBodyButtonDiv.appendChild(resetChangesButton);
+      cardBodyButtonDiv.appendChild(saveProfileButton);
+      cardBody.appendChild(cardBodyButtonDiv);
       innerDiv.appendChild(cardBody);
       outerDiv.appendChild(innerDiv);
     } else {
@@ -1144,12 +1185,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // add exception for rating
 
     try {
-      spanElementForStar.noUiSlider.destroy();
+      htmlElement.noUiSlider.destroy();
     } catch (error) {
       console.log("error in destroying slider", error);
     }
 
     let htmlElement1 = document.getElementById("spanElementForStar");
+    console.log(skillDetail,"skillDetail")
     if (skillDetail.rating) {
       let ratingOptions = skillDetail.rating.options;
 
@@ -1172,8 +1214,39 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         tooltips: true,
         format: format,
         pips: { mode: "steps", format: format, density: 50 },
+        connect: "lower", // Connect the left side of the range
+        tooltips: [false],
       });
 
+      // Style the left part of the slider with a blue background color
+      var sliderStyleConnect = document.createElement("style");
+      sliderStyleConnect.innerHTML =
+        ".noUi-connect { background-color: #007DFC; }";
+      document.head.appendChild(sliderStyleConnect);
+
+      const sliderHandleConnects = htmlElement.querySelector(".noUi-connects");
+      sliderHandleConnects.style.borderRadius = "10px";
+
+      var sliderStyleHorizontalAndHandle = document.createElement("style");
+      sliderStyleHorizontalAndHandle.innerHTML =
+        ".noUi-horizontal .noUi-handle { height: 25px; width: 25px;}";
+      document.head.appendChild(sliderStyleHorizontalAndHandle);
+
+      var sliderHandleContentTouch = document.createElement("style");
+      sliderHandleContentTouch.innerHTML =
+        ".noUi-handle:after, .noUi-handle:before { content: none; }";
+      document.head.appendChild(sliderHandleContentTouch);
+
+      var sliderHandleLabelLines = document.createElement("style");
+      sliderHandleLabelLines.innerHTML =
+        ".noUi-marker-large .noUi-marker-sub { display: none; }";
+      document.head.appendChild(sliderHandleLabelLines);
+
+      const sliderHandle = htmlElement.querySelector(".noUi-handle-lower");
+      sliderHandle.style.background = "#007DFC";
+      sliderHandle.style.border = "5px solid white";
+      sliderHandle.style.borderRadius = "50%";
+      sliderHandle.style.content = "none";
       console.log("ratingOptions", ratingOptions, noUiSlider);
     }
     // check if rateType exist in rating object
@@ -1558,12 +1631,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillDetail?.skills?.length > 0 &&
       skillDetail?.skills[0].rating_type > 0
     ) {
-      // cardTitleH4.appendChild(rateButton);
+      cardTitleH4.appendChild(rateButton);
     }
 
     cardBodyDiv.appendChild(cardTitleH4);
 
-    // this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
+    this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
 
     if (skillDetail?.skills?.length > 0) {
       skillDetail.skills.forEach((skill) => {
