@@ -135,6 +135,56 @@ const saveListToSessionStorage = (list) => {
   sessionStorage.setItem("items", JSON.stringify(list));
 };
 
+// Helper function to create a button with an icon
+function createButton(text, iconClass,align,margin,disabled,onClick) {
+  const button = document.createElement("button");
+  button.innerHTML = `<i class="${iconClass}"></i> ${text}`;
+  button.style.padding = "5px 15px";
+  button.style.borderRadius = "5px";
+  button.style.border = (disabled ? "":"1px solid #007DFC");
+  button.style.background = "transparent";
+  button.style.color = (disabled ? "": "#007DFC");
+  button.style.float = align;
+  button.style.marginRight = margin;
+  button.disabled = disabled;
+  if (!disabled) {
+  button.addEventListener("click", onClick);
+}
+
+  return button;
+}
+
+// Function to handle API calling for  "Add Skill" button click
+function addSkillToApi(payload) {
+  // API endpoint (replace with your actual API endpoint)
+  const apiEndpoint = "https://your-api-endpoint.com/addSkill";
+
+  // Make the API call using the fetch API
+  return fetch(apiEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // Add any additional headers if needed
+    },
+    body: JSON.stringify(payload),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the API response data as needed
+      console.log("API response:", data);
+      return data; // You can return the data if needed
+    })
+    .catch((error) => {
+      console.error("API error:", error);
+      throw error; // You can throw the error for further handling
+    });
+}
+
 class IysSearchPlugin {
   constructor(config) {
     this.config = config;
@@ -180,9 +230,7 @@ class IysSearchPlugin {
     const input = document.createElement("input");
     this.searchInputBox = input;
     input.id = "plugin-search-id";
-
     input.classList.add("form-control");
-
     input.setAttribute("aria-label", "Sizing example input");
     input.setAttribute(
       "placeholder",
@@ -196,6 +244,39 @@ class IysSearchPlugin {
     input.style.padding = "15px";
     input.type = "search";
     div.appendChild(input);
+
+    // Create the clear icon
+    const clearIcon = document.createElement("span");
+    clearIcon.innerHTML = "&times;";
+    clearIcon.style.position = "absolute";
+    clearIcon.style.right = "10px";
+    clearIcon.style.top = "50%";
+    clearIcon.style.transform = "translateY(-50%)";
+    clearIcon.style.cursor = "pointer";
+    clearIcon.style.color = "rgb(255 0 0)";
+    clearIcon.style.fontSize = "25px";
+    clearIcon.style.display = "none"; // Initially hide the clear icon
+
+    // Create a container for the input and clear icon
+    const inputContainer = document.createElement("div");
+    inputContainer.style.position = "relative";
+    inputContainer.style.flex = "1"; // Take up remaining space in the flex container
+    div.appendChild(inputContainer);
+
+    // Append the input and clear icon to the container
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(clearIcon);
+
+    // Add click event to clear the input field
+    clearIcon.addEventListener("click", () => {
+      input.value = "";
+      divDropDown.style.display = "none";
+      this.selectedASkillBox.style.display = "none";
+      clearIcon.style.display = "none"; // Hide the clear icon after clearing input
+    });
+
+    // Append the clear icon to the search box div
+    div.appendChild(clearIcon);
 
     // Format the search text to Title Case
     const searchText = "search"; // Replace with your desired text
@@ -213,7 +294,31 @@ class IysSearchPlugin {
 
     button.innerHTML = `<i class="fas fa-search" style="margin-right: 8px;"></i> ${formattedText}`; // Add your icon HTML here
     button.setAttribute("aria-label", "Search");
+
+    // Add click event to trigger the searchAPI method
+    button.addEventListener("click", () => {
+      this.searchAPI();
+    });
+
     div.appendChild(button);
+
+    // Event listener to toggle search button and clear icon based on input content
+    input.addEventListener("input", () => {
+      const hasInput = input.value.trim() !== "";
+      clearIcon.style.display = hasInput ? "block" : "none";
+      button.style.display = hasInput ? "none" : "block";
+      divDropDown.style.display = hasInput ? "block" : "none";
+      this.selectedASkillBox.style.display = hasInput ? "none" : "block";
+    });
+
+    // Initial check to hide search button if the input has content
+    if (input.value.trim() !== "") {
+      clearIcon.style.display = "block";
+      button.style.display = "none";
+      divDropDown.style.display = "none";
+      this.selectedASkillBox.style.display = "none";
+    }
+
     this.selectedDiv.appendChild(div);
     const divDropDown = document.createElement("div");
     divDropDown.id = "dropdown-plugin-div";
@@ -221,7 +326,6 @@ class IysSearchPlugin {
     divDropDown.style.overflow = "auto";
     divDropDown.style.boxShadow = "0px 0px 12px 0px #0000000F";
     divDropDown.style.marginTop = "12px";
-    // divDropDown.style.padding= "18px 12px 18px 12px"
     divDropDown.style.borderRadius = "12px";
 
     this.selectedDiv.appendChild(divDropDown);
@@ -238,6 +342,7 @@ class IysSearchPlugin {
   getSkillName(skillObject) {
     return skillObject.term;
   }
+
   skillClick(skillListId) {
     //add to selected skill to list
     // add json stringfly
@@ -283,13 +388,17 @@ class IysSearchPlugin {
     div.appendChild(ul);
   }
 
-  createSkillSearchList(searchResultsList) {
-    console.log(searchResultsList, "eeee list");
+  createSkillSearchList(searchResultsList, searchText) {
     const div = document.getElementById("dropdown-plugin-div");
+
     div.style.textAlign = "center";
+    div.style.padding = "30px";
+    div.style.marginBottom = "30px";
     this.searchResultsList = searchResultsList;
     if (searchResultsList.length > 0) {
       const ul = document.createElement("ul");
+      // Create buttons after the unordered list
+
       ul.style.padding = "30px";
       ul.classList.add("dropdown-menu");
 
@@ -299,6 +408,8 @@ class IysSearchPlugin {
         li.style.borderBottom = "1px solid #E0E0E0";
         li.addEventListener("click", (event) => {
           this.skillClick(i);
+          div.style.display = "none";
+          this.selectedASkillBox.style.display = "block";
         });
         const a = document.createElement("a");
         a.classList.add("dropdown-item");
@@ -309,22 +420,21 @@ class IysSearchPlugin {
         );
         li.appendChild(a);
         ul.appendChild(li);
+        // Append buttons to the main div
       }
       ul.style.display = "contents";
       ul.style.width = "100%";
       div.innerHTML = "";
+
       div.appendChild(ul);
     } else {
       div.innerHTML = "";
       // Create the first paragraph
       const paragraph1 = document.createElement("p");
       const icon1 = document.createElement("i");
-      icon1.classList.add("far", "fa-frown"); // Assuming "fa-frown" is a thin sad, frown icon in Font Awesome
+      icon1.classList.add("far", "fa-frown"); //  frown icon in Font Awesome
       icon1.style.padding = "0 10px";
-      // Add the icon to the paragraph
       paragraph1.appendChild(icon1);
-
-      // Add text to the first paragraph
       paragraph1.innerHTML += " No search results found!";
       paragraph1.style.fontSize = "16px";
       paragraph1.style.fontWeight = 500;
@@ -348,12 +458,207 @@ class IysSearchPlugin {
       button.style.background = "transparent";
       button.style.color = "#007DFC";
 
+      // Add event listener to the button
+      button.addEventListener("click", () => {
+        this.openAddSkillModal(searchText);
+      });
+
       // Append the button to the main div
       div.appendChild(button);
     }
+  }
 
-    this.searchInputBox.classList.remove("loading");
-    this.searchInputBox.type = "search";
+  // Function to open the Add Skill modal with two inputs and labels
+  openAddSkillModal(searchText) {
+    const modalDiv = document.createElement("div");
+    modalDiv.classList.add("modal", "fade", "show");
+    modalDiv.style.display = "flex";
+    modalDiv.style.alignItems = "center";
+    modalDiv.style.justifyContent = "center";
+    modalDiv.style.position = "fixed";
+    modalDiv.style.top = "0";
+    modalDiv.style.left = "0";
+    modalDiv.style.width = "100%";
+    modalDiv.style.height = "100%";
+    modalDiv.style.overflow = "auto";
+    modalDiv.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Light black overlay
+    modalDiv.style.zIndex = "1000";
+
+    // Create the modal content
+    const modalContent = document.createElement("div");
+    modalContent.classList.add("modal-content");
+    modalContent.style.width = "40%"; // Set modal width to 40%
+    modalContent.style.background = "#fff";
+    modalContent.style.padding = "20px";
+    modalDiv.appendChild(modalContent);
+
+    // Create a container for label and close button
+    const headerContainer = document.createElement("div");
+    headerContainer.style.display = "flex";
+    headerContainer.style.justifyContent = "space-between";
+    headerContainer.style.alignItems = "center";
+    modalContent.appendChild(headerContainer);
+
+    // Add label
+    const label = document.createElement("div");
+    label.textContent = "Add New Element";
+    label.style.fontSize = "18px";
+    label.style.fontWeight = 600;
+    headerContainer.appendChild(label);
+
+    // Add close button
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&times;"; // Using the "times" symbol (X) for the close button
+    closeButton.style.fontSize = "20px";
+    closeButton.style.border = "none";
+    closeButton.style.backgroundColor = "transparent";
+    closeButton.style.cursor = "pointer";
+    closeButton.addEventListener("click", () => {
+      modalDiv.style.display = "none";
+    });
+    headerContainer.appendChild(closeButton);
+
+    // Add horizontal line
+    const hr = document.createElement("hr");
+    hr.style.marginTop = "5px";
+    hr.style.marginBottom = "15px";
+    modalContent.appendChild(hr);
+
+    // Create the first input field with label
+    const inputLabel1 = document.createElement("label");
+    inputLabel1.innerHTML = 'Element<span style="color:red">*</span>';
+    inputLabel1.style.fontWeight = 500;
+
+    modalContent.appendChild(inputLabel1);
+
+    const inputField1Container = document.createElement("div");
+    inputField1Container.style.position = "relative";
+    inputField1Container.style.border = "1px solid #E6E6E6";
+    inputField1Container.style.borderRadius = "4px";
+    inputField1Container.style.marginBottom = "10px";
+    modalContent.appendChild(inputField1Container);
+
+    const inputField1 = document.createElement("input");
+    inputField1.type = "text";
+    inputField1.value = searchText;
+    inputField1.placeholder = "Enter your  name";
+    inputField1.style.width = "calc(100% - 24px)";
+    inputField1.style.border = "none";
+    inputField1.style.padding = "13px 16px 13px 16px";
+    inputField1.addEventListener("input", () => {
+      // Show or hide the clear icon based on input content
+      clearIcon.style.display = inputField1.value ? "block" : "none";
+    });
+    inputField1Container.appendChild(inputField1);
+
+    // Add cross icon to clear input field
+    const clearIcon = document.createElement("span");
+    clearIcon.innerHTML = "&times;";
+    clearIcon.style.position = "absolute";
+    clearIcon.style.right = "10px";
+    clearIcon.style.top = "5px";
+    clearIcon.style.cursor = "pointer";
+    clearIcon.style.color = "rgb(255 0 0)";
+    clearIcon.style.fontSize = "25px";
+
+    clearIcon.addEventListener("click", () => {
+      inputField1.value = "";
+      clearIcon.style.display = "none"; // Hide the clear icon after clearing input
+    });
+    inputField1Container.appendChild(clearIcon);
+
+    // Create the container for dropdown (input field2)
+    const inputContainer2 = createInputContainer(
+      'Category<span style="color:red">*</span>'
+    );
+
+    // Create the dropdown (select element)
+    const dropdown = createDropdown();
+    inputContainer2.appendChild(dropdown);
+
+    // Create a button inside the modal
+    const modalButton = document.createElement("button");
+    modalButton.innerHTML = "Add";
+    modalButton.style.width = "fit-content";
+    modalButton.style.padding = "5px 15px";
+    modalButton.style.borderRadius = "5px";
+    modalButton.style.border = "1px solid #007DFC";
+    modalButton.style.background = "#007DFC";
+    modalButton.style.color = "#fff";
+    modalButton.style.cursor = "pointer";
+    modalButton.style.alignSelf = "flex-end";
+    modalButton.addEventListener("click", () => {
+      // Get the values from inputField1 and dropdownButton
+      const skillName = inputField1.value;
+      const selectedCategory = dropdown.value;
+
+      // Check if skillName is not empty
+      if (skillName.trim() === "") {
+        alert("Please enter a skill name");
+        return;
+      }
+
+      // Check if a category is selected (replace "Select an option" with your default text)
+      if (selectedCategory === "Select an option") {
+        alert("Please select a category");
+        return;
+      }
+
+      // Call the API function with the payload
+      addSkillToApi({ skillName, selectedCategory })
+        .then((data) => {
+          // Optionally, you can close the modal or perform other actions
+          modalDiv.style.display = "none";
+        })
+        .catch((error) => {
+          // Handle errors, show an alert, or perform other actions
+        });
+    });
+
+    modalContent.appendChild(modalButton);
+
+    // Append the modal to the document body
+    document.body.appendChild(modalDiv);
+
+    function createInputContainer(labelText) {
+      const container = document.createElement("div");
+      container.style.position = "relative";
+      modalContent.appendChild(container);
+
+      const label = document.createElement("label");
+      label.style.fontWeight = 500;
+      label.innerHTML = labelText;
+      container.appendChild(label);
+
+      return container;
+    }
+
+    // Helper function to create the dropdown (select element)
+    function createDropdown() {
+      const dropdown = document.createElement("select");
+      dropdown.defaultSelected = "option2";
+      dropdown.style.width = "100%";
+      dropdown.style.padding = "13px 16px 13px 20px";
+      dropdown.style.border = "1px solid #E6E6E6";
+      dropdown.style.borderRadius = "4px";
+      dropdown.style.marginBottom = "10px";
+      dropdown.style.background = "white";
+
+      // Add options to the dropdown (you can customize this part based on your data)
+      const option1 = document.createElement("option");
+      option1.value = "option1";
+      option1.text = "Option 1";
+      dropdown.appendChild(option1);
+
+      const option2 = document.createElement("option");
+      option2.value = "option2";
+      option2.text = "Option 2";
+      dropdown.appendChild(option2);
+
+      // ... add more options ...
+
+      return dropdown;
+    }
   }
 
   searchHighlight(searched, text) {
@@ -366,9 +671,21 @@ class IysSearchPlugin {
   }
 
   searchAPI() {
-    this.searchInputBox.classList.add("loading");
+    // this.searchInputBox.classList.add("loading");
     this.searchInputBox.type = "text";
-    if (this.searchValue.length > 1) {
+
+    const div = document.getElementById("dropdown-plugin-div");
+    div.style.padding = "30px";
+
+    // Create and append the loader while waiting for the API response
+
+    const loader = document.createElement("div");
+    loader.className = "loader";
+
+    div.innerHTML = ""; // Clear previous content
+    div.appendChild(loader);
+
+    if (this.searchValue.length > 0) {
       fetch(`${ENDPOINT_URL}ISOT/?q=${this.searchValue}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
@@ -380,12 +697,16 @@ class IysSearchPlugin {
         })
         .then((response) => {
           if (this.searchValue == response.query) {
-            this.createSkillSearchList(response.matches);
+            this.createSkillSearchList(response.matches, this.searchValue);
           }
         })
-        .catch((err) => console.error(err));
+        .catch((err) => console.error(err))
+        .finally(() => {
+          // Remove the loader when the API call is complete
+          // div.removeChild(loader);
+        });
     } else {
-      this.createSkillSearchList([]);
+      this.createSkillSearchList([], this.searchValue);
     }
   }
 }
@@ -519,7 +840,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var functionAreaDiv = document.getElementById("functional-area-button");
     var identifierData =
       isFuncSkill || skillDetail.child_count > 0 ? "div" : "button";
-      
+
     var div = document.createElement(identifierData);
 
     if (isFuncSkill) {
@@ -579,7 +900,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
 
     div.style.color = "#333333";
-    div.style.background = (identifierData === "div" ? "rgba(0, 125, 252, 0.1)" : "white")
+    div.style.background =
+      identifierData === "div" ? "rgba(0, 125, 252, 0.1)" : "white";
     div.style.borderRadius = "4px 4px 0px 0px";
     div.style.border = "0.5px solid #007DFC33";
     div.style.padding = "8px 12px 10px 12px";
@@ -751,13 +1073,34 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       outerDiv.classList.add("card");
       const innerDiv = document.createElement("div");
       innerDiv.classList.add("card");
+
       const cardBody = document.createElement("div");
       cardBody.classList.add("card-body");
       cardBody.style.padding = "10px 20px 20px 20px";
       // cardBody.textContent = "skill list";
-      innerDiv.appendChild(cardBody);
       this.createSkillSearchButtonList(cardBody, skillList);
+      // Create the three buttons in the card-body using a parent div
+      const cardBodyButtonDiv = document.createElement("div");
+      cardBodyButtonDiv.style.margin= "20px 0px 0px 5px"
+      
+    const previewProfileButton = createButton("Preview Profile", "far fa-eye", 'left',"", false,() => {
+      // Add logic for preview profile button click
+    });
+    const saveProfileButton = createButton("Reset Changes", "fas fa-undo",'right',"10px",false, () => {
+      // Add logic for save profile button click
+    });
 
+    const resetChangesButton = createButton("Save Profile","", 'right',"",true, () => {
+      // Add logic for reset changes button click
+    });
+
+
+    // Append buttons to the card body
+    cardBodyButtonDiv.appendChild(previewProfileButton);
+    cardBodyButtonDiv.appendChild(resetChangesButton);
+    cardBodyButtonDiv.appendChild(saveProfileButton);
+      cardBody.appendChild(cardBodyButtonDiv)
+      innerDiv.appendChild(cardBody);
       outerDiv.appendChild(innerDiv);
     } else {
       outerDiv.innerHTML = "";
@@ -1170,7 +1513,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   createSkillSelectBox(skillDetail) {
-    console.log("createSkillSelectBox --------- ", skillDetail);
+    const skillDetailArray = JSON.parse(sessionStorage.getItem("items"));
+    console.log("createSkillSelectBox --------- ");
+    this.searchInputBox.value =
+      skillDetailArray !== null ? skillDetailArray[0].name : skillDetail.term;
     this.selectedASkillBox.innerHTML = "";
     const cardDiv = document.createElement("div");
     cardDiv.classList.add("card");
@@ -1204,14 +1550,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (skillDetail?.term) {
       console.log("added", skillDetail.skills[0]);
       addTosessionStorage(skillDetail.skills[0]);
-      cardTitleH4.innerHTML = `Selected Skill  <b  class="text-primary">"${skillDetail.term}"</b>`;
-    } else {
-      if (skillDetail) {
-        cardTitleH4.innerHTML = `Selected Skill <b class="text-primary">"${skillDetail.name}"</b>`;
-      }
     }
-
-    // cardTitleH4.appendChild(titleText);
 
     if (skillDetail.rating_type > 0) {
       cardTitleH4.appendChild(rateButton);
@@ -1219,15 +1558,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillDetail?.skills?.length > 0 &&
       skillDetail?.skills[0].rating_type > 0
     ) {
-      cardTitleH4.appendChild(rateButton);
+      // cardTitleH4.appendChild(rateButton);
     }
 
-    const hrElement = document.createElement("hr");
-
     cardBodyDiv.appendChild(cardTitleH4);
-    cardBodyDiv.appendChild(hrElement);
 
-    this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
+    // this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
 
     if (skillDetail?.skills?.length > 0) {
       skillDetail.skills.forEach((skill) => {
@@ -1480,13 +1816,25 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .then((response) => {
           console.log("delete_skill", response);
 
+          // this.createSkillPath(cardBodyDiv, response.ancestors);
+          // if (response.siblings.length > 0) {
+          //   this.createSelectSkillsChildBox(this.cardBodyDiv, response.siblings);
+          // } else {
+          //   this.childrenSkillAPI(skillId);
+          // }
         })
         .catch((err) => console.error(err));
     } else {
       console.log("delete_skill", skill_id);
       removeItemFromlocalStorage(skill_id);
       console.log("deleted_skill");
-
+      // // TODO: delete skill from local storage FOR NOT login user
+      // console.log("delete_skill",skill_id)
+      // let skill_list = JSON.parse(localStorage.getItem("skill_list"));
+      // console.log("delete_skill",skill_list)
+      // let new_skill_list = skill_list.filter((skill) => skill.id !== skill_id);
+      // console.log("delete_skill",new_skill_list)
+      // localStorage.setItem("skill_list", JSON.stringify(new_skill_list));
     }
   }
 
@@ -1508,7 +1856,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
       })
       .then((response) => {
-        this.createSkillPath(cardBodyDiv, response.ancestors);
+        // this.createSkillPath(cardBodyDiv, response.ancestors);
         if (response.siblings.length > 0) {
           this.createSelectSkillsChildBox(this.cardBodyDiv, response.siblings);
         } else {
@@ -1518,3 +1866,40 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .catch((err) => console.error(err));
   }
 }
+
+// fetch(url, {
+
+//   constructor(config) {
+//     this.config = config;
+//     this.options = {
+//       ApiKey: null,
+//       divID: null,
+//       onSearchSkillClick: null,
+//     };
+//     if (typeof config == "object") {
+//       this.options = {
+//         ...this.options,
+//         ...config,
+//       };
+//     }
+//     if (this.options.ApiKey && this.options.divID) {
+//       this.rapidAPIheaders = {
+//         method: "GET",
+//         headers: {
+//           "X-RapidAPI-Key": this.options.ApiKey,
+//           "X-RapidAPI-Host": "iys-skill-api.p.rapidapi.com",
+//         },
+//       };
+//       this.selectedDiv = document.getElementById(this.options.divID);
+//       this.currentSkill = null;
+//       this.init();
+//     } else {
+//       console.error("ApiKey  divID not set correctly ");
+//     }
+//   }
+
+//   init() {
+//     this.createFunctionalAreaBox();
+//     this.functionalAreaAPI();
+//     // this.setupCreateSearchTriggers()
+//   }
