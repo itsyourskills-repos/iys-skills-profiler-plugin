@@ -57,3 +57,47 @@
   100% { transform: rotate(360deg); }
 }
 
+.card-body{
+  text-align: center;
+}
+
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion1 {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .accordion1:hover {
+  background-color: #ccc;
+}
+
+.panel1 {
+  padding: 0 18px;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+/* Unicode character for "plus" sign (+) */
+.accordion1:after {
+  content: '\02795'; 
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+
+/* Unicode character for "minus" sign (-) */
+.active:after {
+  content: "\2796"; 
+}
