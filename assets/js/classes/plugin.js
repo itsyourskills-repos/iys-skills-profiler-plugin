@@ -2,21 +2,6 @@ var isLoginUser = false;
 const ENDPOINT_URL =
   "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
 
-var acc = document.getElementsByClassName("accordion");
-var i;
-
-for (i = 0; i < acc.length; i++) {
-  acc[i].addEventListener("click", function () {
-    this.classList.toggle("active");
-    var panel = this.nextElementSibling;
-    if (panel.style.maxHeight) {
-      panel.style.maxHeight = null;
-    } else {
-      panel.style.maxHeight = panel.scrollHeight + "px";
-    }
-  });
-}
-
 function fetchData(url, method) {
   return fetch(url, {
     method: method,
@@ -75,6 +60,26 @@ function addTosessionStorage(item) {
     sessionStorage.setItem("items", JSON.stringify(newList));
   }
 }
+
+function findObjectByIsotFileId(array, isotFileId) {
+  // Iterate through each object in the array
+  for (const obj of array) {
+      // Check if the RatedSkils array exists in the object
+      if (obj.RatedSkills) {
+          // Use the find method to search for the object with the specified isot_file_id
+          const foundObject = obj.RatedSkills.find(skill => skill.isot_file_id === isotFileId);
+          
+          // If found, return the object
+          if (foundObject) {
+              return foundObject;
+          }
+      }
+  }
+
+  // If no match is found, return null or handle as needed
+  return null;
+}
+
 function addTolocalStorage(userRatedSkill) {
   // Get the existing list from local storage
   const existingList = JSON.parse(
@@ -346,9 +351,6 @@ class IysSearchPlugin {
     this.selectedDiv.appendChild(divDropDown);
   }
 
-
-
-  
   setupCreateSearchTriggers() {
     const searchBoxElement = document.getElementById("plugin-search-id");
     searchBoxElement.addEventListener("input", (event) => {
@@ -429,6 +431,9 @@ class IysSearchPlugin {
           this.skillClick(i);
           div.style.display = "none";
           this.selectedASkillBox.style.display = "block";
+
+          // remove local storages
+          // clearlocalStorage();
         });
         const a = document.createElement("a");
         a.classList.add("dropdown-item");
@@ -806,8 +811,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.options.skillPlayground.appendChild(this.selectedASkillBox);
   }
 
-
-
   skillClick(skillListId) {
     clearsessionStorage(skillListId);
     this.createSkillSelectBox(this.searchResultsList[skillListId]);
@@ -857,52 +860,75 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .catch((err) => console.error(err));
   }
 
-/** 
- * creating accordion **/
+  /**
+   * creating accordion **/
 
-  createSkillButton(htmlElement, skillDetail, isFuncSkill, identifier,uniqueIdentifier) {
-    console.log("these are some chnages",skillDetail,htmlElement, skillDetail, isFuncSkill, identifier,uniqueIdentifier)
-  
-   
-  
-    var button = document.createElement("div");
-    button.style.width = "100%";
-    button.style.textAlign = "left";
-    button.classList.add("accordion");
+  createSkillButton(
+    htmlElement,
+    skillDetail,
+    isFuncSkill,
+    identifier,
+    uniqueIdentifier
+  ) {
+    var parentDiv = document.createElement("div");
+    parentDiv.style.width = "100%";
+    parentDiv.style.textAlign = "left";
+    parentDiv.setAttribute("class", "accordion accordion-false");
+    parentDiv.setAttribute("id", "parent-" + skillDetail._id);
 
-    if (identifier === "accordionChild"  ) {
+    var childDiv = document.createElement("div");
+    
+    childDiv.setAttribute("id", "child-" + skillDetail._id);
+    childDiv.style.display="flex";
+
+    // let getUserSelectedSkills = getListFromlocalStorage();
+    // let getSingleSelectSkill = getUserSelectedSkills.find((element) => element.tags_data._id === uniqueIdentifier)
+    // console.log(getSingleSelectSkill,"getSingleSelectSkill")
+
+    // if(getSingleSelectSkill?.length > 0){
+    //  const returndede =  getUserSelectedSkills.find((element) => element.isot_file._id === skillDetail._id)
+    //   console.log(returndede,"returndede")
+    // }
+    // console.log(getSingleSelectSkill,"getUserSelectedSkills",getUserSelectedSkills)
+    if (identifier === "accordionChild") {
       htmlElement.innerHTML = "";
       var skilldetailKey = document.getElementById(uniqueIdentifier);
+      
       var panelDiv = document.createElement("button");
+      panelDiv.setAttribute("class", skillDetail._id);
       panelDiv.style.border = "1px solid grey";
-      panelDiv.style.borderRadius=  "30px";
-      panelDiv.style.margin=  "5px";
-      panelDiv.style.padding=  "5px";
-      panelDiv.style.background=  "white";
-      panelDiv.textContent = skillDetail.name;
+      panelDiv.style.borderRadius = "30px";
+      panelDiv.style.margin = "5px";
+      panelDiv.style.padding = "5px";
+      panelDiv.style.background = "white";
+      const userSkillDetail = this.sortRatingByLocalStorage();
+      const foundObject = findObjectByIsotFileId(userSkillDetail, skillDetail._id);
+
+if (foundObject) {
+  panelDiv.innerHTML = `${skillDetail.name} <i class="fa fa-check" style="color:green"></i>`;
+} else {
+  panelDiv.innerHTML = skillDetail.name;
+}
 
       panelDiv.addEventListener("click", () => {
-     
-        this.changeRateModelElement(skillDetail);
+        this.changeRateModelElement(skillDetail, uniqueIdentifier);
       });
-  
+
       skilldetailKey.appendChild(panelDiv);
     } else {
       if (isFuncSkill) {
-        button.innerHTML =
+        parentDiv.innerHTML =
           `<i class="fas fa-plus mr-1"  style="color:#007DFC; padding-left:5px;"></i> ` +
           skillDetail.name;
       } else if (skillDetail.child_count > 0) {
-        button.innerHTML =
+        parentDiv.innerHTML =
           `<i class="fas fa-plus mr-1"  style="color:#007DFC;  padding:0px 10px;" ></i> ` +
           skillDetail.name;
-          
       } else {
-        button.textContent = skillDetail.name;
+        parentDiv.textContent = skillDetail.name;
       }
 
-      button.addEventListener("click", (event) => {
-        console.log("these are some chnages", skillDetail);
+      parentDiv.addEventListener("click", (event) => {
         if (isFuncSkill) {
           console.log("if function");
           // clearsessionStorage();
@@ -914,22 +940,29 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           this.createSkillSelectBox(skillDetail);
         } else if (skillDetail.child_count > 0) {
           addTosessionStorage(skillDetail);
+
           //this.createSkillSelectBox(skillDetail,"accordionChild");
+          const isExpanded =
+            parentDiv.getAttribute("class") === "accordion-false";
+
+          // Toggle the value of aria-expanded
+          parentDiv.setAttribute(
+            "class",
+            String(`accordion accordion-${!isExpanded}`)
+          );
           this.childrenSkillAPI(skillDetail._id, "accordionChild");
         } else {
           this.changeRateModelElement(skillDetail);
         }
       });
 
-      // button.setAttribute("type", "button");
-      // button.setAttribute("class", "btn btn-secondary btn-rounded");
-      button.setAttribute("data-mdb-toggle", "popover");
-      button.setAttribute("data-mdb-content", "its mdb content");
-      button.setAttribute("data-mdb-trigger", "hover");
+      parentDiv.setAttribute("data-mdb-toggle", "popover");
+      parentDiv.setAttribute("data-mdb-content", "its mdb content");
+      parentDiv.setAttribute("data-mdb-trigger", "hover");
 
       if (skillDetail.description) {
-        button.addEventListener("mouseover", function () {
-          const popover = new mdb.Popover(button, {
+        parentDiv.addEventListener("mouseover", function () {
+          const popover = new mdb.Popover(parentDiv, {
             container: "body",
             placement: "top",
             content: skillDetail.description,
@@ -944,32 +977,29 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
       }
 
-      button.style.color = "#333333";
-      button.style.background =
+      parentDiv.style.color = "#333333";
+      parentDiv.style.background =
         isFuncSkill || skillDetail.child_count > 0
           ? "rgba(0, 125, 252, 0.1)"
           : "white";
-      button.style.borderRadius = "4px 4px 0px 0px";
-      button.style.border = "0.5px solid #007DFC33";
-      button.style.padding = "8px 12px 10px 12px";
+      parentDiv.style.borderRadius = "4px 4px 0px 0px";
+      parentDiv.style.border = "0.5px solid #007DFC33";
+      parentDiv.style.padding = "8px 12px 10px 12px";
+      parentDiv.style.fontSize = "105%";
 
-      // add text rasfrom to buuton
-      button.style.fontSize = "105%";
-      button.style.marginLeft = "5px";
-      button.style.marginTop = "15px";
-      button.style.fontFamily =
-        'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
-        
-      htmlElement.appendChild(button);
-      
+      parentDiv.appendChild(childDiv);
+      htmlElement.appendChild(parentDiv);
+
       var skillDetailChild = document.createElement("div");
-      skillDetailChild.style.padding= "10px";
+      skillDetailChild.style.padding = "10px";
       skillDetailChild.classList.add("panel");
-      skillDetailChild.style.justifyContent=  "space-around";
-      skillDetailChild.style.display=  "flex";
-      skillDetailChild.style.flexWrap= "wrap";
+      skillDetailChild.style.justifyContent = "space-around";
+      skillDetailChild.style.display = "flex";
+      skillDetailChild.style.flexWrap = "wrap";
       skillDetailChild.setAttribute("id", skillDetail._id);
-      button.after(skillDetailChild);
+      
+
+      parentDiv.after(skillDetailChild);
     }
   }
 
@@ -980,9 +1010,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     identifier,
     skillId
   ) {
-
-    console.log("listing",htmlElement,
-      fuctionalAreasList)
+    console.log("listing", htmlElement, fuctionalAreasList);
     htmlElement.innerHTML = "";
 
     if (fuctionalAreasList.length > 0) {
@@ -991,7 +1019,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           this.createSkillButton(
             htmlElement,
             fuctionalAreasList[i],
-            isFuncSkill,identifier,skillId
+            isFuncSkill,
+            identifier,
+            skillId
           );
         }
       } else {
@@ -1001,14 +1031,99 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           const items = groupedTagsData[tagTitle];
           for (const item of items) {
-            this.createSkillButton(htmlElement, item, isFuncSkill, identifier,skillId);
+            this.createSkillButton(
+              htmlElement,
+              item,
+              isFuncSkill,
+              identifier,
+              skillId
+            );
           }
         }
       }
     }
   }
+  
+  sortRatingByLocalStorage() {
+    
+    const inputArray = getListFromlocalStorage();
+    let output = {};
 
-  saveTheSkillComment(commentValue, ratingValue, skillDetail) {
+    inputArray.forEach((item) => {
+      const parentID = item.parentSkillDetailId;
+      if (!output[parentID]) {
+        output[parentID] = {
+          parentID,
+          RatedSkills: [],
+        };
+      }
+
+      const ratedSkill = {
+        comment: item.comment,
+        rating: item.rating,
+        isot_file_id: item.isot_file_id,
+        isot_file: item.isot_file,
+        parentSkillDetailId: item.parentSkillDetailId,
+      };
+
+      output[parentID].RatedSkills.push(ratedSkill);
+    });
+   
+    const finalResultArray = Object.values(output);
+
+    return finalResultArray;
+  }
+
+  displaySelctedSkills() {
+    const userSkillDetail = this.sortRatingByLocalStorage();
+    
+    
+    for (let item=0;userSkillDetail.length>item ;item++) {
+      const childDivId = document.getElementById('child-'+userSkillDetail[item].parentID)
+      console.log(`Parent ID:`,childDivId);
+  
+      // Inner loop for iterating over RatedSkills array
+      for (const ratedSkill of userSkillDetail[item].RatedSkills) {
+        // Access the isot_file object
+        const isotFile = ratedSkill.isot_file;
+
+        // Check if isot_file exists and has a name property
+        if (isotFile && isotFile.name) {
+            // Create a div element to display the name
+            const nameDiv = document.createElement('div');
+            const existPanelDiv = document.getElementsByClassName(ratedSkill.isot_file_id);
+            console.log(existPanelDiv,"efrere",)
+            nameDiv.innerHTML = `${isotFile.name} <i class="fa fa-close" style="color:red"></i>`;
+            existPanelDiv.innerHTML = `${isotFile.name} <i class="fa fa-check" style="color:green"></i>`;
+            
+            nameDiv.style.background =  "white";
+            nameDiv.style.border =  "0.5px solid rgba(0, 125, 252, 0.2)";
+            nameDiv.style.padding =  "0px 14px";
+            nameDiv.style.borderRadius =  "30px";
+            nameDiv.style.marginRight = "10px"
+            nameDiv.style.width = "fit-content"
+
+            // Append the div to the childDivId
+            childDivId.appendChild(nameDiv);
+            
+          }       
+          // }
+        }
+  }
+  }
+
+  saveTheSkillComment(
+    commentValue,
+    ratingValue,
+    skillDetail,
+    parentSkillDetailId
+  ) {
+    console.log(
+      commentValue,
+      ratingValue,
+      skillDetail,
+      "commentValue, ratingValue, skillDetail"
+    );
     let userRatedSkill = {
       skills: [
         {
@@ -1063,17 +1178,21 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             rating: ratingValue,
             isot_file_id: skillDetail._id,
             isot_file: response[0],
+            parentSkillDetailId: parentSkillDetailId,
           });
 
-          this.createListProfileSkills();
+          this.displaySelctedSkills();
+         
+          // this.createListProfileSkills();
           // document.getElementById("RateCloseButton").click();
-          this.ratedSkillEvent(skillDetail);
+          // this.ratedSkillEvent(skillDetail);
         })
         .catch((err) => console.error(err));
     }
   }
 
-  changeRateModelElement(skillDetail) {
+  changeRateModelElement(skillDetail, parentSkillDetailId) {
+    console.log(skillDetail, parentSkillDetailId);
     const RateSkillModel = document.getElementById("RateSkillModel");
     const RateSkillModelLabel = document.getElementById("RateSkillModelLabel");
     const spanElementForStar = document.getElementById("spanElementForStar");
@@ -1145,8 +1264,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillDetail.rating.options.indexOf(
             spanElementForStar.noUiSlider.get()
           ) + 1,
-          skillDetail
+          skillDetail,
+          parentSkillDetailId
         );
+        modalEl.hide();
       } else {
         alert("Please rate the skill");
       }
@@ -1154,7 +1275,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     modalEl.show();
   }
 
-  createSelectSkillsChildBox(htmlElement, skillList, identifier,skillId) {
+  createSelectSkillsChildBox(htmlElement, skillList, identifier, skillId) {
     const outerDiv = document.createElement("div");
     if (skillList.length > 0) {
       outerDiv.classList.add("card");
@@ -1163,14 +1284,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const cardBody = document.createElement("div");
       cardBody.classList.add("card-body");
-      cardBody.style.padding = "10px 20px 20px 20px";
+      cardBody.style.padding = "30px";
 
       // cardBody.textContent = "skill list";
-      this.createSkillSearchButtonList(cardBody, skillList, "", identifier,skillId);
+      this.createSkillSearchButtonList(
+        cardBody,
+        skillList,
+        "",
+        identifier,
+        skillId
+      );
       // Create the three buttons in the card-body using a parent div
       const cardBodyButtonDiv = document.createElement("div");
-      cardBodyButtonDiv.style.margin = "20px 0px 0px 5px";
-
       const resetChangesButton = createButton(
         "Reset Changes",
         "fas fa-undo",
@@ -1519,36 +1644,35 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
   createRateSelectedSkills(htmlElement) {
     const div = document.createElement("div");
-    div.classList.add("mt-3");
+    // div.classList.add("mt-3");
 
-    // Create the outer div element with the class "accordion"
-    var accordionDiv = document.createElement("div");
-    accordionDiv.classList.add("accordion");
-    accordionDiv.id = "ratedskill";
+    // // Create the outer div element with the class "accordion"
+    // var accordionDiv = document.createElement("div");
+    // accordionDiv.classList.add("accordion");
+    // accordionDiv.id = "ratedskill";
 
-    // Create the inner div element with the class "accordion-item"
-    var accordionItemDiv = document.createElement("div");
-    accordionItemDiv.classList.add("accordion-item");
+    // // Create the inner div element with the class "accordion-item"
+    // var accordionItemDiv = document.createElement("div");
+    // accordionItemDiv.classList.add("accordion-item");
 
-    // Create the h2 element with the class "accordion-header" and id "headingOne"
-    var accordionHeader = document.createElement("h2");
-    accordionHeader.classList.add("accordion-header");
-    accordionHeader.id = "ratedskillheading";
+    // // Create the h2 element with the class "accordion-header" and id "headingOne"
+    // var accordionHeader = document.createElement("h2");
+    // accordionHeader.classList.add("accordion-header");
+    // accordionHeader.id = "ratedskillheading";
 
-    // Create the button element with the class "accordion-button" and attributes
-    var accordionTitle = document.createElement("h1");
-    accordionTitle.style.fontSize = "1.5rem";
-    accordionTitle.classList.add("accordion-button");
-    accordionTitle.classList.add("text-dark");
+    // // Create the button element with the class "accordion-button" and attributes
+    // var accordionTitle = document.createElement("h1");
+    // accordionTitle.style.fontSize = "1.5rem";
+    // accordionTitle.classList.add("accordion-button");
+    // accordionTitle.classList.add("text-dark");
 
-    accordionTitle.type = "button";
-    accordionTitle.id = "rate-skill-button";
-    accordionTitle.dataset.mdbToggle = "collapse";
-    accordionTitle.dataset.mdbTarget = "#collapsetwo";
-    accordionTitle.setAttribute("aria-expanded", "false");
-    accordionTitle.setAttribute("aria-controls", "collapsetwo");
+    // accordionTitle.type = "button";
+    // accordionTitle.id = "rate-skill-button";
+    // accordionTitle.dataset.mdbToggle = "collapse";
+    // accordionTitle.dataset.mdbTarget = "#collapsetwo";
+    // accordionTitle.setAttribute("aria-expanded", "false");
+    // accordionTitle.setAttribute("aria-controls", "collapsetwo");
 
-    
     // create a span elment with some id in it
     var rateNumber = document.createElement("span");
     rateNumber.id = "rate-skill-span";
@@ -1557,72 +1681,84 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     rateNumber.style.marginRight = "0.5rem";
     this.rateNumber = rateNumber;
     rateNumber.innerText = this.ratedSelectedSkills.length;
-    
-    accordionTitle.innerText = "Your Profile Skills has ";
-    accordionTitle.appendChild(rateNumber);
-    
-    // create a span node with "Skills" text in it
-    var spanElement2 = document.createElement("span");
-    spanElement2.innerText = " Skills";
-    accordionTitle.appendChild(spanElement2);
-    
-    console.log(rateNumber.textContent);
-    var elementCountLabel = document.querySelector('.elementCountLabel');
-    elementCountLabel.innerText = "Your Profile Skills has ";
-  elementCountLabel.appendChild(rateNumber);
-  var spanElementForCountLabel = document.createElement("span");
-  spanElementForCountLabel.innerText = " Skills";
-  elementCountLabel.appendChild(spanElementForCountLabel);
-    if (elementCountLabel) {
-        // Apply styling using style properties
-        elementCountLabel.style.color = "blue";
-        elementCountLabel.style.fontWeight = "bold";
-        // Add more styling properties as needed
-    }
-    // accordionTitle.innerText =  accordionTitle.innerText+ " Skills";
 
+    // accordionTitle.innerText = "Your Profile Skills has ";
+    // accordionTitle.appendChild(rateNumber);
+    // create a span node with "Skills" text in it
+    // var spanElement2 = document.createElement("span");
+    // spanElement2.innerText = " Skills";
+    // accordionTitle.appendChild(spanElement2);
+    // console.log("Value of rate-skill-span:", accordionTitle.textContent);
+
+    console.log(this.ratedSelectedSkills.length, "this.rateNumber.innerHTML");
+    setTimeout(function () {
+      var value = rateNumber.textContent;
+
+      var elementCountLabel = document.querySelector(".elementCountLabel");
+      elementCountLabel.style.width = "fit-content";
+      elementCountLabel.style.padding = "10px 30px";
+      elementCountLabel.style.margin = "0 auto";
+      elementCountLabel.style.borderRadius = "30px";
+      if (value > 0) {
+        elementCountLabel.style.border = "0.4px solid #21965333";
+
+        elementCountLabel.style.background = "#2196531A";
+
+        elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    </svg>  ${rateNumber.textContent} element added to your profile`;
+      } else {
+        elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+    </svg> There are no details added to your profile yet`;
+        elementCountLabel.style.border = "0.4px solid #F2994A33";
+        elementCountLabel.style.background = "#F2994A1A";
+      }
+    }, 100);
     // Append the button to the h2 element
-    accordionHeader.appendChild(accordionTitle);
+    // accordionHeader.appendChild(accordionTitle);
 
     // Create the inner div element with the id "collapsetwo" and class "accordion-collapse collapse show"
-    var accordionCollapseDiv = document.createElement("div");
-    accordionCollapseDiv.id = "collapsetwo";
-    accordionCollapseDiv.classList.add("accordion-collapse", "collapse");
-    accordionCollapseDiv.setAttribute("aria-labelledby", "headingOne");
-    accordionCollapseDiv.setAttribute("data-mdb-parent", "#ratedskill");
+    // var accordionCollapseDiv = document.createElement("div");
+    // accordionCollapseDiv.id = "collapsetwo";
+    // accordionCollapseDiv.classList.add("accordion-collapse", "collapse");
+    // accordionCollapseDiv.setAttribute("aria-labelledby", "headingOne");
+    // accordionCollapseDiv.setAttribute("data-mdb-parent", "#ratedskill");
 
-    // Create the inner div element with the class "accordion-body"
-    var accordionBodyDiv = document.createElement("div");
-    accordionBodyDiv.classList.add("accordion-body");
+    // // Create the inner div element with the class "accordion-body"
+    // var accordionBodyDiv = document.createElement("div");
+    // accordionBodyDiv.classList.add("accordion-body");
 
-    // Append the inner div to the outer div
-    accordionCollapseDiv.appendChild(accordionBodyDiv);
+    // // Append the inner div to the outer div
+    // accordionCollapseDiv.appendChild(accordionBodyDiv);
 
-    const cardDiv = document.createElement("div");
+    // const cardDiv = document.createElement("div");
 
-    const cardBodyDiv = document.createElement("div");
-    cardBodyDiv.classList.add("card-body");
+    // const cardBodyDiv = document.createElement("div");
+    // cardBodyDiv.classList.add("card-body");
 
-    this.selectedRateSkillDiv = cardBodyDiv;
+    // this.selectedRateSkillDiv = cardBodyDiv;
 
-    const cardText = document.createElement("p");
-    cardText.classList.add("card-text");
-    cardBodyDiv.appendChild(cardText);
+    // const cardText = document.createElement("p");
+    // cardText.classList.add("card-text");
+    // cardBodyDiv.appendChild(cardText);
 
-    cardDiv.appendChild(cardBodyDiv);
+    // cardDiv.appendChild(cardBodyDiv);
 
-    accordionBodyDiv.appendChild(cardDiv);
+    // accordionBodyDiv.appendChild(cardDiv);
 
-    // Append the h2 and inner div to the accordion item div
-    accordionItemDiv.appendChild(accordionHeader);
-    accordionItemDiv.appendChild(accordionCollapseDiv);
+    // // Append the h2 and inner div to the accordion item div
+    // accordionItemDiv.appendChild(accordionHeader);
+    // accordionItemDiv.appendChild(accordionCollapseDiv);
 
-    // Append the accordion item div to the accordion div
-    accordionDiv.appendChild(accordionItemDiv);
+    // // Append the accordion item div to the accordion div
+    // accordionDiv.appendChild(accordionItemDiv);
 
-    // append the card element to the document body
+    // // append the card element to the document body
 
-    div.appendChild(accordionDiv);
+    // div.appendChild(accordionDiv);
 
     htmlElement.appendChild(div);
   }
@@ -1895,7 +2031,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       })
       .then((response) => {
         console.log("children", response);
-        this.createSelectSkillsChildBox(this.cardBodyDiv, response, identifier,skillId);
+        this.createSelectSkillsChildBox(
+          this.cardBodyDiv,
+          response,
+          identifier,
+          skillId
+        );
       })
       .catch((err) => console.error(err));
   }
