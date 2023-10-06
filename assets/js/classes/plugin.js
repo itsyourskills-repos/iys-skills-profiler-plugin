@@ -64,20 +64,248 @@ function addTosessionStorage(item) {
 function findObjectByIsotFileId(array, isotFileId) {
   // Iterate through each object in the array
   for (const obj of array) {
-      // Check if the RatedSkils array exists in the object
-      if (obj.RatedSkills) {
-          // Use the find method to search for the object with the specified isot_file_id
-          const foundObject = obj.RatedSkills.find(skill => skill.isot_file_id === isotFileId);
-          
-          // If found, return the object
-          if (foundObject) {
-              return foundObject;
-          }
+    // Check if the RatedSkils array exists in the object
+    if (obj.RatedSkills) {
+      // Use the find method to search for the object with the specified isot_file_id
+      const foundObject = obj.RatedSkills.find(
+        (skill) => skill.isot_file_id === isotFileId
+      );
+
+      // If found, return the object
+      if (foundObject) {
+        return foundObject;
       }
+    }
   }
 
   // If no match is found, return null or handle as needed
   return null;
+}
+
+function isParentIdAvailable(array, parentIdToCheck) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].parentID === parentIdToCheck) {
+      return array[i]; // ParentId found
+    }
+  }
+  return null; // ParentId not found
+}
+
+function sortRatingByLocalStorage() {
+  const inputArray = getListFromlocalStorage();
+  let output = {};
+
+  inputArray.forEach((item) => {
+    const parentID = item.parentSkillDetailId;
+    if (!output[parentID]) {
+      output[parentID] = {
+        parentID,
+        RatedSkills: [],
+      };
+    }
+
+    const ratedSkill = {
+      comment: item.comment,
+      rating: item.rating,
+      isot_file_id: item.isot_file_id,
+      isot_file: item.isot_file,
+      parentSkillDetailId: item.parentSkillDetailId,
+    };
+
+    output[parentID].RatedSkills.push(ratedSkill);
+  });
+
+  const finalResultArray = Object.values(output);
+
+  return finalResultArray;
+}
+
+function displaySelctedSkills() {
+  const userSkillDetail = sortRatingByLocalStorage();
+
+  for (let item = 0; userSkillDetail.length > item; item++) {
+    const childDivId = document.getElementById(
+      "child-" + userSkillDetail[item].parentID
+    );
+
+    childDivId.innerHTML = "";
+
+    // Inner loop for iterating over RatedSkills array
+    for (
+      let obj = 0;
+      obj < 3 && userSkillDetail[item].RatedSkills.length > obj;
+      obj++
+    ) {
+      // Access the isot_file object
+
+      const isotFile = userSkillDetail[item].RatedSkills[obj].isot_file;
+
+      // Check if isot_file exists and has a name property
+      if (isotFile && isotFile.name) {
+        // Create a div element to display the name
+        const nameDiv = document.createElement("div");
+
+        nameDiv.setAttribute(
+          "id",
+          `selectedRating-${userSkillDetail[item].parentID}`
+        );
+
+        nameDiv.innerHTML = `${isotFile.name} <i class="fa fa-close" style="color:red"></i>`;
+        nameDiv.style.background = "white";
+        nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
+        nameDiv.style.padding = "0px 14px";
+        nameDiv.style.borderRadius = "30px";
+        nameDiv.style.marginRight = "10px";
+        nameDiv.style.width = "fit-content";
+
+        // Append the div to the childDivId
+        childDivId.appendChild(nameDiv);
+      }
+    }
+
+    if (userSkillDetail[item].RatedSkills.length > 3) {
+      const plusOneBtn = document.createElement("button");
+      plusOneBtn.style.background = "none";
+      plusOneBtn.style.border = "none";
+      plusOneBtn.style.color = "#007DFC";
+      plusOneBtn.innerHTML = `+1`;
+      plusOneBtn.zIndex = "9"
+      childDivId.append(plusOneBtn);
+    }
+  }
+}
+
+function createSelectedSkillsCount() {
+  const htmlElementCount = getListFromlocalStorage();
+  console.log(htmlElementCount.length, "432423423423htmlElementCount");
+  var elementCountLabel = document.querySelector(".elementCountLabel");
+  elementCountLabel.style.width = "fit-content";
+  elementCountLabel.style.padding = "10px 30px";
+  elementCountLabel.style.margin = "0 auto";
+  elementCountLabel.style.borderRadius = "30px";
+  if (htmlElementCount.length > 0) {
+    elementCountLabel.style.border = "0.4px solid #21965333";
+
+    elementCountLabel.style.background = "#2196531A";
+
+    elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+</svg>  ${htmlElementCount.length} element added to your profile`;
+  } else {
+    elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+</svg> There are no details added to your profile yet`;
+    elementCountLabel.style.border = "0.4px solid #F2994A33";
+    elementCountLabel.style.background = "#F2994A1A";
+  }
+}
+
+// Function to create subString of child label
+function stringSplit(content) {
+  return content.slice(0, 13);
+}
+
+// Function to manage tooltip
+function manageTooltip(htmlElement, content) {
+  htmlElement.addEventListener("mouseover", function () {
+    console.log("first");
+    const popover = new mdb.Popover(htmlElement, {
+      container: "body",
+      placement: "top",
+      content: content,
+      html: true,
+      trigger: "hover",
+    });
+
+    popover.show();
+
+    setTimeout(() => {
+      popover.hide();
+    }, 1700);
+  });
+}
+
+// Function to manage morethan 3 label and its modal
+function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
+  console.log(
+    contentToShowInModal.RatedSkills[0].isot_file.tags_data[0].title,
+    "ContentToShowInModal"
+  );
+  const plusOneBtn = document.createElement("button");
+  plusOneBtn.style.background = "none";
+  plusOneBtn.style.border = "none";
+  plusOneBtn.style.color = "#007DFC";
+  plusOneBtn.innerHTML = `+1`;
+  plusOneBtn.zIndex = "9"
+  
+  htmlElementForPlusOne.append(plusOneBtn);
+
+  // Create the modal container
+  const modalContainer = document.createElement("div");
+  modalContainer.style.display = "none"; // Hide the modal initially
+  modalContainer.style.position = "fixed";
+  modalContainer.style.top = "0";
+  modalContainer.style.left = "0";
+  modalContainer.style.width = "100%";
+  modalContainer.style.height = "100%";
+  modalContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  modalContainer.style.justifyContent = "center";
+  modalContainer.style.alignItems = "center";
+  modalContainer.style.zIndex = "99";
+  document.body.appendChild(modalContainer);
+
+  // Create the modal content
+  const modalContent = document.createElement("div");
+  modalContent.style.width = "50%";
+  modalContent.style.background = "#fff";
+  modalContent.style.padding = "20px";
+  modalContent.style.borderRadius = "5px";
+  modalContainer.appendChild(modalContent);
+
+  // Create the modal header
+  const modalHeader = document.createElement("div");
+  modalHeader.style.display = "flex";
+  modalHeader.style.justifyContent = "space-between";
+  modalHeader.style.borderBottom = "1px solid #ddd";
+  modalHeader.style.marginBottom = "10px";
+  modalContent.appendChild(modalHeader);
+
+  // Create the dot after header
+  const modalDotHeader = document.createElement("div");
+  modalDotHeader.style.width = "3px";
+  modalDotHeader.style.height = "3px";
+  modalDotHeader.style.background = "grey";
+  modalDotHeader.style.borderRadius = "50%";
+  modalHeader.appendChild(modalDotHeader);
+
+  for (const obj of contentToShowInModal.RatedSkills) {
+    console.log(obj, "23423423");
+  }
+  // Create the modal title
+  const modalTitle = document.createElement("h4");
+  modalTitle.innerHTML =
+    contentToShowInModal.RatedSkills[0].isot_file.tags_data[0].title;
+  modalHeader.appendChild(modalTitle);
+
+  // Create the close button for the modal
+  const closeModalBtn = document.createElement("button");
+  closeModalBtn.style.background = "none";
+  closeModalBtn.style.border = "none";
+  closeModalBtn.style.fontSize = "18px";
+  closeModalBtn.innerHTML = "&times;";
+  modalHeader.appendChild(closeModalBtn);
+
+  // Event listener for the +1 button to show the modal
+  plusOneBtn.addEventListener("click", () => {
+    modalContainer.style.display = "flex";
+  });
+
+  // Event listener for the close button to hide the modal
+  closeModalBtn.addEventListener("click", () => {
+    modalContainer.style.display = "none";
+  });
 }
 
 function addTolocalStorage(userRatedSkill) {
@@ -156,7 +384,7 @@ const saveListToSessionStorage = (list) => {
 };
 
 // Helper function to create a button with an icon
-function createButton(text, iconClass, align, margin, disabled, onClick) {
+function createButton(text, iconClass, align, margin, disabled, onClickFunction) {
   const button = document.createElement("button");
   button.innerHTML = `<i class="${iconClass}"></i> ${text}`;
   button.style.padding = "5px 15px";
@@ -168,7 +396,7 @@ function createButton(text, iconClass, align, margin, disabled, onClick) {
   button.style.marginRight = margin;
   button.disabled = disabled;
   if (!disabled) {
-    button.addEventListener("click", onClick);
+    button.addEventListener("click", onClickFunction());
   }
 
   return button;
@@ -795,7 +1023,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         this.createListProfileSkills();
       });
     }
-
+    createSelectedSkillsCount();
     this.createSearchBox();
     this.setupCreateSearchTriggers();
     this.createPlayground();
@@ -870,30 +1098,64 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     identifier,
     uniqueIdentifier
   ) {
+    const userSkillDetail = sortRatingByLocalStorage();
+    const isParentAvailable = isParentIdAvailable(
+      userSkillDetail,
+      skillDetail._id
+    );
+  
     var parentDiv = document.createElement("div");
     parentDiv.style.width = "100%";
     parentDiv.style.textAlign = "left";
+    parentDiv.style.display = "flex";
+    parentDiv.style.justifyContent = "space-between";
     parentDiv.setAttribute("class", "accordion accordion-false");
     parentDiv.setAttribute("id", "parent-" + skillDetail._id);
 
     var childDiv = document.createElement("div");
-    
+
     childDiv.setAttribute("id", "child-" + skillDetail._id);
-    childDiv.style.display="flex";
+    childDiv.style.display = "flex";
+    
+    console.log(userSkillDetail, isParentAvailable);
 
-    // let getUserSelectedSkills = getListFromlocalStorage();
-    // let getSingleSelectSkill = getUserSelectedSkills.find((element) => element.tags_data._id === uniqueIdentifier)
-    // console.log(getSingleSelectSkill,"getSingleSelectSkill")
+    if (isParentAvailable) {
+      if (isParentAvailable.RatedSkills.length > 3) {
+      }
+      for (
+        let obj = 0;
+        obj < 3 && isParentAvailable.RatedSkills.length > obj;
+        obj++
+      ) {
+        const nameDiv = document.createElement("div");
+        nameDiv.setAttribute(
+          "id",
+          `selectedRating-${isParentAvailable.parentID}`
+        );
 
-    // if(getSingleSelectSkill?.length > 0){
-    //  const returndede =  getUserSelectedSkills.find((element) => element.isot_file._id === skillDetail._id)
-    //   console.log(returndede,"returndede")
-    // }
-    // console.log(getSingleSelectSkill,"getUserSelectedSkills",getUserSelectedSkills)
+        nameDiv.style.background = "white";
+        nameDiv.style.zIndex = "9";
+        nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
+        nameDiv.style.padding = "0px 14px";
+        nameDiv.style.borderRadius = "30px";
+        nameDiv.style.marginRight = "10px";
+        nameDiv.style.width = "fit-content";
+        nameDiv.innerHTML = `${isParentAvailable.RatedSkills[obj].isot_file.name} <i class="fa fa-close" style="color:red"></i>`;
+        childDiv.append(nameDiv);
+      }
+      if (isParentAvailable.RatedSkills.length > 3) {
+        manageModalOnPlusOne(childDiv, isParentAvailable);
+      }
+    }
+
     if (identifier === "accordionChild") {
       htmlElement.innerHTML = "";
       var skilldetailKey = document.getElementById(uniqueIdentifier);
-      
+      const foundObject = findObjectByIsotFileId(
+        userSkillDetail,
+        skillDetail._id
+      );
+
       var panelDiv = document.createElement("button");
       panelDiv.setAttribute("class", skillDetail._id);
       panelDiv.style.border = "1px solid grey";
@@ -901,29 +1163,58 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       panelDiv.style.margin = "5px";
       panelDiv.style.padding = "5px";
       panelDiv.style.background = "white";
-      const userSkillDetail = this.sortRatingByLocalStorage();
-      const foundObject = findObjectByIsotFileId(userSkillDetail, skillDetail._id);
 
-if (foundObject) {
-  panelDiv.innerHTML = `${skillDetail.name} <i class="fa fa-check" style="color:green"></i>`;
-} else {
-  panelDiv.innerHTML = skillDetail.name;
-}
+      var infoDesBtn = document.createElement("i");
+
+      if (foundObject) {
+        panelDiv.style.border = "0.4px solid #21965333";
+        panelDiv.setAttribute("class", `${skillDetail._id} selected-skills`);
+
+        if (skillDetail.name.toString().length > 13) {
+          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${stringSplit(
+            skillDetail.name
+          )}... `;
+        } else {
+          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${skillDetail.name}`;
+        }
+
+        infoDesBtn.setAttribute("class", "infoSelectedSkill");
+        infoDesBtn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#007DFC" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" > <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>';
+
+        if (skillDetail) {
+          manageTooltip(
+            panelDiv,
+            `<div>
+          <b style="border-bottom :1px solid gray"> ${skillDetail.name} </b>
+          <p> Description - ${skillDetail.name}</p>
+        </div>`
+          );
+        }
+      } else {
+        if (skillDetail.name.toString().length > 13) {
+          panelDiv.innerHTML = `${stringSplit(skillDetail.name)}... `;
+          manageTooltip(
+            panelDiv,
+            `<div>
+            <b style="border-bottom :1px solid gray"> ${skillDetail.name} </b></div>`
+          );
+        } else {
+          panelDiv.innerHTML = `${skillDetail.name}`;
+        }
+      }
 
       panelDiv.addEventListener("click", () => {
         this.changeRateModelElement(skillDetail, uniqueIdentifier);
       });
 
+      panelDiv.appendChild(infoDesBtn);
       skilldetailKey.appendChild(panelDiv);
     } else {
       if (isFuncSkill) {
-        parentDiv.innerHTML =
-          `<i class="fas fa-plus mr-1"  style="color:#007DFC; padding-left:5px;"></i> ` +
-          skillDetail.name;
+        parentDiv.innerHTML = `<span><i class="fas fa-plus mr-1"  style="color:#007DFC; padding-left:5px;"></i></span>`;
       } else if (skillDetail.child_count > 0) {
-        parentDiv.innerHTML =
-          `<i class="fas fa-plus mr-1"  style="color:#007DFC;  padding:0px 10px;" ></i> ` +
-          skillDetail.name;
+        parentDiv.innerHTML = `<span><i class="fas fa-plus mr-1"  style="color:#007DFC;  padding:0px 10px;" ></i>${skillDetail.name}</span> `;
       } else {
         parentDiv.textContent = skillDetail.name;
       }
@@ -943,14 +1234,21 @@ if (foundObject) {
 
           //this.createSkillSelectBox(skillDetail,"accordionChild");
           const isExpanded =
-            parentDiv.getAttribute("class") === "accordion-false";
+            parentDiv.getAttribute("class") === "accordion accordion-false";
 
-          // Toggle the value of aria-expanded
-          parentDiv.setAttribute(
-            "class",
-            String(`accordion accordion-${!isExpanded}`)
-          );
-          this.childrenSkillAPI(skillDetail._id, "accordionChild");
+          if (isExpanded) {
+            this.childrenSkillAPI(skillDetail._id, "accordionChild");
+            parentDiv.setAttribute(
+              "class",
+              String(`accordion accordion-true`)
+            );
+          } else {
+            document.getElementById(skillDetail._id).innerHTML = "";
+            parentDiv.setAttribute(
+              "class",
+              String(`accordion accordion-false`)
+            );
+          }
         } else {
           this.changeRateModelElement(skillDetail);
         }
@@ -965,7 +1263,7 @@ if (foundObject) {
           const popover = new mdb.Popover(parentDiv, {
             container: "body",
             placement: "top",
-            content: skillDetail.description,
+            content: skillDetail.name,
             trigger: "hover",
           });
 
@@ -993,11 +1291,10 @@ if (foundObject) {
       var skillDetailChild = document.createElement("div");
       skillDetailChild.style.padding = "10px";
       skillDetailChild.classList.add("panel");
-      skillDetailChild.style.justifyContent = "space-around";
+      // skillDetailChild.style.justifyContent = "space-around";
       skillDetailChild.style.display = "flex";
       skillDetailChild.style.flexWrap = "wrap";
       skillDetailChild.setAttribute("id", skillDetail._id);
-      
 
       parentDiv.after(skillDetailChild);
     }
@@ -1043,74 +1340,6 @@ if (foundObject) {
       }
     }
   }
-  
-  sortRatingByLocalStorage() {
-    
-    const inputArray = getListFromlocalStorage();
-    let output = {};
-
-    inputArray.forEach((item) => {
-      const parentID = item.parentSkillDetailId;
-      if (!output[parentID]) {
-        output[parentID] = {
-          parentID,
-          RatedSkills: [],
-        };
-      }
-
-      const ratedSkill = {
-        comment: item.comment,
-        rating: item.rating,
-        isot_file_id: item.isot_file_id,
-        isot_file: item.isot_file,
-        parentSkillDetailId: item.parentSkillDetailId,
-      };
-
-      output[parentID].RatedSkills.push(ratedSkill);
-    });
-   
-    const finalResultArray = Object.values(output);
-
-    return finalResultArray;
-  }
-
-  displaySelctedSkills() {
-    const userSkillDetail = this.sortRatingByLocalStorage();
-    
-    
-    for (let item=0;userSkillDetail.length>item ;item++) {
-      const childDivId = document.getElementById('child-'+userSkillDetail[item].parentID)
-      console.log(`Parent ID:`,childDivId);
-  
-      // Inner loop for iterating over RatedSkills array
-      for (const ratedSkill of userSkillDetail[item].RatedSkills) {
-        // Access the isot_file object
-        const isotFile = ratedSkill.isot_file;
-
-        // Check if isot_file exists and has a name property
-        if (isotFile && isotFile.name) {
-            // Create a div element to display the name
-            const nameDiv = document.createElement('div');
-            const existPanelDiv = document.getElementsByClassName(ratedSkill.isot_file_id);
-            console.log(existPanelDiv,"efrere",)
-            nameDiv.innerHTML = `${isotFile.name} <i class="fa fa-close" style="color:red"></i>`;
-            existPanelDiv.innerHTML = `${isotFile.name} <i class="fa fa-check" style="color:green"></i>`;
-            
-            nameDiv.style.background =  "white";
-            nameDiv.style.border =  "0.5px solid rgba(0, 125, 252, 0.2)";
-            nameDiv.style.padding =  "0px 14px";
-            nameDiv.style.borderRadius =  "30px";
-            nameDiv.style.marginRight = "10px"
-            nameDiv.style.width = "fit-content"
-
-            // Append the div to the childDivId
-            childDivId.appendChild(nameDiv);
-            
-          }       
-          // }
-        }
-  }
-  }
 
   saveTheSkillComment(
     commentValue,
@@ -1118,12 +1347,6 @@ if (foundObject) {
     skillDetail,
     parentSkillDetailId
   ) {
-    console.log(
-      commentValue,
-      ratingValue,
-      skillDetail,
-      "commentValue, ratingValue, skillDetail"
-    );
     let userRatedSkill = {
       skills: [
         {
@@ -1159,7 +1382,7 @@ if (foundObject) {
               response.statusText
             );
           }
-
+        
           this.createListProfileSkills();
           // document.getElementById("RateCloseButton").click();
           this.ratedSkillEvent(skillDetail);
@@ -1181,8 +1404,11 @@ if (foundObject) {
             parentSkillDetailId: parentSkillDetailId,
           });
 
-          this.displaySelctedSkills();
-         
+          displaySelctedSkills();
+          createSelectedSkillsCount();
+          document.getElementById(parentSkillDetailId).innerHTML = "";
+          document.getElementById("parent-" + parentSkillDetailId).click();
+
           // this.createListProfileSkills();
           // document.getElementById("RateCloseButton").click();
           // this.ratedSkillEvent(skillDetail);
@@ -1267,6 +1493,7 @@ if (foundObject) {
           skillDetail,
           parentSkillDetailId
         );
+        
         modalEl.hide();
       } else {
         alert("Please rate the skill");
@@ -1296,19 +1523,22 @@ if (foundObject) {
       );
       // Create the three buttons in the card-body using a parent div
       const cardBodyButtonDiv = document.createElement("div");
-      const resetChangesButton = createButton(
-        "Reset Changes",
-        "fas fa-undo",
-        "right",
-        "",
-        true,
-        () => {
-          // Add logic for reset changes button click
-        }
-      );
+      if (!identifier) {
+        const resetChangesButton = createButton(
+          "Reset Changes",
+          "fas fa-undo",
+          "right",
+          "",
+          false,
+          () => {
+            clearlocalStorage()
+            // Add logic for reset changes button click
+          }
+        );
+        cardBodyButtonDiv.appendChild(resetChangesButton);
+      }
 
       // Append buttons to the card body
-      cardBodyButtonDiv.appendChild(resetChangesButton);
       cardBody.appendChild(cardBodyButtonDiv);
       innerDiv.appendChild(cardBody);
       outerDiv.appendChild(innerDiv);
@@ -1673,54 +1903,54 @@ if (foundObject) {
     // accordionTitle.setAttribute("aria-expanded", "false");
     // accordionTitle.setAttribute("aria-controls", "collapsetwo");
 
-    // create a span elment with some id in it
-    var rateNumber = document.createElement("span");
-    rateNumber.id = "rate-skill-span";
-    rateNumber.classList.add("text-danger");
-    rateNumber.style.marginLeft = "0.5rem";
-    rateNumber.style.marginRight = "0.5rem";
-    this.rateNumber = rateNumber;
-    rateNumber.innerText = this.ratedSelectedSkills.length;
+    // // create a span elment with some id in it
+    // var rateNumber = document.createElement("span");
+    // rateNumber.id = "rate-skill-span";
+    // rateNumber.classList.add("text-danger");
+    // rateNumber.style.marginLeft = "0.5rem";
+    // rateNumber.style.marginRight = "0.5rem";
+    // this.rateNumber = rateNumber;
+    // rateNumber.innerText = this.ratedSelectedSkills.length;
 
     // accordionTitle.innerText = "Your Profile Skills has ";
     // accordionTitle.appendChild(rateNumber);
-    // create a span node with "Skills" text in it
+    // // create a span node with "Skills" text in it
     // var spanElement2 = document.createElement("span");
     // spanElement2.innerText = " Skills";
     // accordionTitle.appendChild(spanElement2);
     // console.log("Value of rate-skill-span:", accordionTitle.textContent);
 
-    console.log(this.ratedSelectedSkills.length, "this.rateNumber.innerHTML");
-    setTimeout(function () {
-      var value = rateNumber.textContent;
+    // console.log(this.ratedSelectedSkills.length, "this.rateNumber.innerHTML");
+    // // setTimeout(function () {
+    // var value = rateNumber.textContent;
 
-      var elementCountLabel = document.querySelector(".elementCountLabel");
-      elementCountLabel.style.width = "fit-content";
-      elementCountLabel.style.padding = "10px 30px";
-      elementCountLabel.style.margin = "0 auto";
-      elementCountLabel.style.borderRadius = "30px";
-      if (value > 0) {
-        elementCountLabel.style.border = "0.4px solid #21965333";
+    // var elementCountLabel = document.querySelector(".elementCountLabel");
+    // elementCountLabel.style.width = "fit-content";
+    // elementCountLabel.style.padding = "10px 30px";
+    // elementCountLabel.style.margin = "0 auto";
+    // elementCountLabel.style.borderRadius = "30px";
+    // if (value > 0) {
+    //   elementCountLabel.style.border = "0.4px solid #21965333";
 
-        elementCountLabel.style.background = "#2196531A";
+    //   elementCountLabel.style.background = "#2196531A";
 
-        elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
-      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-      <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-    </svg>  ${rateNumber.textContent} element added to your profile`;
-      } else {
-        elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
-      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-    </svg> There are no details added to your profile yet`;
-        elementCountLabel.style.border = "0.4px solid #F2994A33";
-        elementCountLabel.style.background = "#F2994A1A";
-      }
-    }, 100);
-    // Append the button to the h2 element
+    //   elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+    //   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    //   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    // </svg>  ${rateNumber.textContent} element added to your profile`;
+    // } else {
+    //   elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+    //   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    //   <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+    // </svg> There are no details added to your profile yet`;
+    //   elementCountLabel.style.border = "0.4px solid #F2994A33";
+    //   elementCountLabel.style.background = "#F2994A1A";
+    // }
+    // // }, 100);
+    // // Append the button to the h2 element
     // accordionHeader.appendChild(accordionTitle);
 
-    // Create the inner div element with the id "collapsetwo" and class "accordion-collapse collapse show"
+    // // Create the inner div element with the id "collapsetwo" and class "accordion-collapse collapse show"
     // var accordionCollapseDiv = document.createElement("div");
     // accordionCollapseDiv.id = "collapsetwo";
     // accordionCollapseDiv.classList.add("accordion-collapse", "collapse");

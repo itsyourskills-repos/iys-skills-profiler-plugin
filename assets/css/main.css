@@ -1,14 +1,3 @@
-/* input[type=text] {
-    position: relative;
-    width: 30%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  } */
-
   .loading {
     background-color: #ffffff;
     background-image: url("https://i.gifer.com/YlWC.gif");
@@ -61,17 +50,10 @@
   text-align: center;
 }
 
-.accordion.accordion-true::before {
-  content: "\02795"; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: #777;
-  float: right;
-  margin-left: 5px;
-  font-family: "Font Awesome 6 Free";
-  }
+.panel .selected-skills i:nth-child(1) {
+  color: #219653 !important;
+}
 
-.accordion.accordion-false::before {content: '\2796'; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: #777;
-  float: right;
-  margin-left: 5px;}
+ .panel .selected-skills{ 
+  background-color: #2196531A !important;
+} 
