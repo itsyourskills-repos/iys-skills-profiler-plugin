@@ -2,9 +2,6 @@ function selectedSkill(params) {
   console.log("api", params);
 }
 
-function ratedSkillEvent(params) {
-  console.log("ratedSkillEvent", params);
-}
 const plugin = new IysFunctionalAreasPlugin({
   divID: "serachid",
   onSearchSkillClick: selectedSkill,
@@ -13,3 +10,7 @@ const plugin = new IysFunctionalAreasPlugin({
   ratedSkillEvent: ratedSkillEvent,
 });
 plugin.init();
+function ratedSkillEvent(params) {
+  console.log("ratedSkillEvent", params);
+  console.log("seleced skill", plugin.ratedSelectedSkills);
+}
