@@ -129,7 +129,6 @@ function displaySelctedSkills() {
     );
 
     childDivId.innerHTML = "";
-
     // Inner loop for iterating over RatedSkills array
     for (
       let obj = 0;
@@ -137,21 +136,41 @@ function displaySelctedSkills() {
       obj++
     ) {
       // Access the isot_file object
-
       const isotFile = userSkillDetail[item].RatedSkills[obj].isot_file;
 
       // Check if isot_file exists and has a name property
       if (isotFile && isotFile.name) {
         // Create a div element to display the name
         const nameDiv = document.createElement("div");
-
         nameDiv.setAttribute(
           "id",
           `selectedRating-${userSkillDetail[item].parentID}`
         );
+        const nameDivCrossButton = document.createElement("i");
+        nameDivCrossButton.id = "cross-btn-child";
+        nameDivCrossButton.setAttribute("class", "fa fa-close");
+        nameDivCrossButton.style.color = "red";
+        nameDivCrossButton.style.marginLeft = "5px";
+        nameDivCrossButton.style.cursor = "pointer";
+        nameDivCrossButton.style.padding = "5px";
+        nameDivCrossButton.style.zIndex = "10";
+        console.log(
+          userSkillDetail[item].RatedSkills,
+          "userSkillDetail[item].RatedSkills"
+        );
 
-        nameDiv.innerHTML = `${isotFile.name} <i class="fa fa-close" style="color:red"></i>`;
+        nameDivCrossButton.addEventListener("click", () => {
+          delete_skill(isotFile._id);
+          if (userSkillDetail[item].RatedSkills.length === 1) {
+            document.getElementById(
+              `selectedRating-${userSkillDetail[item].parentID}`
+            ).style.display = "none";
+          }
+        });
+
+        nameDiv.textContent = isotFile.name;
         nameDiv.style.background = "white";
+        nameDiv.style.zIndex = "9";
         nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
         nameDiv.style.padding = "0px 14px";
         nameDiv.style.borderRadius = "30px";
@@ -159,41 +178,44 @@ function displaySelctedSkills() {
         nameDiv.style.width = "fit-content";
 
         // Append the div to the childDivId
+        nameDiv.appendChild(nameDivCrossButton);
         childDivId.appendChild(nameDiv);
       }
     }
 
     if (userSkillDetail[item].RatedSkills.length > 3) {
-      const plusOneBtn = document.createElement("button");
-      plusOneBtn.style.background = "none";
-      plusOneBtn.style.border = "none";
-      plusOneBtn.style.color = "#007DFC";
-      plusOneBtn.innerHTML = `+1`;
-      plusOneBtn.zIndex = "9"
-      childDivId.append(plusOneBtn);
+      manageModalOnPlusOne(childDivId, userSkillDetail[item]);
     }
+  }
+
+  const resetChangesButton = document.getElementById("Reset Changes");
+
+  if (userSkillDetail.length > 0) {
+    console.log(userSkillDetail.length > 0, "getdataaa");
+    ResetButton(resetChangesButton, false);
+  } else {
+    ResetButton(resetChangesButton, true);
   }
 }
 
 function createSelectedSkillsCount() {
   const htmlElementCount = getListFromlocalStorage();
-  console.log(htmlElementCount.length, "432423423423htmlElementCount");
+
   var elementCountLabel = document.querySelector(".elementCountLabel");
   elementCountLabel.style.width = "fit-content";
   elementCountLabel.style.padding = "10px 30px";
-  elementCountLabel.style.margin = "0 auto";
+  elementCountLabel.style.margin = "20px auto";
   elementCountLabel.style.borderRadius = "30px";
+  // elementCountLabel.style.zIndex = 99;
   if (htmlElementCount.length > 0) {
     elementCountLabel.style.border = "0.4px solid #21965333";
-
     elementCountLabel.style.background = "#2196531A";
-
     elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
 </svg>  ${htmlElementCount.length} element added to your profile`;
   } else {
-    elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+    elementCountLabel.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
   <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
 </svg> There are no details added to your profile yet`;
@@ -227,24 +249,25 @@ function manageTooltip(htmlElement, content) {
   });
 }
 
-// Function to manage morethan 3 label and its modal
+// get data from parentid
+function findObjectByParentID(data, parentID) {
+  return data.filter((obj) => obj.parentID === parentID);
+}
+
 function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
-  console.log(
-    contentToShowInModal.RatedSkills[0].isot_file.tags_data[0].title,
-    "ContentToShowInModal"
-  );
-  const plusOneBtn = document.createElement("button");
+  const plusOneBtn = document.createElement("buttom");
+  plusOneBtn.id = "plusOneBtn";
+  plusOneBtn.innerHTML = `+1`;
   plusOneBtn.style.background = "none";
   plusOneBtn.style.border = "none";
   plusOneBtn.style.color = "#007DFC";
-  plusOneBtn.innerHTML = `+1`;
-  plusOneBtn.zIndex = "9"
-  
+
   htmlElementForPlusOne.append(plusOneBtn);
 
   // Create the modal container
   const modalContainer = document.createElement("div");
-  modalContainer.style.display = "none"; // Hide the modal initially
+  modalContainer.id = "plusOneButtonModal";
+  modalContainer.style.display = "none";
   modalContainer.style.position = "fixed";
   modalContainer.style.top = "0";
   modalContainer.style.left = "0";
@@ -260,8 +283,8 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   const modalContent = document.createElement("div");
   modalContent.style.width = "50%";
   modalContent.style.background = "#fff";
-  modalContent.style.padding = "20px";
-  modalContent.style.borderRadius = "5px";
+  modalContent.style.padding = "32px";
+  modalContent.style.borderRadius = "4px";
   modalContainer.appendChild(modalContent);
 
   // Create the modal header
@@ -270,30 +293,154 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   modalHeader.style.justifyContent = "space-between";
   modalHeader.style.borderBottom = "1px solid #ddd";
   modalHeader.style.marginBottom = "10px";
+  modalHeader.style.paddingBottom = "5px";
   modalContent.appendChild(modalHeader);
 
-  // Create the dot after header
-  const modalDotHeader = document.createElement("div");
-  modalDotHeader.style.width = "3px";
-  modalDotHeader.style.height = "3px";
-  modalDotHeader.style.background = "grey";
-  modalDotHeader.style.borderRadius = "50%";
-  modalHeader.appendChild(modalDotHeader);
+  // Create the header content
+  const headerContent = document.createElement("div");
+  headerContent.style.display = "flex";
+  headerContent.style.alignItems = "center";
+  modalHeader.appendChild(headerContent);
 
-  for (const obj of contentToShowInModal.RatedSkills) {
-    console.log(obj, "23423423");
-  }
   // Create the modal title
-  const modalTitle = document.createElement("h4");
+  const modalTitle = document.createElement("span");
+  modalTitle.style.fontSize = "16px";
+  modalTitle.style.fontWeight = 600;
+  modalTitle.style.color = "#333333";
   modalTitle.innerHTML =
     contentToShowInModal.RatedSkills[0].isot_file.tags_data[0].title;
-  modalHeader.appendChild(modalTitle);
+  headerContent.appendChild(modalTitle);
+
+  // Create the dot separator
+  const modalDotHeader = document.createElement("div");
+  modalDotHeader.style.width = "8px";
+  modalDotHeader.style.height = "8px";
+  modalDotHeader.style.background = "#BDBDBD";
+  modalDotHeader.style.borderRadius = "50%";
+  modalDotHeader.style.margin = "0 10px";
+  headerContent.appendChild(modalDotHeader);
+
+  // Create the count of elements selected
+  const modalTitleElementCount = document.createElement("span");
+  modalTitleElementCount.style.fontWeight = 600;
+  modalTitleElementCount.style.color = "#828282";
+  modalTitleElementCount.style.fontSize = "14px";
+  modalTitleElementCount.innerHTML =
+    contentToShowInModal?.RatedSkills.length + " " + "elements selected";
+  headerContent.appendChild(modalTitleElementCount);
+
+  // Create the main content of modal
+  const modalContentMainParent = document.createElement("div");
+  modalContentMainParent.id = "modalContentMainParent";
+  modalContentMainParent.style.height = "427px";
+  modalContentMainParent.style.overflow = "auto";
+
+  // Clear existing content
+  modalContentMainParent.innerHTML = "";
+
+  for (const obj of contentToShowInModal.RatedSkills) {
+    const ratingGet = obj?.isot_file.rating?.options;
+
+    const modalContentParent = document.createElement("div");
+    modalContentParent.id = `modalContentParent-${obj?.isot_file._id}`;
+    modalContentParent.style.display = "flex";
+    modalContentParent.style.justifyContent = "space-between";
+    modalContentParent.style.border = "1px solid #E6E6E6";
+    modalContentParent.style.padding = "12px";
+    modalContentParent.style.borderRadius = "4px";
+    modalContentParent.style.margin = "15px 0px";
+
+    const modalLeftContent = document.createElement("div");
+    modalLeftContent.id = "modalLeftContent";
+
+    const modalLeftFirstContent = document.createElement("span");
+    modalLeftFirstContent.id = "modalLeftFirstContent";
+    modalLeftFirstContent.innerHTML = obj?.isot_file.name;
+    modalLeftFirstContent.style.fontWeight = 500;
+    modalLeftFirstContent.style.fontSize = "14px";
+    modalLeftFirstContent.style.color = "#828282";
+    modalLeftContent.appendChild(modalLeftFirstContent);
+
+    const modalLeftSecondContent = document.createElement("span");
+    modalLeftSecondContent.id = "modalLeftSecondContent";
+    modalLeftSecondContent.innerHTML = ratingGet[obj?.rating - 1];
+    modalLeftSecondContent.style.margin = "0 0 0 10px";
+    modalLeftSecondContent.style.padding = "4px 12px";
+    modalLeftSecondContent.style.borderRadius = "100px";
+    modalLeftSecondContent.style.border = "1px solid #F2994A33";
+    modalLeftSecondContent.style.fontSize = "12px";
+    modalLeftSecondContent.style.fontWeight = 500;
+    modalLeftContent.appendChild(modalLeftSecondContent);
+
+    const modalRightContent = document.createElement("div");
+    modalRightContent.id = "modalRightContent";
+
+    const modalRightFirstContent = document.createElement("span");
+    modalRightFirstContent.id = "modalRightFirstContent";
+    modalRightFirstContent.textContent = "View Details";
+    modalRightFirstContent.style.display =
+      obj?.comment !== "" ? "initial" : "none";
+    modalRightFirstContent.style.fontWeight = 500;
+    modalRightFirstContent.style.fontSize = "12px";
+    modalRightFirstContent.style.color = "#007DFC";
+    modalRightFirstContent.style.cursor = "pointer";
+
+    manageTooltip(modalRightFirstContent, obj?.comment);
+
+    modalRightContent.appendChild(modalRightFirstContent);
+
+    const modalRightSecondContent = document.createElement("button");
+    modalRightSecondContent.id = "modalRightSecondContent";
+    modalRightSecondContent.style.background = "transparent";
+    modalRightSecondContent.style.border = "none";
+    modalRightSecondContent.style.margin = "0px 0px 0px 10px";
+    modalRightSecondContent.innerHTML =
+      '<i class="fa fa-trash" style="color:red"></i>';
+
+    modalRightSecondContent.addEventListener("click", () => {
+      delete_skill(obj?.isot_file._id);
+      const userSkillDetail = sortRatingByLocalStorage();
+      const result = findObjectByParentID(
+        userSkillDetail,
+        contentToShowInModal.parentID
+      );
+      if (result.length === 0) {
+        // Find the element with the class "accordion accordion-true"
+        const accordionElement = document.querySelector(
+          ".accordion.accordion-true"
+        );
+
+        // Check if the element is found
+        if (accordionElement) {
+          // Update the class to "accordion accordion-false"
+          accordionElement.click();
+        }
+
+        document.getElementById(
+          `selectedRating-${contentToShowInModal.parentID}`
+        ).style.display = "none";
+
+        modalContainer.style.display = "none";
+      }
+      document.getElementById(
+        `modalContentParent-${obj?.isot_file._id}`
+      ).style.display = "none";
+    });
+    modalRightContent.appendChild(modalRightSecondContent);
+
+    modalContentParent.appendChild(modalLeftContent);
+    modalContentParent.appendChild(modalRightContent);
+    modalContentMainParent.appendChild(modalContentParent);
+  }
+
+  modalContent.appendChild(modalContentMainParent);
 
   // Create the close button for the modal
   const closeModalBtn = document.createElement("button");
+  closeModalBtn.id = "closeModal";
   closeModalBtn.style.background = "none";
   closeModalBtn.style.border = "none";
-  closeModalBtn.style.fontSize = "18px";
+  closeModalBtn.style.fontSize = "25px";
   closeModalBtn.innerHTML = "&times;";
   modalHeader.appendChild(closeModalBtn);
 
@@ -384,22 +531,37 @@ const saveListToSessionStorage = (list) => {
 };
 
 // Helper function to create a button with an icon
-function createButton(text, iconClass, align, margin, disabled, onClickFunction) {
-  const button = document.createElement("button");
-  button.innerHTML = `<i class="${iconClass}"></i> ${text}`;
-  button.style.padding = "5px 15px";
-  button.style.borderRadius = "5px";
-  button.style.border = disabled ? "" : "1px solid #007DFC";
-  button.style.background = "transparent";
-  button.style.color = disabled ? "" : "#007DFC";
-  button.style.float = align;
-  button.style.marginRight = margin;
-  button.disabled = disabled;
+function ResetButton(htmlElement, disabled) {
+  htmlElement.innerHTML = `<i class="fas fa-undo"></i> Reset Changes`;
+  htmlElement.id = "Reset Changes";
+  htmlElement.style.padding = "5px 15px";
+  htmlElement.style.borderRadius = "5px";
+  htmlElement.style.border = disabled ? "" : "1px solid #007DFC";
+  htmlElement.style.background = "transparent";
+  htmlElement.style.color = disabled ? "" : "#007DFC";
+  htmlElement.style.float = "right";
+  htmlElement.disabled = disabled;
+
   if (!disabled) {
-    button.addEventListener("click", onClickFunction());
+    htmlElement.addEventListener("click", (event) => {
+      event.preventDefault();
+      htmlElement.disabled = true;
+      htmlElement.style.border = "";
+      htmlElement.style.color = "";
+      const elements = document.querySelectorAll('[id^="selectedRating-"]');
+
+      // Iterate through each element and apply the style
+      elements.forEach(element => {
+        element.style.display = 'none';
+      });
+
+      clearlocalStorage();
+
+      createSelectedSkillsCount();
+    });
   }
 
-  return button;
+  return htmlElement;
 }
 
 // Function to handle API calling for  "Add Skill" button click
@@ -433,6 +595,60 @@ function addSkillToApi(payload) {
     });
 }
 
+function delete_skill(skill_id) {
+  if (isLoginUser) {
+    console.log("skill_id", skill_id);
+
+    let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    console.log("delete_skill", skill_id);
+    // delete-skill/<str:skill_id>/
+
+    // create post resquest to delete skill
+    let url = window.location.origin + "/delete-skill/" + skill_id + "/";
+    console.log("delete_skill", url);
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+    })
+      .then((response) => {
+        if (response.status === 429) {
+          // Redirect to /limit-exceeded/ page
+          window.location.href = "/limit-exceeded/";
+        } else {
+          return response.json();
+        }
+      })
+      .then((response) => {
+        console.log("delete_skill", response);
+        displaySelctedSkills();
+        createSelectedSkillsCount();
+
+        // this.createSkillPath(cardBodyDiv, response.ancestors);delete
+        // if (response.siblings.length > 0) {
+        //   this.createSelectSkillsChildBox(this.cardBodyDiv, response.siblings);
+        // } else {
+        //   this.childrenSkillAPI(skillId);
+        // }
+      })
+      .catch((err) => console.error(err));
+  } else {
+    console.log("delete_skill", skill_id);
+    removeItemFromlocalStorage(skill_id);
+    displaySelctedSkills();
+    createSelectedSkillsCount();
+    console.log("deleted_skill");
+    // // TODO: delete skill from local storage FOR NOT login user
+    // console.log("delete_skill",skill_id)
+    // let skill_list = JSON.parse(localStorage.getItem("skill_list"));
+    // console.log("delete_skill",skill_list)
+    // let new_skill_list = skill_list.filter((skill) => skill.id !== skill_id);
+    // console.log("delete_skill",new_skill_list)
+    // localStorage.setItem("skill_list", JSON.stringify(new_skill_list));
+  }
+}
 class IysSearchPlugin {
   constructor(config) {
     this.config = config;
@@ -519,6 +735,7 @@ class IysSearchPlugin {
     clearIcon.addEventListener("click", () => {
       input.value = "";
       divDropDown.style.display = "none";
+      button.style.display = "block";
       this.selectedASkillBox.style.display = "none";
       clearIcon.style.display = "none"; // Hide the clear icon after clearing input
     });
@@ -539,6 +756,10 @@ class IysSearchPlugin {
     button.style.border = "none";
     button.style.background = "#007DFC";
     button.style.color = "white";
+    button.style.position = "absolute";
+    button.style.right = "0";
+    button.style.height = "78%";
+    button.style.top = "0px";
 
     button.innerHTML = `<i class="fas fa-search" style="margin-right: 8px;"></i> ${formattedText}`; // Add your icon HTML here
     button.setAttribute("aria-label", "Search");
@@ -570,11 +791,14 @@ class IysSearchPlugin {
     this.selectedDiv.appendChild(div);
     const divDropDown = document.createElement("div");
     divDropDown.id = "dropdown-plugin-div";
-    divDropDown.style.maxHeight = "270px";
-    divDropDown.style.overflow = "auto";
+    divDropDown.style.height = "auto";
     divDropDown.style.boxShadow = "0px 0px 12px 0px #0000000F";
     divDropDown.style.marginTop = "12px";
     divDropDown.style.borderRadius = "12px";
+    divDropDown.style.width = "94.5%";
+    divDropDown.style.position = "absolute";
+    divDropDown.style.zIndex = "9";
+    divDropDown.style.background = "#fff";
 
     this.selectedDiv.appendChild(divDropDown);
   }
@@ -1103,7 +1327,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       userSkillDetail,
       skillDetail._id
     );
-  
+    console.log(userSkillDetail, isParentAvailable, "userSkillDetail");
     var parentDiv = document.createElement("div");
     parentDiv.style.width = "100%";
     parentDiv.style.textAlign = "left";
@@ -1116,18 +1340,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     childDiv.setAttribute("id", "child-" + skillDetail._id);
     childDiv.style.display = "flex";
-    
-    console.log(userSkillDetail, isParentAvailable);
 
     if (isParentAvailable) {
-      if (isParentAvailable.RatedSkills.length > 3) {
-      }
       for (
         let obj = 0;
         obj < 3 && isParentAvailable.RatedSkills.length > obj;
         obj++
       ) {
         const nameDiv = document.createElement("div");
+        const nameDivCrossButton = document.createElement("i");
+        nameDivCrossButton.id = "cross-btn-child";
+        nameDivCrossButton.setAttribute("class", "fa fa-close");
+        nameDivCrossButton.style.color = "red";
+        nameDivCrossButton.style.marginLeft = "5px";
+        nameDivCrossButton.style.cursor = "pointer";
+        nameDivCrossButton.style.padding = "5px";
+        nameDivCrossButton.style.zIndex = "10";
+
         nameDiv.setAttribute(
           "id",
           `selectedRating-${isParentAvailable.parentID}`
@@ -1140,7 +1369,21 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         nameDiv.style.borderRadius = "30px";
         nameDiv.style.marginRight = "10px";
         nameDiv.style.width = "fit-content";
-        nameDiv.innerHTML = `${isParentAvailable.RatedSkills[obj].isot_file.name} <i class="fa fa-close" style="color:red"></i>`;
+        nameDiv.textContent = isParentAvailable.RatedSkills[obj].isot_file.name;
+
+        nameDiv.appendChild(nameDivCrossButton);
+        console.log(
+          isParentAvailable.RatedSkills,
+          "isParentAvailable.RatedSkills.length"
+        );
+        nameDivCrossButton.addEventListener("click", () => {
+          delete_skill(isParentAvailable.RatedSkills[obj].isot_file_id);
+          if (isParentAvailable.RatedSkills.length === 1) {
+            document.getElementById(
+              `selectedRating-${isParentAvailable.parentID}`
+            ).style.display = "none";
+          }
+        });
         childDiv.append(nameDiv);
       }
       if (isParentAvailable.RatedSkills.length > 3) {
@@ -1180,7 +1423,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         infoDesBtn.setAttribute("class", "infoSelectedSkill");
         infoDesBtn.innerHTML =
-          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#007DFC" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" > <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>';
+          ' <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#007DFC" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" > <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>';
 
         if (skillDetail) {
           manageTooltip(
@@ -1238,10 +1481,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           if (isExpanded) {
             this.childrenSkillAPI(skillDetail._id, "accordionChild");
-            parentDiv.setAttribute(
-              "class",
-              String(`accordion accordion-true`)
-            );
+            parentDiv.setAttribute("class", String(`accordion accordion-true`));
           } else {
             document.getElementById(skillDetail._id).innerHTML = "";
             parentDiv.setAttribute(
@@ -1282,7 +1522,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           : "white";
       parentDiv.style.borderRadius = "4px 4px 0px 0px";
       parentDiv.style.border = "0.5px solid #007DFC33";
-      parentDiv.style.padding = "8px 12px 10px 12px";
+      parentDiv.style.padding = "10px 12px";
       parentDiv.style.fontSize = "105%";
 
       parentDiv.appendChild(childDiv);
@@ -1382,7 +1622,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               response.statusText
             );
           }
-        
+
           this.createListProfileSkills();
           // document.getElementById("RateCloseButton").click();
           this.ratedSkillEvent(skillDetail);
@@ -1493,7 +1733,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillDetail,
           parentSkillDetailId
         );
-        
+
         modalEl.hide();
       } else {
         alert("Please rate the skill");
@@ -1523,21 +1763,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       );
       // Create the three buttons in the card-body using a parent div
       const cardBodyButtonDiv = document.createElement("div");
+      const getdata = getListFromlocalStorage();
       if (!identifier) {
-        const resetChangesButton = createButton(
-          "Reset Changes",
-          "fas fa-undo",
-          "right",
-          "",
-          false,
-          () => {
-            clearlocalStorage()
-            // Add logic for reset changes button click
-          }
+        const button = document.createElement("button");
+        const resetChangesButton = ResetButton(
+          button,
+          getdata?.length > 0 ? false : true
         );
         cardBodyButtonDiv.appendChild(resetChangesButton);
       }
-
       // Append buttons to the card body
       cardBody.appendChild(cardBodyButtonDiv);
       innerDiv.appendChild(cardBody);
@@ -1732,7 +1966,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             iElement.addEventListener("click", () => {
               console.log("delete the skill", skill);
               iElement.parentElement.remove();
-              this.delete_skill(skill.id);
+              delete_skill(skill.id);
               console.log("refess the connect");
               this.createListProfileSkills();
             });
@@ -1819,7 +2053,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         iElement.addEventListener("click", () => {
           iElement.parentElement.remove();
           console.log("delted the skill", skill, skill.isot_file_id);
-          this.delete_skill(skill.isot_file_id);
+          delete_skill(skill.isot_file_id);
           console.log("refess the connect");
           // this.createListProfileSkills();
         });
@@ -1924,28 +2158,28 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // // setTimeout(function () {
     // var value = rateNumber.textContent;
 
-    // var elementCountLabel = document.querySelector(".elementCountLabel");
-    // elementCountLabel.style.width = "fit-content";
-    // elementCountLabel.style.padding = "10px 30px";
-    // elementCountLabel.style.margin = "0 auto";
-    // elementCountLabel.style.borderRadius = "30px";
-    // if (value > 0) {
-    //   elementCountLabel.style.border = "0.4px solid #21965333";
+    // // var elementCountLabel = document.querySelector(".elementCountLabel");
+    // // elementCountLabel.style.width = "fit-content";
+    // // elementCountLabel.style.padding = "10px 30px";
+    // // elementCountLabel.style.margin = "0 auto";
+    // // elementCountLabel.style.borderRadius = "30px";
+    // // if (value > 0) {
+    // //   elementCountLabel.style.border = "0.4px solid #21965333";
 
-    //   elementCountLabel.style.background = "#2196531A";
+    // //   elementCountLabel.style.background = "#2196531A";
 
-    //   elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
-    //   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-    //   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-    // </svg>  ${rateNumber.textContent} element added to your profile`;
-    // } else {
-    //   elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
-    //   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-    //   <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-    // </svg> There are no details added to your profile yet`;
-    //   elementCountLabel.style.border = "0.4px solid #F2994A33";
-    //   elementCountLabel.style.background = "#F2994A1A";
-    // }
+    // //   elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+    // //   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    // //   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+    // // </svg>  ${rateNumber.textContent} element added to your profile`;
+    // // } else {
+    // //   elementCountLabel.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
+    // //   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    // //   <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+    // // </svg> There are no details added to your profile yet`;
+    // //   elementCountLabel.style.border = "0.4px solid #F2994A33";
+    // //   elementCountLabel.style.background = "#F2994A1A";
+    // // }
     // // }, 100);
     // // Append the button to the h2 element
     // accordionHeader.appendChild(accordionTitle);
@@ -2269,59 +2503,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         );
       })
       .catch((err) => console.error(err));
-  }
-
-  delete_skill(skill_id) {
-    if (isLoginUser) {
-      console.log("skill_id", skill_id);
-
-      let csrftoken = document.querySelector(
-        "[name=csrfmiddlewaretoken]"
-      ).value;
-      console.log("delete_skill", skill_id);
-      // delete-skill/<str:skill_id>/
-
-      // create post resquest to delete skill
-      let url = window.location.origin + "/delete-skill/" + skill_id + "/";
-      console.log("delete_skill", url);
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
-        },
-      })
-        .then((response) => {
-          if (response.status === 429) {
-            // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
-          } else {
-            return response.json();
-          }
-        })
-        .then((response) => {
-          console.log("delete_skill", response);
-
-          // this.createSkillPath(cardBodyDiv, response.ancestors);
-          // if (response.siblings.length > 0) {
-          //   this.createSelectSkillsChildBox(this.cardBodyDiv, response.siblings);
-          // } else {
-          //   this.childrenSkillAPI(skillId);
-          // }
-        })
-        .catch((err) => console.error(err));
-    } else {
-      console.log("delete_skill", skill_id);
-      removeItemFromlocalStorage(skill_id);
-      console.log("deleted_skill");
-      // // TODO: delete skill from local storage FOR NOT login user
-      // console.log("delete_skill",skill_id)
-      // let skill_list = JSON.parse(localStorage.getItem("skill_list"));
-      // console.log("delete_skill",skill_list)
-      // let new_skill_list = skill_list.filter((skill) => skill.id !== skill_id);
-      // console.log("delete_skill",new_skill_list)
-      // localStorage.setItem("skill_list", JSON.stringify(new_skill_list));
-    }
   }
 
   treeSkillAPI(cardBodyDiv, skillId) {
