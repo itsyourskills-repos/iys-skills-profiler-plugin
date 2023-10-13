@@ -61,6 +61,7 @@ function addTosessionStorage(item) {
   }
 }
 
+// check selected childId is exist in  the whole localStorage data
 function findObjectByIsotFileId(array, isotFileId) {
   // Iterate through each object in the array
   for (const obj of array) {
@@ -82,6 +83,7 @@ function findObjectByIsotFileId(array, isotFileId) {
   return null;
 }
 
+// check selected parentId is exist in the whole local storage data
 function isParentIdAvailable(array, parentIdToCheck) {
   for (let i = 0; i < array.length; i++) {
     if (array[i].parentID === parentIdToCheck) {
@@ -91,6 +93,7 @@ function isParentIdAvailable(array, parentIdToCheck) {
   return null; // ParentId not found
 }
 
+// change the format of localstorage data
 function sortRatingByLocalStorage() {
   const inputArray = getListFromlocalStorage();
   let output = {};
@@ -120,6 +123,7 @@ function sortRatingByLocalStorage() {
   return finalResultArray;
 }
 
+// display selected skill on accordion
 function displaySelctedSkills() {
   const userSkillDetail = sortRatingByLocalStorage();
 
@@ -198,6 +202,7 @@ function displaySelctedSkills() {
   }
 }
 
+// display elements count
 function createSelectedSkillsCount() {
   const htmlElementCount = getListFromlocalStorage();
 
@@ -254,6 +259,7 @@ function findObjectByParentID(data, parentID) {
   return data.filter((obj) => obj.parentID === parentID);
 }
 
+// created modal on +1 button
 function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   const plusOneBtn = document.createElement("buttom");
   plusOneBtn.id = "plusOneBtn";
@@ -455,6 +461,104 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   });
 }
 
+// create label
+function createLabel(content) {
+  const inputLabel = document.createElement("label");
+  inputLabel.innerHTML = content;
+  inputLabel.style.fontWeight = 500;
+
+  return inputLabel;
+}
+
+// create Input field
+function createInput(type, placeholder) {
+  const inputField = document.createElement("input");
+  inputField.type = type;
+  inputField.placeholder = placeholder;
+  inputField.style.width = "calc(100%)";
+  inputField.style.border = "none";
+  inputField.style.padding = "13px 16px 13px 16px";
+
+  return inputField;
+}
+
+// Helper function to create error message
+function createErrorMessage() {
+  const errorMessage = document.createElement("div");
+  errorMessage.style.color = "red";
+  errorMessage.style.marginTop = "5px";
+  errorMessage.style.display = "none";
+  return errorMessage;
+}
+
+// Helper function to display error message
+function displayErrorMessage(errorElement, message) {
+  errorElement.textContent = message;
+  errorElement.style.display = "block";
+}
+
+// Helper function to hide error message
+function hideErrorMessage(errorElement) {
+  errorElement.textContent = "";
+  errorElement.style.display = "none";
+}
+
+// Helper function to create the dropdown (select element)
+function createDropdown() {
+  const dropdown = document.createElement("select");
+  dropdown.style.width = "100%";
+  dropdown.style.padding = "13px";
+  dropdown.style.border = "1px solid #E6E6E6";
+  dropdown.style.borderRadius = "4px";
+  dropdown.style.marginBottom = "10px";
+  dropdown.style.background = "white";
+  dropdown.style.fontSize = "1em";
+  dropdown.style.appearance = "none";
+  dropdown.style.backgroundImage = `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`;
+  dropdown.style.backgroundRepeat = "no-repeat";
+  dropdown.style.backgroundPosition = "right 9px center";
+  dropdown.style.backgroundSize = "1em";
+
+  const defaultOption = document.createElement("option");
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  defaultOption.value = "";
+  defaultOption.text = "Select Category";
+  dropdown.appendChild(defaultOption);
+
+  const optionsArray = [
+    "Profile and Occupation",
+    "Knowledge and Skills",
+    "Tools and Technologies",
+    "Activities",
+    "Domain or Context",
+  ];
+  const options = {};
+
+  optionsArray.forEach((optionText, index) => {
+    options[index + 1] = createDropdownOption(optionText);
+    dropdown.appendChild(options[index + 1]);
+  });
+
+  return dropdown;
+}
+
+// helper function to create dropdown options
+function createDropdownOption(value) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.text = value;
+  return option;
+}
+
+// validation for email
+function isValidEmail(email) {
+  // Regular expression for basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  return emailRegex.test(email);
+}
+
 function addTolocalStorage(userRatedSkill) {
   // Get the existing list from local storage
   const existingList = JSON.parse(
@@ -551,8 +655,8 @@ function ResetButton(htmlElement, disabled) {
       const elements = document.querySelectorAll('[id^="selectedRating-"]');
 
       // Iterate through each element and apply the style
-      elements.forEach(element => {
-        element.style.display = 'none';
+      elements.forEach((element) => {
+        element.style.display = "none";
       });
 
       clearlocalStorage();
@@ -567,7 +671,8 @@ function ResetButton(htmlElement, disabled) {
 // Function to handle API calling for  "Add Skill" button click
 function addSkillToApi(payload) {
   // API endpoint (replace with your actual API endpoint)
-  const apiEndpoint = "https://your-api-endpoint.com/addSkill";
+
+  const apiEndpoint = `https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/v2/ISOT/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
 
   // Make the API call using the fetch API
   return fetch(apiEndpoint, {
@@ -576,7 +681,6 @@ function addSkillToApi(payload) {
       "Content-Type": "application/json",
       // Add any additional headers if needed
     },
-    body: JSON.stringify(payload),
   })
     .then((response) => {
       if (!response.ok) {
@@ -586,6 +690,7 @@ function addSkillToApi(payload) {
     })
     .then((data) => {
       // Handle the API response data as needed
+      document.getElementById("plugin-search-id-close-button").click();
       console.log("API response:", data);
       return data; // You can return the data if needed
     })
@@ -711,6 +816,7 @@ class IysSearchPlugin {
 
     // Create the clear icon
     const clearIcon = document.createElement("span");
+    clearIcon.id = "plugin-search-id-close-button";
     clearIcon.innerHTML = "&times;";
     clearIcon.style.position = "absolute";
     clearIcon.style.right = "10px";
@@ -1000,57 +1106,122 @@ class IysSearchPlugin {
     hr.style.marginBottom = "15px";
     modalContent.appendChild(hr);
 
-    // Create the first input field with label
-    const inputLabel1 = document.createElement("label");
-    inputLabel1.innerHTML = 'Element<span style="color:red">*</span>';
-    inputLabel1.style.fontWeight = 500;
-
-    modalContent.appendChild(inputLabel1);
-
-    const inputField1Container = document.createElement("div");
-    inputField1Container.style.position = "relative";
-    inputField1Container.style.border = "1px solid #E6E6E6";
-    inputField1Container.style.borderRadius = "4px";
-    inputField1Container.style.marginBottom = "10px";
-    modalContent.appendChild(inputField1Container);
-
-    const inputField1 = document.createElement("input");
-    inputField1.type = "text";
-    inputField1.value = searchText;
-    inputField1.placeholder = "Enter your  name";
-    inputField1.style.width = "calc(100% - 24px)";
-    inputField1.style.border = "none";
-    inputField1.style.padding = "13px 16px 13px 16px";
-    inputField1.addEventListener("input", () => {
-      // Show or hide the clear icon based on input content
-      clearIcon.style.display = inputField1.value ? "block" : "none";
-    });
-    inputField1Container.appendChild(inputField1);
-
-    // Add cross icon to clear input field
-    const clearIcon = document.createElement("span");
-    clearIcon.innerHTML = "&times;";
-    clearIcon.style.position = "absolute";
-    clearIcon.style.right = "10px";
-    clearIcon.style.top = "5px";
-    clearIcon.style.cursor = "pointer";
-    clearIcon.style.color = "rgb(255 0 0)";
-    clearIcon.style.fontSize = "25px";
-
-    clearIcon.addEventListener("click", () => {
-      inputField1.value = "";
-      clearIcon.style.display = "none"; // Hide the clear icon after clearing input
-    });
-    inputField1Container.appendChild(clearIcon);
-
-    // Create the container for dropdown (input field2)
-    const inputContainer2 = createInputContainer(
-      'Category<span style="color:red">*</span>'
+    const emailInputLabel = createLabel(
+      'Email <span style="color:red">*</span>'
     );
+    modalContent.appendChild(emailInputLabel);
 
+    const emailFieldContainer = document.createElement("div");
+    emailFieldContainer.style.position = "relative";
+    emailFieldContainer.style.marginBottom = "10px";
+    modalContent.appendChild(emailFieldContainer);
+
+    const emailInputField = createInput("text", "Enter Your Email");
+    emailInputField.style.width = "calc(100%)";
+    emailInputField.style.border = "1px solid #E6E6E6";
+    emailInputField.style.borderRadius = "4px";
+    emailInputField.style.padding = "13px 16px 13px 16px";
+    emailFieldContainer.appendChild(emailInputField);
+
+    // Create the first input field with label
+    const elementInputLabel = createLabel(
+      'Element <span style="color:red">*</span>'
+    );
+    modalContent.appendChild(elementInputLabel);
+
+    const elementFieldContainer = document.createElement("div");
+    elementFieldContainer.style.position = "relative";
+    elementFieldContainer.style.marginBottom = "10px";
+    modalContent.appendChild(elementFieldContainer);
+
+    const elementInputField = createInput("text", "Enter Your Name");
+    elementInputField.value = searchText;
+    elementInputField.style.width = "calc(100%)";
+    elementInputField.style.border = "1px solid #E6E6E6";
+    elementInputField.style.borderRadius = "4px";
+    elementInputField.style.padding = "13px 16px 13px 16px";
+    elementInputField.addEventListener("input", () => {
+      // Show or hide the clear icon based on input content
+      elementClearIcon.style.display = elementInputField.value
+        ? "block"
+        : "none";
+    });
+    elementFieldContainer.appendChild(elementInputField);
+
+    // Create the container for dropdown
+    const inputContainer2 = createInputContainer(
+      'Category <span style="color:red">*</span>'
+    );
     // Create the dropdown (select element)
     const dropdown = createDropdown();
     inputContainer2.appendChild(dropdown);
+
+    // Create error messages
+    const emailError = createErrorMessage();
+    emailFieldContainer.appendChild(emailError);
+
+    const elementError = createErrorMessage();
+    elementFieldContainer.appendChild(elementError);
+
+    const categoryError = createErrorMessage();
+    inputContainer2.appendChild(categoryError);
+
+    // Add cross icon to clear input field
+    const elementClearIcon = document.createElement("span");
+    elementClearIcon.innerHTML = "&times;";
+    elementClearIcon.style.position = "absolute";
+    elementClearIcon.style.right = "10px";
+    elementClearIcon.style.top = "9px";
+    elementClearIcon.style.cursor = "pointer";
+    elementClearIcon.style.color = "rgb(255 0 0)";
+    elementClearIcon.style.fontSize = "20px";
+    elementClearIcon.style.zIndex = "9";
+
+    elementClearIcon.addEventListener("click", () => {
+      elementInputField.value = "";
+
+      displayErrorMessage(elementError, "Element name is required");
+
+      elementClearIcon.style.display = "none"; // Hide the clear icon after clearing input
+    });
+    elementFieldContainer.appendChild(elementClearIcon);
+
+    // Event listener for input fields
+    emailInputField.addEventListener("input", () => {
+      const emailValue = emailInputField.value.trim();
+
+      if (emailValue === "") {
+        displayErrorMessage(emailError, "Email is required");
+      } else if (emailValue) {
+        if (isValidEmail(emailValue)) {
+          hideErrorMessage(emailError);
+        } else {
+          displayErrorMessage(emailError, "Enter a valid email address");
+        }
+      } else {
+        hideErrorMessage(emailError);
+      }
+    });
+
+    elementInputField.addEventListener("input", () => {
+      const elementValue = elementInputField.value.trim();
+
+      if (elementValue === "") {
+        displayErrorMessage(elementError, "Element name is required");
+      } else {
+        hideErrorMessage(elementError);
+      }
+    });
+
+    dropdown.addEventListener("change", () => {
+      const selectedCategory = dropdown.value;
+
+      if (!selectedCategory) {
+        displayErrorMessage(categoryError, "Category is required");
+      } else {
+        hideErrorMessage(categoryError);
+      }
+    });
 
     // Create a button inside the modal
     const modalButton = document.createElement("button");
@@ -1064,24 +1235,56 @@ class IysSearchPlugin {
     modalButton.style.cursor = "pointer";
     modalButton.style.alignSelf = "flex-end";
     modalButton.addEventListener("click", () => {
-      // Get the values from inputField1 and dropdownButton
-      const skillName = inputField1.value;
+      // Get the values from elementInputField and dropdownButton
+      const emailValue = emailInputField.value.trim();
+      const elementValue = elementInputField.value.trim();
       const selectedCategory = dropdown.value;
 
-      // Check if skillName is not empty
-      if (skillName.trim() === "") {
-        alert("Please enter a skill name");
-        return;
+      const reqData = {
+        name: elementValue,
+        cat: selectedCategory,
+        email: emailValue,
+      };
+
+      // Check Validate email
+      if (emailValue === "") {
+        displayErrorMessage(emailError, "Email is required");
+      } else if (emailValue) {
+        if (isValidEmail(emailValue)) {
+          hideErrorMessage(emailError);
+        } else {
+          displayErrorMessage(emailError, "Enter a valid email address");
+        }
+      } else {
+        hideErrorMessage(emailError);
       }
 
-      // Check if a category is selected (replace "Select an option" with your default text)
-      if (selectedCategory === "Select an option") {
-        alert("Please select a category");
-        return;
+      // Validate element
+      if (elementValue === "") {
+        displayErrorMessage(elementError, "Element name is required");
+      } else {
+        hideErrorMessage(elementError);
+      }
+
+      // Validate category
+      if (selectedCategory === "") {
+        displayErrorMessage(categoryError, "Category is required");
+      } else {
+        hideErrorMessage(categoryError);
+      }
+
+      // Check if any error exists
+      if (
+        emailValue === "" ||
+        elementValue === "" ||
+        selectedCategory === "" ||
+        emailError.textContent !== ""
+      ) {
+        return; // Do not proceed if there are errors
       }
 
       // Call the API function with the payload
-      addSkillToApi({ skillName, selectedCategory })
+      addSkillToApi(reqData)
         .then((data) => {
           // Optionally, you can close the modal or perform other actions
           modalDiv.style.display = "none";
@@ -1101,39 +1304,10 @@ class IysSearchPlugin {
       container.style.position = "relative";
       modalContent.appendChild(container);
 
-      const label = document.createElement("label");
-      label.style.fontWeight = 500;
-      label.innerHTML = labelText;
+      const label = createLabel(labelText);
       container.appendChild(label);
 
       return container;
-    }
-
-    // Helper function to create the dropdown (select element)
-    function createDropdown() {
-      const dropdown = document.createElement("select");
-      dropdown.defaultSelected = "option2";
-      dropdown.style.width = "100%";
-      dropdown.style.padding = "13px 16px 13px 20px";
-      dropdown.style.border = "1px solid #E6E6E6";
-      dropdown.style.borderRadius = "4px";
-      dropdown.style.marginBottom = "10px";
-      dropdown.style.background = "white";
-
-      // Add options to the dropdown (you can customize this part based on your data)
-      const option1 = document.createElement("option");
-      option1.value = "option1";
-      option1.text = "Option 1";
-      dropdown.appendChild(option1);
-
-      const option2 = document.createElement("option");
-      option2.value = "option2";
-      option2.text = "Option 2";
-      dropdown.appendChild(option2);
-
-      // ... add more options ...
-
-      return dropdown;
     }
   }
 
@@ -1658,7 +1832,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   changeRateModelElement(skillDetail, parentSkillDetailId) {
-    console.log(skillDetail, parentSkillDetailId);
+    console.log("changeRateModelElement", skillDetail, parentSkillDetailId);
     const RateSkillModel = document.getElementById("RateSkillModel");
     const RateSkillModelLabel = document.getElementById("RateSkillModelLabel");
     const spanElementForStar = document.getElementById("spanElementForStar");
@@ -1709,7 +1883,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
 
     rateSkillCommentBox.value = "";
-    spanElementForStar.innerHTML = "";
+    // spanElementForStar.innerHTML = "";
     const modalEl = new mdb.Modal(RateSkillModel);
     RateSkillModelLabel.style.fontSize = "17px";
 
@@ -1743,17 +1917,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   createSelectSkillsChildBox(htmlElement, skillList, identifier, skillId) {
-    const outerDiv = document.createElement("div");
+    const cardBody = document.createElement("div");
     if (skillList.length > 0) {
-      outerDiv.classList.add("card");
-      const innerDiv = document.createElement("div");
-      innerDiv.classList.add("card");
+      cardBody.classList.add("card-body-accordion");
 
-      const cardBody = document.createElement("div");
-      cardBody.classList.add("card-body");
-      cardBody.style.padding = "30px";
-
-      // cardBody.textContent = "skill list";
       this.createSkillSearchButtonList(
         cardBody,
         skillList,
@@ -1774,12 +1941,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
       // Append buttons to the card body
       cardBody.appendChild(cardBodyButtonDiv);
-      innerDiv.appendChild(cardBody);
-      outerDiv.appendChild(innerDiv);
     } else {
-      outerDiv.innerHTML = "";
+      cardBody.innerHTML = "";
     }
-    htmlElement.appendChild(outerDiv);
+    htmlElement.appendChild(cardBody);
   }
 
   createSkillPath(htmlElement, skillList) {
@@ -1810,6 +1975,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     const nav = document.createElement("nav");
     nav.setAttribute("aria-label", "breadcrumb");
+    nav.setAttribute("class", "breadcrumb-nav");
     nav.appendChild(ol);
     htmlElement.appendChild(nav);
   }
@@ -2238,6 +2404,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     const cardBodyDiv = document.createElement("div");
     cardBodyDiv.classList.add("card-body");
+    cardBodyDiv.id = "card-body-accordion";
 
     const cardTitleH4 = document.createElement("h4");
     cardTitleH4.classList.add("card-title");
@@ -2478,31 +2645,93 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   childrenSkillAPI(skillId, identifier) {
-    let url = "";
-    if (isLoginUser) {
-      url = window.location.origin + "/api-child/?id=" + skillId;
+    // Get the element with the class ".card-body"
+    const skillIdElement = document.getElementById(skillId);
+    const selectedSkillDiv = document.querySelector(".breadcrumb-nav");
+
+    // Check if the element exists
+    if (skillIdElement) {
+      const previousContent = skillIdElement.innerHTML;
+      // Create and append the loader
+      const loader = document.createElement("div");
+      loader.className = "loader";
+      skillIdElement.innerHTML = ""; // Clear previous content
+      skillIdElement.appendChild(loader);
+
+      let url = "";
+      if (isLoginUser) {
+        url = window.location.origin + "/api-child/?id=" + skillId;
+      } else {
+        url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      }
+
+      fetch(url, this.rapidAPIheaders)
+        .then((response) => {
+          if (response.status === 429) {
+            // Redirect to /limit-exceeded/ page
+            window.location.href = "/limit-exceeded/";
+          } else {
+            return response.json();
+          }
+        })
+        .then((response) => {
+          skillIdElement.removeChild(loader);
+          skillIdElement.innerHTML = previousContent;
+          this.createSelectSkillsChildBox(
+            this.cardBodyDiv,
+            response,
+            identifier,
+            skillId
+          );
+        })
+        .catch((err) => {
+          console.error(err);
+          skillIdElement.removeChild(loader);
+          skillIdElement.innerHTML = previousContent;
+        })
+        .finally((err) => {});
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      const previousContent = selectedSkillDiv.innerHTML;
+      // Create and append the loader
+      const loader = document.createElement("div");
+      loader.className = "loader";
+      loader.style.margin = "100px auto";
+      selectedSkillDiv.appendChild(loader);
+
+      let url = "";
+      if (isLoginUser) {
+        url = window.location.origin + "/api-child/?id=" + skillId;
+      } else {
+        url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      }
+
+      fetch(url, this.rapidAPIheaders)
+        .then((response) => {
+          if (response.status === 429) {
+            // Redirect to /limit-exceeded/ page
+            window.location.href = "/limit-exceeded/";
+          } else {
+            return response.json();
+          }
+        })
+        .then((response) => {
+          selectedSkillDiv.removeChild(loader);
+          selectedSkillDiv.innerHTML = previousContent;
+
+          this.createSelectSkillsChildBox(
+            this.cardBodyDiv,
+            response,
+            identifier,
+            skillId
+          );
+        })
+        .catch((err) => {
+          selectedSkillDiv.removeChild(loader);
+          selectedSkillDiv.innerHTML = previousContent;
+
+          console.error(err);
+        });
     }
-    fetch(url, this.rapidAPIheaders)
-      .then((response) => {
-        if (response.status === 429) {
-          // Redirect to /limit-exceeded/ page
-          window.location.href = "/limit-exceeded/";
-        } else {
-          return response.json();
-        }
-      })
-      .then((response) => {
-        console.log("children", response);
-        this.createSelectSkillsChildBox(
-          this.cardBodyDiv,
-          response,
-          identifier,
-          skillId
-        );
-      })
-      .catch((err) => console.error(err));
   }
 
   treeSkillAPI(cardBodyDiv, skillId) {
@@ -2530,7 +2759,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           this.childrenSkillAPI(skillId);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+      });
   }
 }
 
