@@ -230,8 +230,15 @@ function createSelectedSkillsCount() {
 }
 
 // Function to create subString of child label
-function stringSplit(content) {
-  return content.slice(0, 13);
+function createSubString(originalText){
+  let words = originalText.split(' ');
+  let firstTwoWords = words.slice(0, 2).join(' ');
+  return firstTwoWords;
+}
+
+// function to count first 2 words
+function wordCount(str) {
+  return str.split(" ").length;
 }
 
 // Function to manage tooltip
@@ -267,6 +274,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   plusOneBtn.style.background = "none";
   plusOneBtn.style.border = "none";
   plusOneBtn.style.color = "#007DFC";
+  plusOneBtn.style.cursor = "pointer";
 
   htmlElementForPlusOne.append(plusOneBtn);
 
@@ -1586,11 +1594,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       if (foundObject) {
         panelDiv.style.border = "0.4px solid #21965333";
         panelDiv.setAttribute("class", `${skillDetail._id} selected-skills`);
-
-        if (skillDetail.name.toString().length > 13) {
-          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${stringSplit(
+        const wordCounting = wordCount(skillDetail.name);
+        if (wordCounting > 2) {
+          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${createSubString(
             skillDetail.name
-          )}... `;
+          )} ... `;
         } else {
           panelDiv.innerHTML = `<i class="fa fa-check"></i> ${skillDetail.name}`;
         }
@@ -1609,8 +1617,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           );
         }
       } else {
-        if (skillDetail.name.toString().length > 13) {
-          panelDiv.innerHTML = `${stringSplit(skillDetail.name)}... `;
+        const wordCounting = wordCount(skillDetail.name);
+        if (wordCounting > 2) {
+          panelDiv.innerHTML = `${createSubString(skillDetail.name)} ... `;
           manageTooltip(
             panelDiv,
             `<div>
