@@ -230,9 +230,9 @@ function createSelectedSkillsCount() {
 }
 
 // Function to create subString of child label
-function createSubString(originalText){
-  let words = originalText.split(' ');
-  let firstTwoWords = words.slice(0, 2).join(' ');
+function createSubString(originalText) {
+  let words = originalText.split(" ");
+  let firstTwoWords = words.slice(0, 2).join(" ");
   return firstTwoWords;
 }
 
@@ -699,12 +699,12 @@ function addSkillToApi(payload) {
     .then((data) => {
       // Handle the API response data as needed
       document.getElementById("plugin-search-id-close-button").click();
-      console.log("API response:", data);
-      return data; // You can return the data if needed
+      toastr.success("New skill added!");
+      return data; 
     })
     .catch((error) => {
-      console.error("API error:", error);
-      throw error; // You can throw the error for further handling
+      toastr.error("Skill not added");
+      throw error; 
     });
 }
 
