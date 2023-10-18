@@ -7,5 +7,7 @@ const plugin = new IysFunctionalAreasPlugin({
   onSearchSkillClick: selectedSkill,
   selectedSkilldiv: "selectSkill",
   skillPlayground: "skillPlayground",
+  ratedSkillEvent: "ratedSkillEvent",
 });
 plugin.init();
+plugin.getSelectedSkill()
