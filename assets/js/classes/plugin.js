@@ -466,6 +466,15 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   // Event listener for the close button to hide the modal
   closeModalBtn.addEventListener("click", () => {
     modalContainer.style.display = "none";
+    const accordionElement = document.querySelector(
+      ".accordion.accordion-true"
+    );
+
+    // Check if the element is found
+    if (accordionElement) {
+      // Update the class to "accordion accordion-false"
+      accordionElement.click();
+    }
   });
 }
 
@@ -667,8 +676,17 @@ function ResetButton(htmlElement, disabled) {
         element.style.display = "none";
       });
 
-      clearlocalStorage();
+      const accordionElement = document.querySelector(
+        ".accordion.accordion-true"
+      );
+  
+      // Check if the element is found
+      if (accordionElement) {
+        // Update the class to "accordion accordion-false"
+        accordionElement.click();
+      }
 
+      clearlocalStorage();
       createSelectedSkillsCount();
     });
   }
@@ -787,7 +805,6 @@ class IysSearchPlugin {
       console.error("ApiKey  divID not set correctly ");
     }
   }
-
   //initi fuctions
   init() {
     this.createSearchBox();

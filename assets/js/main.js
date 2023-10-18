@@ -1,5 +1,5 @@
 function selectedSkill(params) {
-  console.log("api", params);
+  console.log("apidata", params);
 }
 
 const plugin = new IysFunctionalAreasPlugin({
