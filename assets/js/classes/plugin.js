@@ -27,7 +27,7 @@ function groupByTagsName(data) {
   const groupedData = {};
 
   data.forEach((item) => {
-    const tagTitle = item.tags_data[0]?.title;
+    const tagTitle = item.tags[0]?.title;
 
     if (!tagTitle) {
       if (!groupedData["Other"]) {
@@ -430,7 +430,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   SkillChildrenAPI(skillFileId) {
-    fetch(window.location.origin + "/api-child/?id=" + skillFileId)
+    fetch(window.location.origin + "/api-child/?path_addr=" + skillFileId)
       .then((response) => response.json())
       .then((response) => {
         console.log(response);
@@ -1156,11 +1156,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (skillDetail?.skills?.length > 0) {
       skillDetail.skills.forEach((skill) => {
         // clearsessionStorage();
-        this.treeSkillAPI(cardBodyDiv, skill._id);
+        this.treeSkillAPI(cardBodyDiv, skill.path_addr);
         // this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
       });
     } else {
-      this.childrenSkillAPI(skillDetail._id);
+      this.childrenSkillAPI(skillDetail.path_addr);
     }
 
     cardDiv.appendChild(cardBodyDiv);
@@ -1299,9 +1299,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     let skillId = "files/a54b2fe8-dfce-4ff8-977d-af63d7777e89";
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-child/?id=" + skillId;
+      url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -1325,9 +1325,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     let skillId = "files/fe2f048a-aa8c-4e16-9f51-378a18a2b17a";
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-child/?id=" + skillId;
+      url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -1353,9 +1353,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   childrenSkillAPI(skillId) {
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-child/?id=" + skillId;
+      url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -1429,9 +1429,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   treeSkillAPI(cardBodyDiv, skillId) {
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-tree/?id=" + skillId;
+      url = window.location.origin + "/api-tree/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/tree/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/tree/?path_addr=${skillId}`;
     }
 
     fetch(url, this.rapidAPIheaders)
