@@ -26,7 +26,7 @@ function groupByTagsName(data) {
   const groupedData = {};
 
   data.forEach((item) => {
-    const tagTitle = item.tags_data[0]?.title;
+    const tagTitle = item.tags[0]?.title;
 
     if (!tagTitle) {
       if (!groupedData["Other"]) {
@@ -51,7 +51,7 @@ function addTosessionStorage(item) {
   // Check if the item already exists in the list
   const isDuplicate = existingList.some(
     (existingItem) =>
-      existingItem._id === item._id && existingItem._id === item._id
+      existingItem.path_addr === item.path_addr && existingItem.path_addr === item.path_addr
   );
 
   // If the item is not a duplicate, add it to the list
@@ -126,7 +126,7 @@ function sortRatingByLocalStorage() {
 // display selected skill on accordion
 function displaySelctedSkills() {
   const userSkillDetail = sortRatingByLocalStorage();
-
+console.log(userSkillDetail,"userSkillDetai---------------------l")
   for (let item = 0; userSkillDetail.length > item; item++) {
     const childDivId = document.getElementById(
       "child-" + userSkillDetail[item].parentID
@@ -164,7 +164,7 @@ function displaySelctedSkills() {
         );
 
         nameDivCrossButton.addEventListener("click", () => {
-          delete_skill(isotFile._id);
+          delete_skill(isotFile.path_addr);
           if (userSkillDetail[item].RatedSkills.length === 1) {
             document.getElementById(
               `selectedRating-${userSkillDetail[item].parentID}`
@@ -268,6 +268,7 @@ function findObjectByParentID(data, parentID) {
 
 // created modal on +1 button
 function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
+  console.log(htmlElementForPlusOne,"htlmodal")
   const plusOneBtn = document.createElement("buttom");
   plusOneBtn.id = "plusOneBtn";
   plusOneBtn.innerHTML = `+1`;
@@ -275,6 +276,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   plusOneBtn.style.border = "none";
   plusOneBtn.style.color = "#007DFC";
   plusOneBtn.style.cursor = "pointer";
+  // plusOneBtn.style.zIndex = "99";
 
   htmlElementForPlusOne.append(plusOneBtn);
 
@@ -322,7 +324,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   modalTitle.style.fontWeight = 600;
   modalTitle.style.color = "#333333";
   modalTitle.innerHTML =
-    contentToShowInModal.RatedSkills[0].isot_file.tags_data[0].title;
+    contentToShowInModal.RatedSkills[0].isot_file.tags[0].title;
   headerContent.appendChild(modalTitle);
 
   // Create the dot separator
@@ -353,10 +355,10 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   modalContentMainParent.innerHTML = "";
 
   for (const obj of contentToShowInModal.RatedSkills) {
-    const ratingGet = obj?.isot_file.rating?.options;
+    const ratingGet = obj?.isot_file.ratings[0]?.rating_scale_label;
 
     const modalContentParent = document.createElement("div");
-    modalContentParent.id = `modalContentParent-${obj?.isot_file._id}`;
+    modalContentParent.id = `modalContentParent-${obj?.isot_file.path_addr}`;
     modalContentParent.style.display = "flex";
     modalContentParent.style.justifyContent = "space-between";
     modalContentParent.style.border = "1px solid #E6E6E6";
@@ -412,7 +414,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
       '<i class="fa fa-trash" style="color:red"></i>';
 
     modalRightSecondContent.addEventListener("click", () => {
-      delete_skill(obj?.isot_file._id);
+      delete_skill(obj?.isot_file.path_addr);
       const userSkillDetail = sortRatingByLocalStorage();
       const result = findObjectByParentID(
         userSkillDetail,
@@ -437,7 +439,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
         modalContainer.style.display = "none";
       }
       document.getElementById(
-        `modalContentParent-${obj?.isot_file._id}`
+        `modalContentParent-${obj?.isot_file.path_addr}`
       ).style.display = "none";
     });
     modalRightContent.appendChild(modalRightSecondContent);
@@ -599,8 +601,6 @@ function addTolocalStorage(userRatedSkill) {
 
   // Save the updated list in localStorage
   localStorage.setItem("userRatedSkills", JSON.stringify(newList));
-
-  console.warn(getListFromlocalStorage());
 }
 
 function getListFromlocalStorage() {
@@ -1501,7 +1501,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   SkillChildrenAPI(skillFileId) {
-    fetch(window.location.origin + "/api-child/?id=" + skillFileId)
+    fetch(window.location.origin + "/api-child/?path_addr=" + skillFileId)
       .then((response) => response.json())
       .then((response) => {
         console.log(response);
@@ -1524,7 +1524,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const userSkillDetail = sortRatingByLocalStorage();
     const isParentAvailable = isParentIdAvailable(
       userSkillDetail,
-      skillDetail._id
+      skillDetail.path_addr
     );
     console.log(userSkillDetail, isParentAvailable, "userSkillDetail");
     var parentDiv = document.createElement("div");
@@ -1533,11 +1533,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     parentDiv.style.display = "flex";
     parentDiv.style.justifyContent = "space-between";
     parentDiv.setAttribute("class", "accordion accordion-false");
-    parentDiv.setAttribute("id", "parent-" + skillDetail._id);
+    parentDiv.setAttribute("id", "parent-" + skillDetail.path_addr);
 
     var childDiv = document.createElement("div");
 
-    childDiv.setAttribute("id", "child-" + skillDetail._id);
+    childDiv.setAttribute("id", "child-" + skillDetail.path_addr);
     childDiv.style.display = "flex";
 
     if (isParentAvailable) {
@@ -1595,11 +1595,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       var skilldetailKey = document.getElementById(uniqueIdentifier);
       const foundObject = findObjectByIsotFileId(
         userSkillDetail,
-        skillDetail._id
+        skillDetail.path_addr
       );
 
       var panelDiv = document.createElement("button");
-      panelDiv.setAttribute("class", skillDetail._id);
+      panelDiv.setAttribute("class", skillDetail.path_addr);
       panelDiv.style.border = "1px solid grey";
       panelDiv.style.borderRadius = "30px";
       panelDiv.style.margin = "5px";
@@ -1610,7 +1610,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       if (foundObject) {
         panelDiv.style.border = "0.4px solid #21965333";
-        panelDiv.setAttribute("class", `${skillDetail._id} selected-skills`);
+        panelDiv.setAttribute("class", `${skillDetail.path_addr} selected-skills`);
         const wordCounting = wordCount(skillDetail.name);
         if (wordCounting > 2) {
           panelDiv.innerHTML = `<i class="fa fa-check"></i> ${createSubString(
@@ -1680,10 +1680,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             parentDiv.getAttribute("class") === "accordion accordion-false";
 
           if (isExpanded) {
-            this.childrenSkillAPI(skillDetail._id, "accordionChild");
+            this.childrenSkillAPI(skillDetail.path_addr, "accordionChild");
             parentDiv.setAttribute("class", String(`accordion accordion-true`));
           } else {
-            document.getElementById(skillDetail._id).innerHTML = "";
+            document.getElementById(skillDetail.path_addr).innerHTML = "";
             parentDiv.setAttribute(
               "class",
               String(`accordion accordion-false`)
@@ -1734,7 +1734,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       // skillDetailChild.style.justifyContent = "space-around";
       skillDetailChild.style.display = "flex";
       skillDetailChild.style.flexWrap = "wrap";
-      skillDetailChild.setAttribute("id", skillDetail._id);
+      skillDetailChild.setAttribute("id", skillDetail.path_addr);
 
       parentDiv.after(skillDetailChild);
     }
@@ -1792,7 +1792,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         {
           comment: commentValue,
           rating: ratingValue,
-          file_id: skillDetail._id,
+          file_id: skillDetail.path_addr,
         },
       ],
     };
@@ -1834,12 +1834,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     } else {
       console.log("user not login adding skills");
 
-      fetchData(`${ENDPOINT_URL}ISOT/details/?ids=${skillDetail._id}`, "GET")
+      fetchData(`${ENDPOINT_URL}ISOT/details/?path_addrs=${skillDetail.path_addr}`, "GET")
         .then((response) => {
           addTolocalStorage({
             comment: commentValue,
             rating: ratingValue,
-            isot_file_id: skillDetail._id,
+            isot_file_id: skillDetail.path_addr,
             isot_file: response[0],
             parentSkillDetailId: parentSkillDetailId,
           });
@@ -1892,7 +1892,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     if (skillDetail?.term) {
       titleText = skillDetail?.term;
-      skillDetail = skillDetail.skills[0];
+      skillDetail = skillDetail;
     } else {
       if (skillDetail) {
         titleText = skillDetail.name;
@@ -1924,10 +1924,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     button.removeEventListener("click", this.saveTheSkillComment);
 
     button.addEventListener("click", (event) => {
-      if (skillDetail.rating) {
+      if (skillDetail.ratings) {
         this.saveTheSkillComment(
           rateSkillCommentBox.value,
-          skillDetail.rating.options.indexOf(
+          skillDetail.ratings[0].rating_scale_label.indexOf(
             spanElementForStar.noUiSlider.get()
           ) + 1,
           skillDetail,
@@ -2008,7 +2008,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
   createRatingElement(htmlElement, skillDetail) {
     // add exception for rating
-
+console.log(skillDetail,"rating")
     try {
       htmlElement.noUiSlider.destroy();
     } catch (error) {
@@ -2017,8 +2017,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     let htmlElement1 = document.getElementById("spanElementForStar");
     console.log(skillDetail, "skillDetail");
-    if (skillDetail.rating) {
-      let ratingOptions = skillDetail.rating.options;
+    if (skillDetail.ratings) {
+      let ratingOptions = skillDetail.ratings[0].rating_scale_label;
 
       var arbitraryValuesForSlider = ratingOptions;
 
@@ -2228,7 +2228,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         let button = document.createElement("button");
         let ratePercentage =
           (skill.rating / skill.isot_file.rating.options.length) * 100;
-        console.log("ratePercentage", ratePercentage);
         button.innerHTML = `${skill.isot_file.name}  <i class="fas fa-message" style="color:#3b71ca0;margin-left:10px;margin-right:10px"  ></i>
             
             <div style="width: 25px; height: 25px; border-radius: 50%; background: radial-gradient(closest-side, white 79%, transparent 80% 100%), conic-gradient(#2C58A0 ${ratePercentage}%, pink 0);">
@@ -2449,7 +2448,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     rateButton.textContent = "Rate";
     rateButton.addEventListener("click", () => {
       console.log("rate button clicked", skillDetail);
-      this.changeRateModelElement(skillDetail);
+      this.changeRateModelElement(skillDetail.skills[0]);
     });
     rateButton.innerHTML += `  <i class="fas fa-star"></i>`;
 
@@ -2464,7 +2463,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       cardTitleH4.appendChild(rateButton);
     } else if (
       skillDetail?.skills?.length > 0 &&
-      skillDetail?.skills[0].rating_type > 0
+      skillDetail?.skills[0].ratings[0].rating_scale_label.length > 0
     ) {
       cardTitleH4.appendChild(rateButton);
     }
@@ -2476,11 +2475,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (skillDetail?.skills?.length > 0) {
       skillDetail.skills.forEach((skill) => {
         // clearsessionStorage();
-        this.treeSkillAPI(cardBodyDiv, skill._id);
+        this.treeSkillAPI(cardBodyDiv, skill.path_addr);
         // this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
       });
     } else {
-      this.childrenSkillAPI(skillDetail._id, identifier);
+      this.childrenSkillAPI(skillDetail.path_addr, identifier);
     }
 
     cardDiv.appendChild(cardBodyDiv);
@@ -2619,9 +2618,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     let skillId = "files/a54b2fe8-dfce-4ff8-977d-af63d7777e89";
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-child/?id=" + skillId;
+      url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -2645,9 +2644,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     let skillId = "files/fe2f048a-aa8c-4e16-9f51-378a18a2b17a";
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-child/?id=" + skillId;
+      url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -2686,9 +2685,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       let url = "";
       if (isLoginUser) {
-        url = window.location.origin + "/api-child/?id=" + skillId;
+        url = window.location.origin + "/api-child/?path_addr=" + skillId;
       } else {
-        url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+        url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
       }
 
       fetch(url, this.rapidAPIheaders)
@@ -2726,9 +2725,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       let url = "";
       if (isLoginUser) {
-        url = window.location.origin + "/api-child/?id=" + skillId;
+        url = window.location.origin + "/api-child/?path_addr=" + skillId;
       } else {
-        url = `${ENDPOINT_URL}ISOT/children/?id=${skillId}`;
+        url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
       }
 
       fetch(url, this.rapidAPIheaders)
@@ -2763,9 +2762,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   treeSkillAPI(cardBodyDiv, skillId) {
     let url = "";
     if (isLoginUser) {
-      url = window.location.origin + "/api-tree/?id=" + skillId;
+      url = window.location.origin + "/api-tree/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/tree/?id=${skillId}`;
+      url = `${ENDPOINT_URL}ISOT/tree/?path_addr=${skillId}`;
     }
 
     fetch(url, this.rapidAPIheaders)
