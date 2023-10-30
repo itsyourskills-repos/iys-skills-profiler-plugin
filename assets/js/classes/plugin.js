@@ -1,9 +1,9 @@
-var isLoginUser =  false;
+var isLoginUser = false;
 const ENDPOINT_URL =
   "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
-const loggedInUserApiEndpoint = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/get-skills/`;
-const loggedInUserAddSkill = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/add-skills/`;
-const deleteSkillApiEndpoint = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/delete-skill/`;
+const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
+const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
+const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 
 function fetchData(url, method) {
@@ -103,61 +103,16 @@ function isParentIdAvailable(array, parentIdToCheck) {
 }
 
 // change the format of localstorage data
-// function sortRatingByLocalStorage() {
-//   let output = {},
-//     inputArray;
-//   const getLoggedInUser = getLoggedInUserListFromlocalStorage();
-//   if (getLoggedInUser && getLoggedInUser.length > 0) {
-//     inputArray = getLoggedInUser;
-//   } else {
-//     inputArray = getListFromlocalStorage();
-//   }
-//   inputArray?.forEach((item) => {
-//     const parentID = item?.parentSkillDetailId
-//       ? item?.parentSkillDetailId
-//       : item?.ancestors && item?.ancestors[0]?.path_addr;
-//     if (!output[parentID]) {
-//       output[parentID] = {
-//         parentID,
-//         RatedSkills: [],
-//       };
-//     }
-
-//     const ratedSkill = {
-//       id:item?.id,
-//       comment: item?.comment
-//         ? item?.comment
-//         : item?.ratings && item?.ratings[0].comment,
-//       rating: item?.rating
-//         ? item?.rating
-//         : item?.ratings && item?.ratings[0]?.rating,
-//       isot_file_id: item?.isot_file_id
-//         ? item?.isot_file_id
-//         : item?.isot_path_addr,
-//       isot_file: item?.isot_file ? item?.isot_file : item?.isot_skill,
-//       parentSkillDetailId: item?.parentSkillDetailId
-//         ? item?.parentSkillDetailId
-//         : item?.ancestors && item?.ancestors[0]?.path_addr,
-//     };
-//     output[parentID].RatedSkills.push(ratedSkill);
-//   });
-
-//   const finalResultArray = Object.values(output);
-// console.log(finalResultArray,"finalResultArray");
-//   return finalResultArray;
-// }
-
 function sortRatingByLocalStorage() {
   let output = {},
     inputArray;
   const getLoggedInUser = getLoggedInUserListFromlocalStorage();
-  if (getLoggedInUser && getLoggedInUser?.length > 0) {
+  if (getLoggedInUser && getLoggedInUser.length > 0) {
     inputArray = getLoggedInUser;
   } else {
     inputArray = getListFromlocalStorage();
   }
   inputArray?.forEach((item) => {
-    console.log(item,"teiete")
     const parentID = item?.ancestors
       ? item?.ancestors[0]?.path_addr
       : item?.parentSkillDetailId;
@@ -170,15 +125,15 @@ function sortRatingByLocalStorage() {
       }
       const ratedSkill = {
         id: item?.id,
-        comment: item?.rating && item?.rating?.length > 0 ?  item?.rating[0]?.comment : item?.comment ,
-        rating: item?.rating || (item?.ratings[0] && item?.ratings[0]?.rating),
+        comment: item?.rating && item?.rating?.length > 0 ?  item?.rating[0]?.comment : item?.comment,
+        rating: item?.rating || (item?.ratings[0] && item?.ratings[0].rating),
         isot_file_id: item?.isot_file_id || item?.isot_path_addr,
         isot_file: item?.isot_file || item?.isot_skill,
         parentSkillDetailId: item?.parentSkillDetailId
           ? item?.parentSkillDetailId
           : item?.ancestors && item?.ancestors[0]?.path_addr,
       };
-      output[parentID]?.RatedSkills.push(ratedSkill);
+      output[parentID].RatedSkills.push(ratedSkill);
     // }
   });
   const finalResultArray = Object.values(output);
@@ -1573,7 +1528,7 @@ class IysSearchPlugin {
 
     if (isLoginUser && this.searchValue.length > 0) {
       fetch(
-        `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/api-search/?q=${this.searchValue}`,
+        `https://api.myskillsplus.com/api-search/?q=${this.searchValue}`,
         {
           method: "GET",
           headers: {
@@ -1750,7 +1705,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   SkillChildrenAPI(skillFileId) {
     let url;
     if (isLoginUser) {
-      url = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
+      url = `https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
     } else {
       url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillFileId}`;
     }
@@ -2779,7 +2734,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       cardTitleH4.appendChild(rateButton);
     } else if (
       skillDetail?.skills?.length > 0 &&
-      skillDetail?.skills[0].ratings[0].rating_scale_label.length > 0
+      skillDetail?.skills[0]?.ratings[0]?.rating_scale_label.length > 0
     ) {
       cardTitleH4.appendChild(rateButton);
     }
@@ -2995,18 +2950,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillIdElement,
       parentIdOfHirarchy
     );
+    const loader = document.createElement("div");
+    loader.className = "loader";
+    loader.style.margin = "100px auto";
+    
     // Check if the element exists
     if (skillIdElement) {
       const previousContent = skillIdElement.innerHTML;
       // Create and append the loader
-      const loader = document.createElement("div");
-      loader.className = "loader";
-      skillIdElement.innerHTML = ""; // Clear previous content
       skillIdElement.appendChild(loader);
 
       let url = "";
       if (isLoginUser) {
-        url = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
+        url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
         url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
       }
@@ -3046,13 +3002,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     } else {
       const previousContent = selectedSkillDiv.innerHTML;
       // Create and append the loader
-      const loader = document.createElement("div");
-      loader.className = "loader";
-      loader.style.margin = "100px auto";
       selectedSkillDiv.appendChild(loader);
       let url = "";
       if (isLoginUser) {
-        url = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
+        url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
         url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
       }
@@ -3073,7 +3026,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          // selectedSkillDiv.removeChild(loader);
+          selectedSkillDiv.removeChild(loader);
           selectedSkillDiv.innerHTML = previousContent;
 
           this.createSelectSkillsChildBox(
@@ -3084,6 +3037,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           );
         })
         .catch((err) => {
+          selectedSkillDiv.removeChild(loader);
           selectedSkillDiv.innerHTML = previousContent;
 
           console.error(err);
@@ -3094,7 +3048,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   treeSkillAPI(cardBodyDiv, skillId) {
     let url = "";
     if (isLoginUser) {
-      url = `https://cors-anywhere.herokuapp.com/https://api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
+      url = `https://api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
       fetch(url, {
         method: "GET",
         headers: {
