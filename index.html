@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plugin Demo</title>
+  <script src="https://d3js.org/d3.v6.js"></script>
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <!-- Google Fonts -->
@@ -16,7 +17,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.css" />
 
   <script src="https://cdn.jsdelivr.net/npm/nouislider/distribute/nouislider.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /> -->
   <style src="{% static 'css/main.css' %}"></style>
   <script src="https://cdn.rawgit.com/kimmobrunfeldt/progressbar.js/0.5.6/dist/progressbar.js"></script>
   <!-- toater CDN's -->
@@ -79,6 +80,19 @@
       </div>
     </div>
   </div>
+
+  <div id="resetModalContainer" class="modal-container">
+    <div id="confirmModal" class="modal-content">
+      <!-- Modal content here -->
+      <div class="reset-title">
+        <p>Reset Confirm</p><span id="closeModal" class="close-button">&times;</span>
+      </div>
+      <hr class="reset-hr-line" />
+      <p class="reset-message">Are you sure you want to reset?</p>
+      <button id="confirmReset" class="confirm-button">Confirm</button>
+    </div>
+  </div>
+  
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"></script>
   <script src="assets/js/classes/plugin.js"></script>
   <script src="assets/js/main.js"></script>

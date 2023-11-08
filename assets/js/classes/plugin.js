@@ -4,6 +4,8 @@ const ENDPOINT_URL =
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
+const getaccessYokenEndpoint =
+  "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 
 function fetchData(url, method) {
@@ -117,23 +119,28 @@ function sortRatingByLocalStorage() {
       ? item?.ancestors[0]?.path_addr
       : item?.parentSkillDetailId;
     // if (parentID) {
-      if (!output[parentID]) {
-        output[parentID] = {
-          parentID,
-          RatedSkills: [],
-        };
-      }
-      const ratedSkill = {
-        id: item?.id,
-        comment: item?.rating && item?.rating?.length > 0 ?  item?.rating[0]?.comment : item?.comment,
-        rating: item?.rating || (item?.ratings[0] && item?.ratings[0].rating),
-        isot_file_id: item?.isot_file_id || item?.isot_path_addr,
-        isot_file: item?.isot_file || item?.isot_skill,
-        parentSkillDetailId: item?.parentSkillDetailId
-          ? item?.parentSkillDetailId
-          : item?.ancestors && item?.ancestors[0]?.path_addr,
+    if (!output[parentID]) {
+      output[parentID] = {
+        parentID,
+        RatedSkills: [],
       };
-      output[parentID].RatedSkills.push(ratedSkill);
+    }
+    const ratedSkill = {
+      id: item?.id,
+      comment:
+        item?.rating && item?.rating?.length > 0
+          ? item?.rating[0]?.comment
+          : item.ratings && item.ratings.length > 0
+          ? item.ratings[0].comment
+          : item?.comment,
+      rating: item?.rating || (item?.ratings[0] && item?.ratings[0].rating),
+      isot_file_id: item?.isot_file_id || item?.isot_path_addr,
+      isot_file: item?.isot_file || item?.isot_skill,
+      parentSkillDetailId: item?.parentSkillDetailId
+        ? item?.parentSkillDetailId
+        : item?.ancestors && item?.ancestors[0]?.path_addr,
+    };
+    output[parentID].RatedSkills.push(ratedSkill);
     // }
   });
   const finalResultArray = Object.values(output);
@@ -149,63 +156,63 @@ function displaySelctedSkills() {
     );
     if (childDivId) {
       childDivId.innerHTML = "";
-      // Inner loop for iterating over RatedSkills array
-      for (
-        let obj = 0;
-        obj < 3 && userSkillDetail[item].RatedSkills.length > obj;
-        obj++
-      ) {
-        // Access the isot_file object
-        const isotFile = userSkillDetail[item].RatedSkills[obj].isot_file;
-        const skillid = userSkillDetail[item]?.RatedSkills[obj]?.id;
+      // // Inner loop for iterating over RatedSkills array
+      // for (
+      //   let obj = 0;
+      //   obj < 3 && userSkillDetail[item].RatedSkills.length > obj;
+      //   obj++
+      // ) {
+      //   // Access the isot_file object
+      //   const isotFile = userSkillDetail[item].RatedSkills[obj].isot_file;
+      //   const skillid = userSkillDetail[item]?.RatedSkills[obj]?.id;
 
-        // Check if isot_file exists and has a name property
-        if (isotFile && isotFile.name) {
-          // Create a div element to display the name
-          const nameDiv = document.createElement("div");
-          nameDiv.setAttribute(
-            "id",
-            `selectedRating-${userSkillDetail[item].parentID}`
-          );
-          const nameDivCrossButton = document.createElement("i");
-          nameDivCrossButton.id = `cross-btn-child-${
-            skillid ? skillid : isotFile.path_addr
-          }`;
-          nameDivCrossButton.setAttribute("class", "fa fa-close");
-          nameDivCrossButton.style.color = "red";
-          nameDivCrossButton.style.marginLeft = "5px";
-          nameDivCrossButton.style.cursor = "pointer";
-          nameDivCrossButton.style.padding = "5px";
-          nameDivCrossButton.style.zIndex = "10";
-          console.log(
-            userSkillDetail[item].RatedSkills,
-            "userSkillDetail[item].RatedSkills"
-          );
-          nameDivCrossButton.addEventListener("click", () => {
-            delete_skill(skillid ? skillid : isotFile.path_addr);
-            if (userSkillDetail[item].RatedSkills.length === 1) {
-              document.getElementById(
-                `selectedRating-${userSkillDetail[item].parentID}`
-              ).style.display = "none";
-            }
-          });
-          nameDiv.textContent = isotFile.name;
-          nameDiv.style.background = "white";
-          nameDiv.style.display = "flex";
-          nameDiv.style.zIndex = "9";
-          nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
-          nameDiv.style.padding = "0px 14px";
-          nameDiv.style.borderRadius = "30px";
-          nameDiv.style.marginRight = "10px";
-          nameDiv.style.width = "fit-content";
-          // Append the div to the childDivId
-          nameDiv.appendChild(nameDivCrossButton);
-          childDivId.appendChild(nameDiv);
-        }
-      }
-      if (userSkillDetail[item].RatedSkills.length > 3) {
-        manageModalOnPlusOne(childDivId, userSkillDetail[item]);
-      }
+      //   // Check if isot_file exists and has a name property
+      //   if (isotFile && isotFile.name) {
+      //     // Create a div element to display the name
+      //     const nameDiv = document.createElement("div");
+      //     nameDiv.setAttribute(
+      //       "id",
+      //       `selectedRating-${userSkillDetail[item].parentID}`
+      //     );
+      //     const nameDivCrossButton = document.createElement("i");
+      //     nameDivCrossButton.id = `cross-btn-child-${
+      //       skillid ? skillid : isotFile.path_addr
+      //     }`;
+      //     nameDivCrossButton.setAttribute("class", "fa fa-close");
+      //     nameDivCrossButton.style.color = "red";
+      //     nameDivCrossButton.style.marginLeft = "5px";
+      //     nameDivCrossButton.style.cursor = "pointer";
+      //     nameDivCrossButton.style.padding = "5px";
+      //     nameDivCrossButton.style.zIndex = "10";
+      //     console.log(
+      //       userSkillDetail[item].RatedSkills,
+      //       "userSkillDetail[item].RatedSkills"
+      //     );
+      //     nameDivCrossButton.addEventListener("click", () => {
+      //       delete_skill(skillid ? skillid : isotFile.path_addr);
+      //       if (userSkillDetail[item].RatedSkills.length === 1) {
+      //         document.getElementById(
+      //           `selectedRating-${userSkillDetail[item].parentID}`
+      //         ).style.display = "none";
+      //       }
+      //     });
+      //     nameDiv.textContent = isotFile.name;
+      //     nameDiv.style.background = "white";
+      //     nameDiv.style.display = "flex";
+      //     nameDiv.style.zIndex = "9";
+      //     nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
+      //     nameDiv.style.padding = "0px 14px";
+      //     nameDiv.style.borderRadius = "30px";
+      //     nameDiv.style.marginRight = "10px";
+      //     nameDiv.style.width = "fit-content";
+      //     // Append the div to the childDivId
+      //     nameDiv.appendChild(nameDivCrossButton);
+      //     childDivId.appendChild(nameDiv);
+      //   }
+      // }
+      // if (userSkillDetail[item].RatedSkills.length > 3) {
+      manageModalOnPlusOne(childDivId, userSkillDetail[item]);
+      // }
     }
   }
 
@@ -225,8 +232,10 @@ function sumRatings(data) {
 
   data.forEach((item) => {
     if (
-      // item.parentID && 
-      item.RatedSkills && Array.isArray(item.RatedSkills)) {
+      // item.parentID &&
+      item.RatedSkills &&
+      Array.isArray(item.RatedSkills)
+    ) {
       totalRating += item.RatedSkills.length;
     }
   });
@@ -236,13 +245,13 @@ function sumRatings(data) {
 // display all the elements count
 function createSelectedSkillsCount() {
   const htmlElementCount = sortRatingByLocalStorage();
-  console.log(htmlElementCount,"htmlElementCount");
   const sumofAllRatings = sumRatings(htmlElementCount);
   var elementCountLabel = document.querySelector(".elementCountLabel");
   elementCountLabel.style.width = "fit-content";
   elementCountLabel.style.padding = "10px 30px";
   elementCountLabel.style.margin = "20px auto";
   elementCountLabel.style.borderRadius = "30px";
+
   // elementCountLabel.style.zIndex = 99;
   if (htmlElementCount && sumofAllRatings) {
     elementCountLabel.style.border = "0.4px solid #21965333";
@@ -250,7 +259,7 @@ function createSelectedSkillsCount() {
     elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-</svg>  ${sumofAllRatings} element added to your profile`;
+</svg>  ${sumofAllRatings} element added to your profile <a href='/profile'> Check your profile </a> `;
   } else {
     elementCountLabel.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -297,16 +306,33 @@ function findObjectByParentID(data, parentID) {
   return data.filter((obj) => obj.parentID === parentID);
 }
 
+// check string for rate button
+function searchByName(searchName) {
+  const data = sortRatingByLocalStorage();
+  const searchResult = [];
+  data.forEach((item) => {
+    item.RatedSkills.forEach((skill) => {
+      if (
+        skill.isot_file.name.toLowerCase().includes(searchName.toLowerCase())
+      ) {
+        searchResult.push(skill);
+      }
+    });
+  });
+  return searchResult;
+}
+
 // created modal on +1 button
 function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
+  console.log(contentToShowInModal, "222222222222");
   const plusOneBtn = document.createElement("buttom");
   plusOneBtn.id = "plusOneBtn";
-  plusOneBtn.innerHTML = `+1`;
+  plusOneBtn.innerHTML = `${contentToShowInModal?.RatedSkills?.length} Selected skills`;
   plusOneBtn.style.background = "none";
   plusOneBtn.style.border = "none";
   plusOneBtn.style.color = "#007DFC";
   plusOneBtn.style.cursor = "pointer";
-  // plusOneBtn.style.zIndex = "99";
+  plusOneBtn.style.fontSize = "16px";
   htmlElementForPlusOne.append(plusOneBtn);
   // Create the modal container
   const modalContainer = document.createElement("div");
@@ -360,8 +386,11 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   headerContent.appendChild(modalDotHeader);
   // Create the count of elements selected
   const modalTitleElementCount = document.createElement("span");
-  modalTitleElementCount.id = 'rating-modal-element-count'
-  modalTitleElementCount.setAttribute('data-count',contentToShowInModal?.RatedSkills?.length);
+  modalTitleElementCount.id = "rating-modal-element-count";
+  modalTitleElementCount.setAttribute(
+    "data-count",
+    contentToShowInModal?.RatedSkills?.length
+  );
   modalTitleElementCount.style.fontWeight = 600;
   modalTitleElementCount.style.color = "#828282";
   modalTitleElementCount.style.fontSize = "14px";
@@ -377,12 +406,15 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
   modalContentMainParent.innerHTML = "";
 
   for (const obj of contentToShowInModal.RatedSkills) {
-    console.log(obj,)
+    console.log(obj);
     const ratingGet = obj?.isot_file.ratings[0]?.rating_scale_label;
     const modalContentParent = document.createElement("div");
     modalContentParent.id = `modalContentParent-${obj?.isot_file.path_addr}`;
-    modalContentParent.setAttribute('class',`modalContentParent-${obj?.id ? obj.id : obj?.isot_file.path_addr}`);
-    
+    modalContentParent.setAttribute(
+      "class",
+      `modalContentParent-${obj?.id ? obj.id : obj?.isot_file.path_addr}`
+    );
+
     modalContentParent.style.display = "flex";
     modalContentParent.style.justifyContent = "space-between";
     modalContentParent.style.border = "1px solid #E6E6E6";
@@ -400,11 +432,15 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalLeftFirstContent.style.fontWeight = 500;
     modalLeftFirstContent.style.fontSize = "14px";
     modalLeftFirstContent.style.color = "#828282";
+    modalLeftFirstContent.setAttribute('data-label',obj?.isot_file.name);
     modalLeftContent.appendChild(modalLeftFirstContent);
 
     const modalLeftSecondContent = document.createElement("span");
     modalLeftSecondContent.id = "modalLeftSecondContent";
-    modalLeftSecondContent.innerHTML = ratingGet[obj?.rating.length > 0?  obj?.rating[0]?.rating - 1 :obj?.rating - 1 ];
+    modalLeftSecondContent.innerHTML =
+      ratingGet[
+        obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
+      ];
     modalLeftSecondContent.style.margin = "0 0 0 10px";
     modalLeftSecondContent.style.padding = "4px 12px";
     modalLeftSecondContent.style.borderRadius = "100px";
@@ -417,21 +453,19 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalRightContent.id = "modalRightContent";
     modalRightContent.style.width = "20%";
     modalRightContent.style.textAlign = "right";
-   
 
     const modalRightFirstContent = document.createElement("span");
     modalRightFirstContent.id = "modalRightFirstContent";
     modalRightFirstContent.textContent = "View Details";
-   
+
     modalRightFirstContent.style.display =
-    obj?.comment !== "" ? "initial" : "none";
+      obj?.comment !== "" ? "initial" : "none";
     modalRightFirstContent.style.fontWeight = 500;
     modalRightFirstContent.style.fontSize = "12px";
     modalRightFirstContent.style.color = "#007DFC";
     modalRightFirstContent.style.cursor = "pointer";
 
     manageTooltip(modalRightFirstContent, obj?.comment);
-
 
     modalRightContent.appendChild(modalRightFirstContent);
 
@@ -446,13 +480,12 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
       '<i class="fa fa-trash" style="color:red"></i>';
 
     modalRightSecondContent.addEventListener("click", () => {
-      delete_skill(obj?.id ? obj.id : obj?.isot_file.path_addr, "modal");
-      
       const userSkillDetail = sortRatingByLocalStorage();
+      delete_skill(obj?.id ? obj.id : obj?.isot_file.path_addr, "modal");
       const result = findObjectByParentID(
         userSkillDetail,
         contentToShowInModal.parentID
-        );
+      );
       if (result.length === 0) {
         // Find the element with the class "accordion accordion-true"
         const accordionElement = document.querySelector(
@@ -471,10 +504,10 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
 
         modalContainer.style.display = "none";
       }
-      if(!isLoginUser){
-      document.getElementById(
-        `modalContentParent-${obj?.isot_file.path_addr}`
-      ).style.display = "none";
+      if (!isLoginUser) {
+        document.getElementById(
+          `modalContentParent-${obj?.isot_file.path_addr}`
+        ).style.display = "none";
       }
     });
     modalRightContent.appendChild(modalRightSecondContent);
@@ -685,24 +718,66 @@ async function getListFromLoggedInUser(loaderIdentifier) {
     getElementByClass.appendChild(loader);
   }
   if (getAccessToken) {
-    // Make the API call using the fetch API
-    return await fetch(loggedInUserApiEndpoint, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getAccessToken.access}`,
-        // Add any additional headers if needed
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+    try {
+      let response = [];
+      response = await fetch(loggedInUserApiEndpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAccessToken.access}`,
+        },
+      });
+      if (!response.ok && response.status === 401) {
+        //throw new Error(`HTTP error! Status: ${response.status}`);
+        const refreshtoken = JSON.parse(
+          localStorage.getItem("tokenData")
+        )?.refresh;
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+          refresh: refreshtoken,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        try {
+          fetch(getaccessYokenEndpoint, requestOptions)
+            .then((response) => response.text())
+            .then(async (result) => {
+              localStorage.setItem(
+                "tokenData",
+                JSON.stringify({
+                  refresh: refreshtoken,
+                  access: JSON.parse(result)?.access,
+                })
+              );
+              const Retreyresponse = await fetch(loggedInUserApiEndpoint, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${JSON.parse(result)?.access}`,
+                },
+              });
+              const data = await Retreyresponse.json();
+              if (loaderIdentifier !== "notLoadded") {
+                getElementByClass.removeChild(loader);
+                getElementByClass.innerHTML = previousContent;
+              }
+              localStorage.setItem(
+                "logginUserRatedSkills",
+                JSON.stringify(data.data)
+              );
+              createSelectedSkillsCount();
+              return data;
+            })
+            .catch((error) => console.log("error", error));
+        } catch (error) {
+          console.log("Error occurred:", error);
         }
-        return response.json();
-      })
-      .then((data) => {
-        // Handle the API response data as needed
-        console.log(data, "login plugin data");
+      } else {
+        const data = await response.json();
         if (loaderIdentifier !== "notLoadded") {
           getElementByClass.removeChild(loader);
           getElementByClass.innerHTML = previousContent;
@@ -710,16 +785,18 @@ async function getListFromLoggedInUser(loaderIdentifier) {
         localStorage.setItem(
           "logginUserRatedSkills",
           JSON.stringify(data.data)
-          );
-          createSelectedSkillsCount()
-      })
-      .catch((error) => {
-        if (loaderIdentifier !== "notLoadded") {
-          getElementByClass.removeChild(loader);
-          getElementByClass.innerHTML = previousContent;
-        }
-        throw error;
-      });
+        );
+        createSelectedSkillsCount();
+        return data;
+      }
+    } catch (error) {
+      if (loaderIdentifier !== "notLoadded") {
+        getElementByClass.removeChild(loader);
+        getElementByClass.innerHTML = previousContent;
+      }
+      console.error("Error occurred:", error);
+      return { error: error.message };
+    }
   } else {
     if (loaderIdentifier !== "notLoadded") {
       getElementByClass.removeChild(loader);
@@ -751,6 +828,12 @@ function clearlocalStorage() {
   }
 }
 
+function clearloggedlocalStorage() {
+  if (localStorage.getItem("logginUserRatedSkills")) {
+    localStorage.removeItem("logginUserRatedSkills");
+  }
+}
+
 function getListFromsessionStorage() {
   if (sessionStorage.getItem("items")) {
     return JSON.parse(sessionStorage.getItem("items"));
@@ -774,9 +857,12 @@ const saveListToSessionStorage = (list) => {
 };
 
 // Helper function to create a button with an icon
+
 function ResetButton(htmlElement, disabled) {
+  const getResetModalContainer = document.querySelector(".modal-container");
+
   htmlElement.innerHTML = `<i class="fas fa-undo"></i> Reset Changes`;
-  htmlElement.id = "Reset Changes";
+  htmlElement.id = "ResetChanges";
   htmlElement.style.padding = "5px 15px";
   htmlElement.style.borderRadius = "5px";
   htmlElement.style.border = disabled ? "" : "1px solid #007DFC";
@@ -788,28 +874,54 @@ function ResetButton(htmlElement, disabled) {
   if (!disabled) {
     htmlElement.addEventListener("click", (event) => {
       event.preventDefault();
-      htmlElement.disabled = true;
-      htmlElement.style.border = "";
-      htmlElement.style.color = "";
-      const elements = document.querySelectorAll('[id^="selectedRating-"]');
+      getResetModalContainer.style.display = "flex";
+      // Open the modal when the button is clicked
+      const confirmModal = document.getElementById("confirmModal");
+      confirmModal.style.display = "block";
+      confirmModal.style.borderRadius = "5px";
+      confirmModal.style.padding = "20px";
+      confirmModal.style.width = "80%";
+      confirmModal.style.maxWidth = "400px";
+      confirmModal.style.background = "white";
 
-      // Iterate through each element and apply the style
-      elements.forEach((element) => {
-        element.style.display = "none";
-      });
+      // Handle modal close button
+      const closeModalButton = document.getElementById("closeModal");
+      closeModalButton.onclick = function () {
+        getResetModalContainer.style.display = "none";
+        confirmModal.style.display = "none";
+      };
 
-      const accordionElement = document.querySelector(
-        ".accordion.accordion-true"
-      );
+      // Handle reset confirmation
+      const confirmResetButton = document.getElementById("confirmReset");
+      confirmResetButton.onclick = function () {
+        getResetModalContainer.style.display = "none";
+        htmlElement.disabled = true;
+        htmlElement.style.border = "";
+        htmlElement.style.color = "";
+        const elements = document.querySelectorAll('[id^="selectedRating-"]');
+        const plusOneBtnElements =
+          document.querySelectorAll('[id^="plusOneBtn"]');
+        elements.forEach((element) => {
+          element.style.display = "none";
+        });
 
-      // Check if the element is found
-      if (accordionElement) {
-        // Update the class to "accordion accordion-false"
-        accordionElement.click();
-      }
+        plusOneBtnElements.forEach((element) => {
+          element.style.display = "none";
+        });
 
-      clearlocalStorage();
-      createSelectedSkillsCount();
+        const accordionElement = document.querySelector(
+          ".accordion.accordion-true"
+        );
+        if (accordionElement) {
+          accordionElement.click();
+        }
+
+        clearlocalStorage();
+        createSelectedSkillsCount();
+
+        // Close the modal
+        confirmModal.style.display = "none";
+      };
     });
   }
 
@@ -836,6 +948,7 @@ function addSkillToApi(payload) {
     })
     .then((data) => {
       // Handle the API response data as needed
+
       document.getElementById("plugin-search-id-close-button").click();
       toastr.success("New skill element added!");
       return data;
@@ -847,7 +960,6 @@ function addSkillToApi(payload) {
 }
 
 function delete_skill(skill_id, deleteIconIdentifier) {
-
   let getElementByIdData;
   if (isLoginUser) {
     if (deleteIconIdentifier !== "modal") {
@@ -897,22 +1009,29 @@ function delete_skill(skill_id, deleteIconIdentifier) {
           await getListFromLoggedInUser("notLoadded", getElementByIdData);
           if (deleteIconIdentifier === "modal") {
             getElementByIdData.removeChild(loader);
-           
           }
           getElementByIdData.innerHTML = previousContent;
-          
-         const ratingModalElementCount = document.getElementById('rating-modal-element-count')
-        const getAttributeValue =  (ratingModalElementCount.getAttribute('data-count')-1);
-         ratingModalElementCount.innerHTML =
-         getAttributeValue + " " + "elements selected";
-         ratingModalElementCount.setAttribute('data-count', getAttributeValue)
-         if(getAttributeValue === 0){
-          document.getElementById("closeModal").click();
-         }
-         document.querySelector(
-          `.modalContentParent-${skill_id}`
-        ).style.display = "none";
 
+          const ratingModalElementCount = document.getElementById(
+            "rating-modal-element-count"
+          );
+          const getAttributeValue =
+            ratingModalElementCount.getAttribute("data-count") - 1;
+          ratingModalElementCount.innerHTML =
+            getAttributeValue + " " + "elements selected";
+          ratingModalElementCount.setAttribute("data-count", getAttributeValue);
+          if (getAttributeValue === 0) {
+            document.getElementById("closeModal").click();
+          }
+          document.querySelector(
+            `.modalContentParent-${skill_id}`
+          ).style.display = "none";
+        }
+        const deleteRowData = document.getElementById('modalLeftFirstContent');
+        if(deleteRowData){
+          const SelectedRowData = deleteRowData.getAttribute('data-label');
+         
+         toastr.success(`Remove Skill ${SelectedRowData} from profile`);
         }
         displaySelctedSkills();
         createSelectedSkillsCount();
@@ -934,8 +1053,8 @@ function delete_skill(skill_id, deleteIconIdentifier) {
         }
       });
   } else {
-    console.log("delete_skill", skill_id);
     removeItemFromlocalStorage(skill_id);
+    toastr.success(`Remove selected skill`);
     displaySelctedSkills();
     createSelectedSkillsCount();
 
@@ -1065,7 +1184,9 @@ class IysSearchPlugin {
 
     // Add click event to trigger the searchAPI method
     button.addEventListener("click", () => {
-      this.searchAPI();
+      if (input.value !== "") {
+        this.searchAPI();
+      }
     });
 
     div.appendChild(button);
@@ -1107,7 +1228,7 @@ class IysSearchPlugin {
     searchBoxElement.addEventListener("input", (event) => {
       event.preventDefault();
       this.searchValue = searchBoxElement.value;
-      if (this.searchValue?.length > 2) {
+      if (this.searchValue?.length > 1) {
         this.searchAPI(this.searchValue);
       }
     });
@@ -1184,13 +1305,22 @@ class IysSearchPlugin {
           // remove local storages
           // clearlocalStorage();
         });
+        const addMorePlusIcon =
+          searchResultsList[i]?.skills[0]?.child_count > 0
+            ? '<i class="fa fa-plus"></i>'
+            : "";
         const a = document.createElement("a");
         a.classList.add("dropdown-item");
+        a.style.wordWwrap = "break-word";
+        a.style.whiteSpace = "pre-wrap";
         a.href = "#";
-        a.innerHTML = this.searchHighlight(
-          this.searchValue,
-          this.getSkillName(searchResultsList[i])
-        );
+        a.innerHTML =
+          addMorePlusIcon +
+          " " +
+          this.searchHighlight(
+            this.searchValue,
+            this.getSkillName(searchResultsList[i])
+          );
         li.appendChild(a);
         ul.appendChild(li);
         // Append buttons to the main div
@@ -1504,8 +1634,11 @@ class IysSearchPlugin {
 
   searchHighlight(searched, text) {
     if (searched !== "") {
-      let re = new RegExp(searched, "gi"); // add "i" flag for case-insensitivity
-      let newText = text.replace(re, (match) => `<b>${match}</b>`);
+      const searchTerms = searched.split(" ");
+      const newText = text.replace(
+        new RegExp(searchTerms.join("|"), "gi"),
+        (match) => `<b>${match}</b>`
+      );
       return newText;
     }
     return text;
@@ -1517,6 +1650,8 @@ class IysSearchPlugin {
 
     const div = document.getElementById("dropdown-plugin-div");
     div.style.padding = "30px";
+    div.style.height = "200px";
+    div.style.overflow = "auto";
 
     // Create and append the loader while waiting for the API response
 
@@ -1527,16 +1662,13 @@ class IysSearchPlugin {
     div.appendChild(loader);
 
     if (isLoginUser && this.searchValue.length > 0) {
-      fetch(
-        `https://api.myskillsplus.com/api-search/?q=${this.searchValue}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getAccessToken?.access}`,
-          },
-        }
-      )
+      fetch(`https://api.myskillsplus.com/api-search/?q=${this.searchValue}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAccessToken?.access}`,
+        },
+      })
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1607,46 +1739,41 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
   async init() {
     if (isLoginUser) {
-      
       //  For rating saved
       const transformSkillList = transformDataFromLocalStorage(
         getListFromlocalStorage()
-        );
-        
-        if(transformSkillList?.skills?.length > 0) {
-          
-          console.log("adding some saved slikks ", transformSkillList);
-          fetch(loggedInUserAddSkill, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${getAccessToken.access}`,
-            },
-            body: JSON.stringify(transformSkillList),
-          }).then(async(response) => {
+      );
+
+      if (transformSkillList?.skills?.length > 0) {
+        console.log("adding some saved slikks ", transformSkillList);
+        fetch(loggedInUserAddSkill, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getAccessToken.access}`,
+          },
+          body: JSON.stringify(transformSkillList),
+        }).then(async (response) => {
           // Handle the response from the server
           if (response.ok) {
             // Successful response
             console.log("Skill added successfully!");
-            await getListFromLoggedInUser();
-            
             clearlocalStorage();
+            await getListFromLoggedInUser();
           } else {
             // Handle errors
             console.error(
               "Failed to add skill:",
               response.status,
               response.statusText
-              );
-            }
-            
-            this.createListProfileSkills();
-          });
-        }else{
-          
-          await getListFromLoggedInUser();
-      }
+            );
+          }
 
+          this.createListProfileSkills();
+        });
+      } else {
+        await getListFromLoggedInUser();
+      }
     }
     createSelectedSkillsCount();
     this.createSearchBox();
@@ -1713,11 +1840,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     fetch(url)
       .then((response) => response.json())
       .then((response) => {
-        console.log(
-          response,
-          "skillFileIdskillFileIdskillFileIdskillFileIdskillFileIdskillFileIdskillFileIdskillFileIdskillFileId"
-        );
-
         this.createSkillSearchList(response);
       })
       .catch((err) => console.error(err));
@@ -1745,8 +1867,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     var subDivIdForPlusAndElement = document.createElement("div");
     subDivIdForPlusAndElement.style.textAlign = "left";
-    subDivIdForPlusAndElement.style.display = "flex";
-    subDivIdForPlusAndElement.style.justifyContent = "space-between";
+    parentDiv.style.display = "flex";
+    parentDiv.style.justifyContent = "space-between";
+    parentDiv.style.flexWrap = "wrap";
     subDivIdForPlusAndElement.setAttribute("class", "child-accordion");
     // subDivIdForPlusAndElement.setAttribute("id", "parent-" + skillDetail.path_addr);
 
@@ -1754,67 +1877,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     childDiv.setAttribute("id", "child-" + skillDetail.path_addr);
     childDiv.style.display = "flex";
+    childDiv.style.flexWrap = "wrap";
 
     if (isParentAvailable) {
-      for (
-        let obj = 0;
-        obj < 3 && isParentAvailable.RatedSkills.length > obj;
-        obj++
-      ) {
-        console.log(
-          isParentAvailable.RatedSkills[obj],
-          " isParentAvailable.RatedSkills[obj] firslt"
-        );
-        const nameDiv = document.createElement("div");
-        const nameDivCrossButton = document.createElement("i");
-        nameDivCrossButton.id = `cross-btn-child-${
-          isParentAvailable.RatedSkills[obj]?.id
-            ? isParentAvailable.RatedSkills[obj].id
-            : isParentAvailable.RatedSkills[obj].isot_file_id
-        }`;
-        nameDivCrossButton.setAttribute("class", "fa fa-close");
-        nameDivCrossButton.style.color = "red";
-        nameDivCrossButton.style.marginLeft = "5px";
-        nameDivCrossButton.style.cursor = "pointer";
-        nameDivCrossButton.style.padding = "5px";
-        nameDivCrossButton.style.zIndex = "10";
-
-        nameDiv.setAttribute(
-          "id",
-          `selectedRating-${isParentAvailable.parentID}`
-        );
-
-        nameDiv.style.background = "white";
-        nameDiv.style.display = "flex";
-        nameDiv.style.zIndex = "9";
-        nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
-        nameDiv.style.padding = "0px 14px";
-        nameDiv.style.borderRadius = "30px";
-        nameDiv.style.marginRight = "10px";
-        nameDiv.style.width = "fit-content";
-        nameDiv.textContent = isParentAvailable.RatedSkills[obj].isot_file.name;
-
-        nameDiv.appendChild(nameDivCrossButton);
-
-        nameDivCrossButton.addEventListener("click", () => {
-          console.log(isParentAvailable, "isParentAvailable.RatedSkills[obj]");
-          delete_skill(
-            isParentAvailable?.RatedSkills[obj]?.id
-              ? isParentAvailable.RatedSkills[obj].id
-              : isParentAvailable.RatedSkills[obj].isot_file_id
-          );
-          if (isParentAvailable.RatedSkills.length === 1) {
-            document.getElementById(
-              `selectedRating-${isParentAvailable.parentID}`
-            ).style.display = "none";
-          }
-        });
-        childDiv.append(nameDiv);
-      }
-      if (isParentAvailable.RatedSkills.length > 3) {
-        manageModalOnPlusOne(childDiv, isParentAvailable);
-      }
+      manageModalOnPlusOne(childDiv, isParentAvailable);
     }
+    console.log(isParentAvailable,"skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",uniqueIdentifier)
 
     if (identifier === "accordionChild") {
       console.log(skillDetail, "skillDetail", identifier);
@@ -1828,11 +1896,28 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       var panelDiv = document.createElement("button");
       panelDiv.setAttribute("class", skillDetail.path_addr);
       panelDiv.setAttribute("data-name", skillDetail.name);
-      panelDiv.style.border = "1px solid grey";
-      panelDiv.style.borderRadius = "30px";
+      if(skillDetail.child_count > 0){
+      panelDiv.setAttribute("row-data", JSON.stringify(skillDetail));
+      }
+
+      panelDiv.style.border = "1px solid #E6E6E6";
+      panelDiv.style.borderRadius = "100px";
       panelDiv.style.margin = "5px";
-      panelDiv.style.padding = "5px";
+      panelDiv.style.padding = "6px 12px";
       panelDiv.style.background = "white";
+      panelDiv.style.cursor = "pointer";
+      panelDiv.style.color = "#4F4F4F";
+      panelDiv.style.fontSize = "14px";
+
+      panelDiv.addEventListener("mouseover", function () {
+        // Add a 1px border when the mouse is over the element
+        panelDiv.style.border = "1px solid #4F4F4F";
+      });
+
+      panelDiv.addEventListener("mouseout", function () {
+        // Remove the border when the mouse is no longer over the element
+        panelDiv.style.border = "1px solid #E6E6E6";
+      });
 
       var infoDesBtn = document.createElement("i");
 
@@ -1845,9 +1930,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         );
         const wordCounting = wordCount(skillDetail.name);
         if (wordCounting > 2) {
-          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${createSubString(
-            skillDetail.name
-          )} ... `;
+          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${skillDetail.name} `;
         } else {
           panelDiv.innerHTML = `<i class="fa fa-check"></i> ${skillDetail.name}`;
         }
@@ -1855,15 +1938,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         infoDesBtn.setAttribute("class", "infoSelectedSkill");
         infoDesBtn.innerHTML =
           ' <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#007DFC" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" > <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>';
-
+        infoDesBtn.style.cursor = "pointer";
         if (skillDetail) {
           manageTooltip(
-            panelDiv,
+            infoDesBtn,
             `<div>
-          <b style="border-bottom :1px solid gray"> ${skillDetail.name} </b>
           ${
             skillDetail.description !== null
-              ? `<p> Description - ${skillDetail.description}</p>`
+              ? `<p>${skillDetail.description}</p>`
               : ""
           }
         </div>`
@@ -1879,12 +1961,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           panelDiv.id = `haveChild-${skillDetail.path_addr}`;
         } else if (wordCounting > 2) {
-          panelDiv.innerHTML = `${createSubString(skillDetail.name)} ... `;
-          manageTooltip(
-            panelDiv,
-            `<div>
-            <b style="border-bottom :1px solid gray"> ${skillDetail.name} </b></div>`
-          );
+          panelDiv.innerHTML = skillDetail.name;
         } else {
           panelDiv.innerHTML = `${skillDetail.name}`;
         }
@@ -1902,8 +1979,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       panelDiv.addEventListener("click", () => {
         const buttonId = panelDiv?.id;
         const buttonClass = panelDiv?.className;
-
         if (buttonId) {
+          console.log(buttonId,"rerere")
           skilldetailKey.innerHTML = "";
           const subChildBreadcrumbs = document.createElement("div");
           subChildBreadcrumbs.style.width = "100%";
@@ -1915,15 +1992,44 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           subParentChildBreadcrumbsSpan.textContent = `${skilldetailKey.getAttribute(
             "data-name"
             )} `;
-            subParentChildBreadcrumbsSpan.style.fontWeight = 700;
+          subParentChildBreadcrumbsSpan.style.fontSize = '14px';
+          subParentChildBreadcrumbsSpan.style.color = '#828282';
+          
+          const hirarchyArrowIcon = document.createElement("span");
+          hirarchyArrowIcon.textContent = '>';
+          hirarchyArrowIcon.style.fontSize = '14px';
+          hirarchyArrowIcon.style.color = '#828282';
+          
+          
+          const hirarchyLevelSpan = document.createElement("span");
+          hirarchyLevelSpan.innerHTML = ` ${panelDiv.getAttribute("data-name")} `;
+          hirarchyLevelSpan.className='hirarchyLevel cursor-pointer';
+          hirarchyLevelSpan.style.fontSize = '14px';
+          hirarchyLevelSpan.style.color = '#333333';
+          hirarchyLevelSpan.setAttribute('get-that-id',buttonClass)
+          hirarchyLevelSpan.setAttribute('row-data',JSON.stringify(skillDetail))
+          
 
-          const subChildBreadcrumbsSpan = document.createElement("span");
-          subChildBreadcrumbsSpan.innerHTML = `> ${panelDiv.getAttribute(
-            "data-name"
-          )} `;
+        
+          const hirarchyLevelSpanPlusIcon = document.createElement("i");
+          hirarchyLevelSpanPlusIcon.className = 'fa fa-plus cursor-pointer';
+          hirarchyLevelSpanPlusIcon.style.color = '#007DFC';
+
+          const subParentChildBreadcrumbsSpanForCount =
+            document.createElement("span");
+          subParentChildBreadcrumbsSpanForCount.id = "accordion-parent-count";
+          subParentChildBreadcrumbsSpanForCount.textContent = `${skillDetail.child_count} sub categories`;
+          subParentChildBreadcrumbsSpanForCount.style.float = "right";
+          subParentChildBreadcrumbsSpanForCount.style.fontSize = '14px';
+          subParentChildBreadcrumbsSpanForCount.style.color = '#BDBDBD';
 
           subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpan);
-          subChildBreadcrumbs.appendChild(subChildBreadcrumbsSpan);
+          subChildBreadcrumbs.appendChild(hirarchyArrowIcon);
+          subChildBreadcrumbs.appendChild(hirarchyLevelSpan);
+          subChildBreadcrumbs.appendChild(hirarchyLevelSpanPlusIcon);
+          
+          subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpanForCount);
+        
           skilldetailKey.appendChild(subChildBreadcrumbs);
           this.childrenSkillAPI(
             buttonClass,
@@ -1931,21 +2037,45 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             uniqueIdentifier
           );
         } else {
-          if(skillDetail.ratings && skillDetail.ratings.length > 0){
-          this.changeRateModelElement(skillDetail, uniqueIdentifier);
+          console.log("going thsat");
+          if (skillDetail.ratings && skillDetail.ratings.length > 0) {
+            this.changeRateModelElement(skillDetail, uniqueIdentifier);
           }
+         
         }
       });
-
-      panelDiv.appendChild(infoDesBtn);
+      skillDetail.description !== null ? panelDiv.appendChild(infoDesBtn) : "";
       skilldetailKey.appendChild(panelDiv);
+      var hirarchyLevelSpan = document.getElementsByClassName("hirarchyLevel");
+      if(hirarchyLevelSpan){
+      for (const element of hirarchyLevelSpan) {
+      
+         const selectedHirarchyRating = JSON.parse(element.getAttribute('row-data'));
+        
+        element.addEventListener("mouseover", function () {  element.style.color = '#007DFC'; });
+
+        element.addEventListener("mouseout", function () { element.style.color = '#333333'; });
+        console.log(isParentAvailable,"skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",uniqueIdentifier)
+        element.addEventListener("click", function(){
+                if (selectedHirarchyRating) {
+                this.changeRateModelElement(selectedHirarchyRating, uniqueIdentifier);
+                }
+              })
+            }
+      
+    }
     } else {
+
       var subElementSpan = document.createElement("span");
       subElementSpan.setAttribute(
         "class",
         "accordion accordion-false cursor-pointer"
       );
       subElementSpan.setAttribute("id", "parent-" + skillDetail.path_addr);
+      subElementSpan.style.width = 'calc(100% - 150px)';
+      subElementSpan.style.textAlign = 'left';
+      subElementSpan.style.fontSize = '16px';
+      subElementSpan.style.color = '#333333';  
 
       if (isFuncSkill) {
         subElementSpan.innerHTML = `<i class="fas fa-plus mr-1"  style="color:#007DFC; padding-left:5px;"></i>`;
@@ -1967,24 +2097,80 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           this.createSkillSelectBox(skillDetail);
         } else if (skillDetail.child_count > 0) {
           addTosessionStorage(skillDetail);
-          console.log(skillDetail, "skillDetail444444444444444444444");
-          //this.createSkillSelectBox(skillDetail,"accordionChild");
+
           const isExpanded =
             subElementSpan.getAttribute("class") ===
             "accordion accordion-false cursor-pointer";
 
           if (isExpanded) {
             this.childrenSkillAPI(skillDetail.path_addr, "accordionChild");
-            subElementSpan.setAttribute(
-              "class",
-              String(`accordion accordion-true cursor-pointer`)
+            const allAccordionTrueElements = document.querySelectorAll(
+              ".accordion.accordion-true.cursor-pointer"
+            );
+            if (allAccordionTrueElements) {
+              const removeThatPanelData = document.querySelectorAll(".panel");
+              allAccordionTrueElements.forEach((element) => {
+                element.classList.remove(
+                  "accordion",
+                  "accordion-true",
+                  "cursor-pointer"
+                );
+                element.classList.add(
+                  "accordion",
+                  "accordion-false",
+                  "cursor-pointer"
+                );
+                removeThatPanelData.forEach((element) => {
+                  if (element.id !== skillDetail.path_addr) {
+                    element.innerHTML = "";
+                  }
+                });
+
+                const iconElement = element.querySelector("i"); // Assuming the <i> tag is directly inside the element
+                if (iconElement) {
+                  iconElement.classList.remove("fa-minus");
+                  iconElement.classList.add("fa-plus");
+                }
+              });
+            }
+            subElementSpan.classList.remove(
+              "accordion",
+              "accordion-false",
+              "cursor-pointer"
+            );
+            subElementSpan.classList.add(
+              "accordion",
+              "accordion-true",
+              "cursor-pointer"
             );
           } else {
             document.getElementById(skillDetail.path_addr).innerHTML = "";
-            subElementSpan.setAttribute(
-              "class",
-              String(`accordion accordion-false cursor-pointer`)
+            subElementSpan.classList.remove(
+              "accordion",
+              "accordion-true",
+              "cursor-pointer"
             );
+            subElementSpan.classList.add(
+              "accordion",
+              "accordion-false",
+              "cursor-pointer"
+            );
+          }
+
+          //this.createSkillSelectBox(skillDetail,"accordionChild");
+
+          const returnAccordionIcon =
+            subElementSpan &&
+            subElementSpan.classList.contains("accordion-true")
+              ? "fas fa-minus"
+              : "fas fa-plus";
+
+          if (isFuncSkill) {
+            subElementSpan.innerHTML = `<i class=${returnAccordionIcon} mr-1"  style="color:#007DFC; padding-left:5px;"></i>`;
+          } else if (skillDetail.child_count > 0) {
+            subElementSpan.innerHTML = `<i class="${returnAccordionIcon} mr-1" style="color:#007DFC;  padding:0px 10px;" ></i>${skillDetail.name}`;
+          } else {
+            subElementSpan.textContent = skillDetail.name;
           }
 
           if (isLoginUser) {
@@ -2016,19 +2202,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
       }
 
-      subDivIdForPlusAndElement.style.color = "#333333";
-      subDivIdForPlusAndElement.style.background =
+      parentDiv.style.color = "#333333";
+      parentDiv.style.background =
         isFuncSkill || skillDetail.child_count > 0
           ? "rgba(0, 125, 252, 0.1)"
           : "white";
-      subDivIdForPlusAndElement.style.borderRadius = "4px 4px 0px 0px";
-      subDivIdForPlusAndElement.style.border = "0.5px solid #007DFC33";
-      subDivIdForPlusAndElement.style.padding = "10px 12px";
-      subDivIdForPlusAndElement.style.fontSize = "105%";
+      parentDiv.style.borderRadius = "4px 4px 0px 0px";
+      parentDiv.style.border = "0.5px solid #007DFC33";
+      parentDiv.style.padding = "10px 12px";
+      parentDiv.style.fontSize = "105%";
 
-      subDivIdForPlusAndElement.appendChild(subElementSpan);
-      subDivIdForPlusAndElement.appendChild(childDiv);
-      parentDiv.appendChild(subDivIdForPlusAndElement);
+      parentDiv.appendChild(subElementSpan);
+      parentDiv.appendChild(childDiv);
+      childDiv.appendChild(subDivIdForPlusAndElement);
       htmlElement.appendChild(parentDiv);
 
       var skillDetailChild = document.createElement("div");
@@ -2099,14 +2285,28 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         },
       ],
     };
+
+    const myrate = () => {
+      if (parentSkillDetailId === undefined) {
+        var ratedButton = document.getElementById("rateBtn");
+        ratedButton.style.backgroundColor = "#21965333";
+        ratedButton.textContent = "rated";
+        ratedButton.innerHTML += `  <i class="fas fa-star"></i>`;
+        ratedButton.style.color = "black";
+        ratedButton.style.fontWeight = "normal";
+      }
+    };
+
     if (isLoginUser) {
       const saveButtonElement = document.getElementById("saveChangesButton");
       // Check if the element exists
+      console.log(saveButtonElement, "saveButtonElement");
       if (saveButtonElement) {
         const previousContent = saveButtonElement.innerHTML;
         // Create and append the loader
         const loader = document.createElement("div");
-        loader.className = "loader";
+
+        loader.className = "loader rate";
         loader.style.width = "20px";
         loader.style.height = "20px";
         saveButtonElement.textContent = "";
@@ -2122,26 +2322,42 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           .then(async (response) => {
             if (response.ok) {
               // Successful response
-              console.log("Skill added successfully!");
+              toastr.success(
+                `Adding Skill ${skillDetail.name}  Added to profile`
+              );
               await getListFromLoggedInUser("notLoadded");
+              myrate();
+              if (skillDetail?.path_addr) {
+                const elements = document.getElementsByClassName(
+                  skillDetail?.path_addr
+                );
+                console.log(elements, "ratedBtn");
+                for (const element of elements) {
+                  element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+                  element.classList.add(
+                    skillDetail?.path_addr,
+                    "selected-skills"
+                  );
+                }
+              }
               saveButtonElement.removeChild(loader);
               saveButtonElement.innerHTML = previousContent;
+
               displaySelctedSkills();
-              createSelectedSkillsCount();
-              document.getElementById(parentSkillDetailId).innerHTML = "";
-              document.getElementById("parent-" + parentSkillDetailId).click();
               // this.ratedSkillEvent(skillDetail);
             } else {
               // Handle errors
+              toastr.success(`Remove Skill ${skillDetail.name} from profile`);
+
               saveButtonElement.removeChild(loader);
               saveButtonElement.innerHTML = previousContent;
             }
-            // this.createListProfileSkills();
-            // document.getElementById("RateCloseButton").click();
           })
           .catch((error) => {
-            saveButtonElement.removeChild(loader);
-            saveButtonElement.innerHTML = previousContent;
+            if (loader && saveButtonElement) {
+              saveButtonElement.removeChild(loader);
+              saveButtonElement.innerHTML = previousContent;
+            }
             // Handle network errors
             console.error("Error:", error);
           });
@@ -2159,16 +2375,33 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             isot_file: response[0],
             parentSkillDetailId: parentSkillDetailId,
           });
-          displaySelctedSkills();
+          toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
+          myrate();
+          // document.getElementById(parentSkillDetailId).innerHTML = "";
+          // document.getElementById("parent-" + parentSkillDetailId).click();
+          if (skillDetail?.path_addr) {
+            const elements = document.getElementsByClassName(
+              skillDetail?.path_addr
+            );
+            console.log(elements, "ratedBtn");
+            for (const element of elements) {
+              element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+              element.classList.add(
+                skillDetail?.path_addr,
+                "selected-skills"
+              );
+            }
+          }
           createSelectedSkillsCount();
-          document.getElementById(parentSkillDetailId).innerHTML = "";
-          document.getElementById("parent-" + parentSkillDetailId).click();
+          displaySelctedSkills();
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+        });
     }
   }
 
-  //#################################################################   create a html rating model box   ###############################
+  //#####################   create a html rating model box   ############s###########
   changeRateModelElement(skillDetail, parentSkillDetailId) {
     const RateSkillModel = document.getElementById("RateSkillModel");
     const RateSkillModelLabel = document.getElementById("RateSkillModelLabel");
@@ -2226,22 +2459,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     button.removeEventListener("click", this.saveTheSkillComment);
 
     button.addEventListener("click", (event) => {
-      console.log(this.ratedSelectedSkills, "dkfjsf");
-      // if (skillDetail.ratings) {
-      //   this.saveTheSkillComment(
-      //     rateSkillCommentBox.value,
-      //     skillDetail.ratings[0].rating_scale_label.indexOf(
-      //       spanElementForStar.noUiSlider.get()
-      //     ) + 1,
-      //     skillDetail,
-      //     parentSkillDetailId
-      //   );
-      //
-      // } else {
-      //   alert("Please rate the skill");
-      // }
-      var modalBody = document.getElementsByClassName("modal-body")[0];
-      modalBody.querySelector("#spanElementForStar").innerHTML = "";
       modalEl.hide();
     });
     modalEl.show();
@@ -2260,7 +2477,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       );
       // Create the three buttons in the card-body using a parent div
       const cardBodyButtonDiv = document.createElement("div");
-      const getdata = getListFromlocalStorage();
+      const getdata = sortRatingByLocalStorage();
       if (!identifier) {
         const button = document.createElement("button");
         const resetChangesButton = ResetButton(
@@ -2326,7 +2543,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         let spanSliderInnerDiv = document.createElement("div");
         spanSliderInnerDiv.className = "slider-container";
         spanSliderInnerDiv.style.display = "flex";
-        spanSliderInnerDiv.style.gap = "15px";
+        // spanSliderInnerDiv.style.gap = "15px";
         spanSliderInnerDiv.style.flexWrap = "wrap";
         let htmlElementLabel = document.createElement("label");
         htmlElementLabel.className = "rating-label";
@@ -2341,6 +2558,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           options.forEach((option, index) => {
             let radioContainer = document.createElement("div");
             radioContainer.className = "radio-container";
+            radioContainer.style.marginRight = "10px";
             let radioInput = document.createElement("input");
             radioInput.type = "radio";
             radioInput.name = `rating-${sliderObj._id}`;
@@ -2414,15 +2632,21 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       sliderHandle.style.border = "5px solid white";
       sliderHandle.style.borderRadius = "50%";
       sliderHandle.style.content = "none";
+      var nouiHorizontalSliderHeight = document.createElement("style");
+
       // Rest of your code...
-    } 
+    }
     // remove a model box child element after close the model box
-    const closeButton = document.querySelector(".btn-close");
+    const closeButton = document.getElementById("RateSkillModelBtn");
     // Add an id to the button
-    closeButton.id = "RateSkillModelBtn";
-    var button = document.getElementById("RateSkillModelBtn");
+
     var modalBody = document.getElementsByClassName("modal-body")[0];
-    button.addEventListener("click", () => {
+    closeButton.addEventListener("click", () => {
+      const parentIDByDynamicIDGet = document
+        .getElementById("parent-" + closeButton.getAttribute("data-panel-id"));
+        if(parentIDByDynamicIDGet){
+          parentIDByDynamicIDGet.click();
+        }
       modalBody.querySelector("#spanElementForStar").innerHTML = "";
     });
     // getting data from clicking saveChangesButton
@@ -2580,9 +2804,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
     } else {
       let skillList = getListFromlocalStorage();
-
       this.selectedRateSkillDiv.innerHTML = "";
-
       this.rateNumber.innerHTML = skillList.length;
 
       // loop through the array of list item texts and create a list item for each
@@ -2687,47 +2909,26 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       "btn-rounded"
     );
     rateButton.setAttribute("type", "button");
+    rateButton.setAttribute("id", "rateBtn");
     rateButton.style.fontWeight = "bolder";
     rateButton.style.fontSize = "14px";
     rateButton.textContent = "Rate";
     rateButton.addEventListener("click", () => {
       this.changeRateModelElement(skillDetail.skills[0]);
     });
+    console.log(skillDetail, "skillDetail");
     rateButton.innerHTML += `  <i class="fas fa-star"></i>`;
-    const localdata = getListFromlocalStorage();
-    const loginlocaldata = getLoggedInUserListFromlocalStorage();
-
-
-    console.log(localdata,"localdata")
-
-    console.log(loginlocaldata,"loginlocaldata")
-
-
-    if (loginlocaldata) {
-      for (var i = 0; i < loginlocaldata?.length; i++) {
-        if (loginlocaldata[i]?.ancestors.length === 0) {
-          rateButton.style.backgroundColor = "#21965333";
-          rateButton.textContent = "rated";
-          rateButton.innerHTML += `  <i class="fas fa-star"></i>`;
-          rateButton.style.color = "black";
-          rateButton.style.fontWeight = "normal";
-        }
-      }
-    } else {
-      for (var i = 0; i < localdata?.length; i++) {
-        if (localdata[i]?.parentSkillDetailId === undefined) {
-          rateButton.style.backgroundColor = "#21965333";
-          rateButton.textContent = "rated";
-          rateButton.innerHTML += `  <i class="fas fa-star"></i>`;
-          rateButton.style.color = "black";
-          rateButton.style.fontWeight = "normal";
-        }
-      }
+    const localdata = sortRatingByLocalStorage();
+    const searchText = searchByName(skillDetail.term);
+    if (searchText.length > 0) {
+      rateButton.style.backgroundColor = "#21965333";
+      rateButton.textContent = "rated";
+      rateButton.innerHTML += `  <i class="fas fa-star"></i>`;
+      rateButton.style.color = "black";
+      rateButton.style.fontWeight = "normal";
     }
-
     this.cardBodyDiv = cardBodyDiv;
     if (skillDetail?.term) {
-      console.log("added", skillDetail.skills[0]);
       addTosessionStorage(skillDetail.skills[0]);
     }
     if (skillDetail.rating_type > 0) {
@@ -2741,7 +2942,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     cardBodyDiv.appendChild(cardTitleH4);
     this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
     if (skillDetail?.skills?.length > 0) {
-      console.log(skillDetail, "skillDetail treeeee");
       skillDetail.skills.forEach((skill) => {
         // clearsessionStorage();
         this.treeSkillAPI(cardBodyDiv, skill.path_addr);
@@ -2953,7 +3153,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const loader = document.createElement("div");
     loader.className = "loader";
     loader.style.margin = "100px auto";
-    
+
     // Check if the element exists
     if (skillIdElement) {
       const previousContent = skillIdElement.innerHTML;
@@ -3074,6 +3274,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           } else {
             this.childrenSkillAPI(skillId);
           }
+          setTimeout(()=>{
+              document.getElementById('rateBtn').click();
+          },3000)
         })
         .catch((err) => {
           console.error(err);
