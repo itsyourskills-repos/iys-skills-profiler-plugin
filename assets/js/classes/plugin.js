@@ -1,6 +1,8 @@
-var isLoginUser = false;
+var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
+  ? true
+  : false;
 const ENDPOINT_URL =
-  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
+  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/staging/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
@@ -432,7 +434,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalLeftFirstContent.style.fontWeight = 500;
     modalLeftFirstContent.style.fontSize = "14px";
     modalLeftFirstContent.style.color = "#828282";
-    modalLeftFirstContent.setAttribute('data-label',obj?.isot_file.name);
+    modalLeftFirstContent.setAttribute("data-label", obj?.isot_file.name);
     modalLeftContent.appendChild(modalLeftFirstContent);
 
     const modalLeftSecondContent = document.createElement("span");
@@ -931,7 +933,7 @@ function ResetButton(htmlElement, disabled) {
 // Function to handle API calling for  "Add Skill" button click
 function addSkillToApi(payload) {
   // API endpoint (replace with your actual API endpoint)
-  const apiEndpoint = `https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/v2/ISOT/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
+  const apiEndpoint = `https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/v2/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
   // Make the API call using the fetch API
   return fetch(apiEndpoint, {
     method: "POST",
@@ -1027,11 +1029,11 @@ function delete_skill(skill_id, deleteIconIdentifier) {
             `.modalContentParent-${skill_id}`
           ).style.display = "none";
         }
-        const deleteRowData = document.getElementById('modalLeftFirstContent');
-        if(deleteRowData){
-          const SelectedRowData = deleteRowData.getAttribute('data-label');
-         
-         toastr.success(`Remove Skill ${SelectedRowData} from profile`);
+        const deleteRowData = document.getElementById("modalLeftFirstContent");
+        if (deleteRowData) {
+          const SelectedRowData = deleteRowData.getAttribute("data-label");
+
+          toastr.success(`Remove Skill ${SelectedRowData} from profile`);
         }
         displaySelctedSkills();
         createSelectedSkillsCount();
@@ -1688,7 +1690,7 @@ class IysSearchPlugin {
           // div.removeChild(loader);
         });
     } else if (this.searchValue.length > 0) {
-      fetch(`${ENDPOINT_URL}ISOT/?q=${this.searchValue}&limit=10`)
+      fetch(`${ENDPOINT_URL}?q=${this.searchValue}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1834,7 +1836,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = `https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillFileId}`;
+      url = `${ENDPOINT_URL}children/?path_addr=${skillFileId}`;
     }
 
     fetch(url)
@@ -1882,7 +1884,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isParentAvailable) {
       manageModalOnPlusOne(childDiv, isParentAvailable);
     }
-    console.log(isParentAvailable,"skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",uniqueIdentifier)
+    console.log(
+      isParentAvailable,
+      "skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",
+      uniqueIdentifier
+    );
 
     if (identifier === "accordionChild") {
       console.log(skillDetail, "skillDetail", identifier);
@@ -1896,8 +1902,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       var panelDiv = document.createElement("button");
       panelDiv.setAttribute("class", skillDetail.path_addr);
       panelDiv.setAttribute("data-name", skillDetail.name);
-      if(skillDetail.child_count > 0){
-      panelDiv.setAttribute("row-data", JSON.stringify(skillDetail));
+      if (skillDetail.child_count > 0) {
+        panelDiv.setAttribute("row-data", JSON.stringify(skillDetail));
       }
 
       panelDiv.style.border = "1px solid #E6E6E6";
@@ -1975,12 +1981,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           this.childrenSkillAPI(uniqueIdentifier, "accordionChild");
         });
       }
-
       panelDiv.addEventListener("click", () => {
         const buttonId = panelDiv?.id;
         const buttonClass = panelDiv?.className;
         if (buttonId) {
-          console.log(buttonId,"rerere")
+          console.log(buttonId, "rerere");
           skilldetailKey.innerHTML = "";
           const subChildBreadcrumbs = document.createElement("div");
           subChildBreadcrumbs.style.width = "100%";
@@ -1991,45 +1996,49 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           subParentChildBreadcrumbsSpan.setAttribute("class", "cursor-pointer");
           subParentChildBreadcrumbsSpan.textContent = `${skilldetailKey.getAttribute(
             "data-name"
-            )} `;
-          subParentChildBreadcrumbsSpan.style.fontSize = '14px';
-          subParentChildBreadcrumbsSpan.style.color = '#828282';
-          
-          const hirarchyArrowIcon = document.createElement("span");
-          hirarchyArrowIcon.textContent = '>';
-          hirarchyArrowIcon.style.fontSize = '14px';
-          hirarchyArrowIcon.style.color = '#828282';
-          
-          
-          const hirarchyLevelSpan = document.createElement("span");
-          hirarchyLevelSpan.innerHTML = ` ${panelDiv.getAttribute("data-name")} `;
-          hirarchyLevelSpan.className='hirarchyLevel cursor-pointer';
-          hirarchyLevelSpan.style.fontSize = '14px';
-          hirarchyLevelSpan.style.color = '#333333';
-          hirarchyLevelSpan.setAttribute('get-that-id',buttonClass)
-          hirarchyLevelSpan.setAttribute('row-data',JSON.stringify(skillDetail))
-          
+          )} `;
+          subParentChildBreadcrumbsSpan.style.fontSize = "14px";
+          subParentChildBreadcrumbsSpan.style.color = "#828282";
 
-        
+          const hirarchyArrowIcon = document.createElement("span");
+          hirarchyArrowIcon.textContent = ">";
+          hirarchyArrowIcon.style.fontSize = "14px";
+          hirarchyArrowIcon.style.color = "#828282";
+
+          const hirarchyLevelSpan = document.createElement("span");
+          hirarchyLevelSpan.innerHTML = ` ${panelDiv.getAttribute(
+            "data-name"
+          )} `;
+          hirarchyLevelSpan.className = "hirarchyLevel cursor-pointer";
+          hirarchyLevelSpan.style.fontSize = "14px";
+          hirarchyLevelSpan.style.color = "#333333";
+          hirarchyLevelSpan.setAttribute("get-that-id", buttonClass);
+          hirarchyLevelSpan.setAttribute(
+            "row-data",
+            JSON.stringify(skillDetail)
+          );
+
           const hirarchyLevelSpanPlusIcon = document.createElement("i");
-          hirarchyLevelSpanPlusIcon.className = 'fa fa-plus cursor-pointer';
-          hirarchyLevelSpanPlusIcon.style.color = '#007DFC';
+          hirarchyLevelSpanPlusIcon.className = "fa fa-plus cursor-pointer";
+          hirarchyLevelSpanPlusIcon.style.color = "#007DFC";
 
           const subParentChildBreadcrumbsSpanForCount =
             document.createElement("span");
           subParentChildBreadcrumbsSpanForCount.id = "accordion-parent-count";
           subParentChildBreadcrumbsSpanForCount.textContent = `${skillDetail.child_count} sub categories`;
           subParentChildBreadcrumbsSpanForCount.style.float = "right";
-          subParentChildBreadcrumbsSpanForCount.style.fontSize = '14px';
-          subParentChildBreadcrumbsSpanForCount.style.color = '#BDBDBD';
+          subParentChildBreadcrumbsSpanForCount.style.fontSize = "14px";
+          subParentChildBreadcrumbsSpanForCount.style.color = "#BDBDBD";
 
           subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpan);
           subChildBreadcrumbs.appendChild(hirarchyArrowIcon);
           subChildBreadcrumbs.appendChild(hirarchyLevelSpan);
           subChildBreadcrumbs.appendChild(hirarchyLevelSpanPlusIcon);
-          
-          subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpanForCount);
-        
+
+          subChildBreadcrumbs.appendChild(
+            subParentChildBreadcrumbsSpanForCount
+          );
+
           skilldetailKey.appendChild(subChildBreadcrumbs);
           this.childrenSkillAPI(
             buttonClass,
@@ -2041,41 +2050,50 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           if (skillDetail.ratings && skillDetail.ratings.length > 0) {
             this.changeRateModelElement(skillDetail, uniqueIdentifier);
           }
-         
         }
       });
       skillDetail.description !== null ? panelDiv.appendChild(infoDesBtn) : "";
       skilldetailKey.appendChild(panelDiv);
       var hirarchyLevelSpan = document.getElementsByClassName("hirarchyLevel");
-      if(hirarchyLevelSpan){
-      for (const element of hirarchyLevelSpan) {
-      
-         const selectedHirarchyRating = JSON.parse(element.getAttribute('row-data'));
-        
-        element.addEventListener("mouseover", function () {  element.style.color = '#007DFC'; });
+      if (hirarchyLevelSpan) {
+        for (const element of hirarchyLevelSpan) {
+          const selectedHirarchyRating = JSON.parse(
+            element.getAttribute("row-data")
+          );
 
-        element.addEventListener("mouseout", function () { element.style.color = '#333333'; });
-        console.log(isParentAvailable,"skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",uniqueIdentifier)
-        element.addEventListener("click", function(){
-                if (selectedHirarchyRating) {
-                this.changeRateModelElement(selectedHirarchyRating, uniqueIdentifier);
-                }
-              })
+          element.addEventListener("mouseover", function () {
+            element.style.color = "#007DFC";
+          });
+
+          element.addEventListener("mouseout", function () {
+            element.style.color = "#333333";
+          });
+          console.log(
+            isParentAvailable,
+            "skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",
+            uniqueIdentifier
+          );
+          element.addEventListener("click", () => {
+            if (selectedHirarchyRating) {
+              this.changeRateModelElement(
+                selectedHirarchyRating,
+                uniqueIdentifier
+              );
             }
-      
-    }
+          });
+        }
+      }
     } else {
-
       var subElementSpan = document.createElement("span");
       subElementSpan.setAttribute(
         "class",
         "accordion accordion-false cursor-pointer"
       );
       subElementSpan.setAttribute("id", "parent-" + skillDetail.path_addr);
-      subElementSpan.style.width = 'calc(100% - 150px)';
-      subElementSpan.style.textAlign = 'left';
-      subElementSpan.style.fontSize = '16px';
-      subElementSpan.style.color = '#333333';  
+      subElementSpan.style.width = "calc(100% - 150px)";
+      subElementSpan.style.textAlign = "left";
+      subElementSpan.style.fontSize = "16px";
+      subElementSpan.style.color = "#333333";
 
       if (isFuncSkill) {
         subElementSpan.innerHTML = `<i class="fas fa-plus mr-1"  style="color:#007DFC; padding-left:5px;"></i>`;
@@ -2364,7 +2382,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
     } else {
       fetchData(
-        `${ENDPOINT_URL}ISOT/details/?path_addrs=${skillDetail?.path_addr}`,
+        `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`,
         "GET"
       )
         .then((response) => {
@@ -2386,10 +2404,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             console.log(elements, "ratedBtn");
             for (const element of elements) {
               element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-              element.classList.add(
-                skillDetail?.path_addr,
-                "selected-skills"
-              );
+              element.classList.add(skillDetail?.path_addr, "selected-skills");
             }
           }
           createSelectedSkillsCount();
@@ -2642,11 +2657,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     var modalBody = document.getElementsByClassName("modal-body")[0];
     closeButton.addEventListener("click", () => {
-      const parentIDByDynamicIDGet = document
-        .getElementById("parent-" + closeButton.getAttribute("data-panel-id"));
-        if(parentIDByDynamicIDGet){
-          parentIDByDynamicIDGet.click();
-        }
+      const parentIDByDynamicIDGet = document.getElementById(
+        "parent-" + closeButton.getAttribute("data-panel-id")
+      );
+      if (parentIDByDynamicIDGet) {
+        parentIDByDynamicIDGet.click();
+      }
       modalBody.querySelector("#spanElementForStar").innerHTML = "";
     });
     // getting data from clicking saveChangesButton
@@ -3062,7 +3078,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = window.location.origin + "/api-popular-categories/";
     } else {
-      url = `${ENDPOINT_URL}ISOT/popular-categories/`;
+      url = `${ENDPOINT_URL}popular-categories/`;
     }
 
     fetch(url)
@@ -3088,7 +3104,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+      url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -3114,7 +3130,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+      url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -3164,7 +3180,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       if (isLoginUser) {
         url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
-        url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+        url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
       }
 
       fetch(url, {
@@ -3207,7 +3223,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       if (isLoginUser) {
         url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
-        url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+        url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
       }
 
       fetch(url, {
@@ -3274,15 +3290,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           } else {
             this.childrenSkillAPI(skillId);
           }
-          setTimeout(()=>{
-              document.getElementById('rateBtn').click();
-          },3000)
+          setTimeout(() => {
+            document.getElementById("rateBtn").click();
+          }, 3000);
         })
         .catch((err) => {
           console.error(err);
         });
     } else {
-      url = `${ENDPOINT_URL}ISOT/tree/?path_addr=${skillId}`;
+      url = `${ENDPOINT_URL}tree/?path_addr=${skillId}`;
       fetch(url, this.rapidAPIheaders)
         .then((response) => {
           if (response.status === 429) {
