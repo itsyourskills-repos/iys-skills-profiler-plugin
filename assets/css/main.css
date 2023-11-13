@@ -1,18 +1,227 @@
-input[type=text] {
-    position: relative;
-    width: 30%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
+.loading {
+  background-color: #ffffff;
+  background-image: url("https://i.gifer.com/YlWC.gif");
+  background-size: 25px 25px;
+  background-position: right center;
+  background-repeat: no-repeat;
+}
 
-  .loading {
-    background-color: #ffffff;
-    background-image: url("https://i.gifer.com/YlWC.gif");
-    background-size: 25px 25px;
-    background-position: right center;
-    background-repeat: no-repeat;
+::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 30px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 30px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 30px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* loader css */
+/* Add these styles to your CSS file */
+.loader {
+  border: 4px solid #f3f3f3; /* Light gray border */
+  border-top: 4px solid #007dfc; /* Blue border for animation */
+  border-radius: 50%; /* Circular shape */
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite; /* Rotation animation */
+  margin: 0 auto; /* Center horizontally */
+  margin-top: 20px; /* Add margin for spacing */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.card-body {
+  text-align: center;
+}
+
+.panel .selected-skills i:nth-child(1) {
+  color: #219653 !important;
+}
+
+.panel .selected-skills {
+  background-color: #2196531a !important;
+}
+
+/* rating modal style  */
+
+.noUi-value-sub,
+.noUi-value-large {
+  color: #333 !important;
+  font-size: 14px !important;
+  font-weight: 500;
+}
+.noUi-marker-horizontal.noUi-marker-sub,
+.noUi-marker-horizontal.noUi-marker-large {
+  display: none;
+}
+
+.noUi-value-horizontal {
+  -webkit-transform: translate(-50%, 0%) !important;
+  transform: translate(-50%, 0%) !important;
+}
+
+div#RateSkillModel .modal-dialog {
+  max-width: 650px;
+}
+
+div#RateSkillModel .modal-footer {
+  border-top: none;
+}
+
+.noUi-pips .noUi-value-large:nth-child(2) {
+  transform: translate(0%, 0px) !important;
+}
+
+.noUi-pips .noUi-value-large:last-child {
+  right: 0px !important;
+  transform: translate(45%, 0px) !important;
+  left: 0 !important;
+}
+
+.noUi-touch-area {
+  width: 97% !important;
+}
+
+.noUi-base {
+  width: 99% !important;
+}
+
+div.noUi-base > div.noUi-origin > div {
+  box-shadow: none;
+  border: #3b71ca;
+  background: #3b71ca;
+  color: #3b71ca;
+}
+
+.checkedstar {
+  color: orange !important;
+}
+
+/* CSS for the radio buttons and slider */
+
+.noUi-pips.noUi-pips-horizontal {
+  position: static;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  height: auto;
+}
+
+body .slider-container {
+  border-bottom: 1px solid #ccc !important;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.noUi-pips.noUi-pips-horizontal .noUi-value {
+  position: static;
+  white-space: normal;
+  transform: translate(0px, 0px) !important;
+  width: 20%;
+}
+
+.noUi-pips .noUi-value-large:nth-child(2) {
+  text-align: left;
+}
+
+body .noUi-horizontal {
+  height: auto!important;
+  background: none; 
+  border-radius: 0; 
+  border: none; 
+  box-shadow: none;
+}
+
+body .noUi-base {
+  height: 10px;
+    background: #FAFAFA;
+    border-radius: 4px;
+    border: 1px solid #D3D3D3;
+    box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+}
+
+.noUi-pips .noUi-value-large:nth-child(6) {
+  padding-left: 15px;
+}
+
+.noUi-pips .noUi-value-large:last-child {
+  
+  text-align: right;
+}
+
+/* reset-modal-css  */
+.modal-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Background with 50% opacity for the blur effect */
+  z-index: 111;
+  align-items: center;
+  justify-content: center;
+}
+
+.reset-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.reset-hr-line {
+  margin: 0 0 1rem 0;
+}
+
+.reset-message {
+  margin: 30px 0px 20px 0px;
+}
+
+.close-button {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.confirm-button {
+  background-color: #007dfc;
+  color: #fff;
+  border: none;
+  padding: 5px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+div#mySkillPluginSerachId {
+  position: relative;
+}
+
+@media only screen and (max-width: 600px) {
+  .accordion{
+    width: 100% !important;
+  }
+}
