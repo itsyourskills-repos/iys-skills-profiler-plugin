@@ -7,6 +7,73 @@ const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
+let breadcrumbsArray = [];
+
+function filterArrayBySkillName(skillName, dataArray) {
+  const matchingObjects = dataArray.filter(
+    (obj) =>
+      obj.skillName === skillName || obj.skillName.startsWith(skillName + ".")
+  );
+
+  return matchingObjects;
+}
+
+function generateBreadcrumbs(skilldetailKey, skillDetail, breadCrumbDataArray) {
+  const subChildBreadcrumbs = document.createElement("div");
+  subChildBreadcrumbs.style.width = "100%";
+  subChildBreadcrumbs.style.textAlign = "left";
+  subChildBreadcrumbs.style.marginBottom = "10px";
+  const subParentChildBreadcrumbsSpan = document.createElement("span");
+  subParentChildBreadcrumbsSpan.id = "accordion-parent";
+  subParentChildBreadcrumbsSpan.setAttribute("class", "cursor-pointer");
+  subParentChildBreadcrumbsSpan.textContent = `${skilldetailKey.getAttribute(
+    "data-name"
+  )} `;
+  subParentChildBreadcrumbsSpan.style.fontSize = "14px";
+  subParentChildBreadcrumbsSpan.style.color = "#828282";
+  subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpan);
+
+  for (
+    let breadcrumbIterate = 0;
+    breadcrumbIterate < breadCrumbDataArray.length;
+    breadcrumbIterate++
+  ) {
+    const element = breadCrumbDataArray[breadcrumbIterate];
+    const hirarchyArrowIcon = document.createElement("span");
+    hirarchyArrowIcon.textContent = ">";
+    hirarchyArrowIcon.style.fontSize = "14px";
+    hirarchyArrowIcon.style.color = "#828282";
+
+    const hirarchyLevelSpan = document.createElement("span");
+    hirarchyLevelSpan.innerHTML = ` ${element.skillName} `;
+    hirarchyLevelSpan.className = `${element.id} cursor-pointer`;
+    hirarchyLevelSpan.style.fontSize = "14px";
+    hirarchyLevelSpan.style.color = "#333333";
+    hirarchyLevelSpan.setAttribute("get-that-id", element.id);
+    hirarchyLevelSpan.setAttribute("row-data", JSON.stringify(skillDetail));
+
+    subChildBreadcrumbs.appendChild(hirarchyArrowIcon);
+    subChildBreadcrumbs.appendChild(hirarchyLevelSpan);
+    if (breadCrumbDataArray.length - 1 === breadcrumbIterate) {
+      const hirarchyLevelSpanPlusIcon = document.createElement("i");
+      hirarchyLevelSpan.className = `${element.id} cursor-pointer hirarchyLevel`;
+      hirarchyLevelSpanPlusIcon.className = "fa fa-plus cursor-pointer";
+      hirarchyLevelSpanPlusIcon.style.color = "#007DFC";
+      subChildBreadcrumbs.appendChild(hirarchyLevelSpanPlusIcon);
+    }
+  }
+
+  const subParentChildBreadcrumbsSpanForCount = document.createElement("span");
+  subParentChildBreadcrumbsSpanForCount.id = "accordion-parent-count";
+  subParentChildBreadcrumbsSpanForCount.textContent = `${skillDetail.child_count} sub categories`;
+  subParentChildBreadcrumbsSpanForCount.style.float = "right";
+  subParentChildBreadcrumbsSpanForCount.style.fontSize = "14px";
+  subParentChildBreadcrumbsSpanForCount.style.color = "#BDBDBD";
+
+  subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpanForCount);
+
+  return subChildBreadcrumbs;
+}
 
 function fetchData(url, method) {
   return fetch(url, {
@@ -156,63 +223,7 @@ function displaySelctedSkills() {
     );
     if (childDivId) {
       childDivId.innerHTML = "";
-      // // Inner loop for iterating over RatedSkills array
-      // for (
-      //   let obj = 0;
-      //   obj < 3 && userSkillDetail[item].RatedSkills.length > obj;
-      //   obj++
-      // ) {
-      //   // Access the isot_file object
-      //   const isotFile = userSkillDetail[item].RatedSkills[obj].isot_file;
-      //   const skillid = userSkillDetail[item]?.RatedSkills[obj]?.id;
-
-      //   // Check if isot_file exists and has a name property
-      //   if (isotFile && isotFile.name) {
-      //     // Create a div element to display the name
-      //     const nameDiv = document.createElement("div");
-      //     nameDiv.setAttribute(
-      //       "id",
-      //       `selectedRating-${userSkillDetail[item].parentID}`
-      //     );
-      //     const nameDivCrossButton = document.createElement("i");
-      //     nameDivCrossButton.id = `cross-btn-child-${
-      //       skillid ? skillid : isotFile.path_addr
-      //     }`;
-      //     nameDivCrossButton.setAttribute("class", "fa fa-close");
-      //     nameDivCrossButton.style.color = "red";
-      //     nameDivCrossButton.style.marginLeft = "5px";
-      //     nameDivCrossButton.style.cursor = "pointer";
-      //     nameDivCrossButton.style.padding = "5px";
-      //     nameDivCrossButton.style.zIndex = "10";
-      //     console.log(
-      //       userSkillDetail[item].RatedSkills,
-      //       "userSkillDetail[item].RatedSkills"
-      //     );
-      //     nameDivCrossButton.addEventListener("click", () => {
-      //       delete_skill(skillid ? skillid : isotFile.path_addr);
-      //       if (userSkillDetail[item].RatedSkills.length === 1) {
-      //         document.getElementById(
-      //           `selectedRating-${userSkillDetail[item].parentID}`
-      //         ).style.display = "none";
-      //       }
-      //     });
-      //     nameDiv.textContent = isotFile.name;
-      //     nameDiv.style.background = "white";
-      //     nameDiv.style.display = "flex";
-      //     nameDiv.style.zIndex = "9";
-      //     nameDiv.style.border = "0.5px solid rgba(0, 125, 252, 0.2)";
-      //     nameDiv.style.padding = "0px 14px";
-      //     nameDiv.style.borderRadius = "30px";
-      //     nameDiv.style.marginRight = "10px";
-      //     nameDiv.style.width = "fit-content";
-      //     // Append the div to the childDivId
-      //     nameDiv.appendChild(nameDivCrossButton);
-      //     childDivId.appendChild(nameDiv);
-      //   }
-      // }
-      // if (userSkillDetail[item].RatedSkills.length > 3) {
       manageModalOnPlusOne(childDivId, userSkillDetail[item]);
-      // }
     }
   }
 
@@ -432,7 +443,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalLeftFirstContent.style.fontWeight = 500;
     modalLeftFirstContent.style.fontSize = "14px";
     modalLeftFirstContent.style.color = "#828282";
-    modalLeftFirstContent.setAttribute('data-label',obj?.isot_file.name);
+    modalLeftFirstContent.setAttribute("data-label", obj?.isot_file.name);
     modalLeftContent.appendChild(modalLeftFirstContent);
 
     const modalLeftSecondContent = document.createElement("span");
@@ -1027,11 +1038,11 @@ function delete_skill(skill_id, deleteIconIdentifier) {
             `.modalContentParent-${skill_id}`
           ).style.display = "none";
         }
-        const deleteRowData = document.getElementById('modalLeftFirstContent');
-        if(deleteRowData){
-          const SelectedRowData = deleteRowData.getAttribute('data-label');
-         
-         toastr.success(`Remove Skill ${SelectedRowData} from profile`);
+        const deleteRowData = document.getElementById("modalLeftFirstContent");
+        if (deleteRowData) {
+          const SelectedRowData = deleteRowData.getAttribute("data-label");
+
+          toastr.success(`Remove Skill ${SelectedRowData} from profile`);
         }
         displaySelctedSkills();
         createSelectedSkillsCount();
@@ -1178,6 +1189,7 @@ class IysSearchPlugin {
     button.style.right = "0";
     button.style.height = "78%";
     button.style.top = "0px";
+    button.classList.add("d-none", "d-lg-block");
 
     button.innerHTML = `<i class="fas fa-search" style="margin-right: 8px;"></i> ${formattedText}`; // Add your icon HTML here
     button.setAttribute("aria-label", "Search");
@@ -1845,8 +1857,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .catch((err) => console.error(err));
   }
 
-  /**
-   * creating accordion **/
+  /*** creating accordion ***/
 
   createSkillButton(
     htmlElement,
@@ -1882,10 +1893,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isParentAvailable) {
       manageModalOnPlusOne(childDiv, isParentAvailable);
     }
-    console.log(isParentAvailable,"skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",uniqueIdentifier)
 
     if (identifier === "accordionChild") {
-      console.log(skillDetail, "skillDetail", identifier);
       htmlElement.innerHTML = "";
       var skilldetailKey = document.getElementById(uniqueIdentifier);
       const foundObject = findObjectByIsotFileId(
@@ -1896,8 +1905,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       var panelDiv = document.createElement("button");
       panelDiv.setAttribute("class", skillDetail.path_addr);
       panelDiv.setAttribute("data-name", skillDetail.name);
-      if(skillDetail.child_count > 0){
-      panelDiv.setAttribute("row-data", JSON.stringify(skillDetail));
+      if (skillDetail.child_count > 0) {
+        panelDiv.setAttribute("row-data", JSON.stringify(skillDetail));
       }
 
       panelDiv.style.border = "1px solid #E6E6E6";
@@ -1973,109 +1982,102 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         getidparent.addEventListener("click", () => {
           skilldetailKey.innerHTML = "";
           this.childrenSkillAPI(uniqueIdentifier, "accordionChild");
+          breadcrumbsArray = [];
         });
       }
 
       panelDiv.addEventListener("click", () => {
         const buttonId = panelDiv?.id;
         const buttonClass = panelDiv?.className;
+
+        if (skillDetail.child_count > 0) {
+          breadcrumbsArray.push({
+            id: buttonClass,
+            skillName: skillDetail.name,
+          });
+        }
+
         if (buttonId) {
-          console.log(buttonId,"rerere")
           skilldetailKey.innerHTML = "";
-          const subChildBreadcrumbs = document.createElement("div");
-          subChildBreadcrumbs.style.width = "100%";
-          subChildBreadcrumbs.style.textAlign = "left";
-          subChildBreadcrumbs.style.marginBottom = "10px";
-          const subParentChildBreadcrumbsSpan = document.createElement("span");
-          subParentChildBreadcrumbsSpan.id = "accordion-parent";
-          subParentChildBreadcrumbsSpan.setAttribute("class", "cursor-pointer");
-          subParentChildBreadcrumbsSpan.textContent = `${skilldetailKey.getAttribute(
-            "data-name"
-            )} `;
-          subParentChildBreadcrumbsSpan.style.fontSize = '14px';
-          subParentChildBreadcrumbsSpan.style.color = '#828282';
-          
-          const hirarchyArrowIcon = document.createElement("span");
-          hirarchyArrowIcon.textContent = '>';
-          hirarchyArrowIcon.style.fontSize = '14px';
-          hirarchyArrowIcon.style.color = '#828282';
-          
-          
-          const hirarchyLevelSpan = document.createElement("span");
-          hirarchyLevelSpan.innerHTML = ` ${panelDiv.getAttribute("data-name")} `;
-          hirarchyLevelSpan.className='hirarchyLevel cursor-pointer';
-          hirarchyLevelSpan.style.fontSize = '14px';
-          hirarchyLevelSpan.style.color = '#333333';
-          hirarchyLevelSpan.setAttribute('get-that-id',buttonClass)
-          hirarchyLevelSpan.setAttribute('row-data',JSON.stringify(skillDetail))
-          
 
-        
-          const hirarchyLevelSpanPlusIcon = document.createElement("i");
-          hirarchyLevelSpanPlusIcon.className = 'fa fa-plus cursor-pointer';
-          hirarchyLevelSpanPlusIcon.style.color = '#007DFC';
-
-          const subParentChildBreadcrumbsSpanForCount =
-            document.createElement("span");
-          subParentChildBreadcrumbsSpanForCount.id = "accordion-parent-count";
-          subParentChildBreadcrumbsSpanForCount.textContent = `${skillDetail.child_count} sub categories`;
-          subParentChildBreadcrumbsSpanForCount.style.float = "right";
-          subParentChildBreadcrumbsSpanForCount.style.fontSize = '14px';
-          subParentChildBreadcrumbsSpanForCount.style.color = '#BDBDBD';
-
-          subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpan);
-          subChildBreadcrumbs.appendChild(hirarchyArrowIcon);
-          subChildBreadcrumbs.appendChild(hirarchyLevelSpan);
-          subChildBreadcrumbs.appendChild(hirarchyLevelSpanPlusIcon);
-          
-          subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpanForCount);
-        
+          const subChildBreadcrumbs = generateBreadcrumbs(
+            skilldetailKey,
+            skillDetail,
+            breadcrumbsArray
+          );
           skilldetailKey.appendChild(subChildBreadcrumbs);
+
           this.childrenSkillAPI(
             buttonClass,
             "accordionChild",
             uniqueIdentifier
           );
         } else {
-          console.log("going thsat");
+          console.log("going thsat skillDetail", skillDetail);
+
           if (skillDetail.ratings && skillDetail.ratings.length > 0) {
             this.changeRateModelElement(skillDetail, uniqueIdentifier);
           }
-         
         }
+        console.log(breadcrumbsArray, "breadcrumbsArray outer");
       });
       skillDetail.description !== null ? panelDiv.appendChild(infoDesBtn) : "";
       skilldetailKey.appendChild(panelDiv);
-      var hirarchyLevelSpan = document.getElementsByClassName("hirarchyLevel");
-      if(hirarchyLevelSpan){
-      for (const element of hirarchyLevelSpan) {
-      
-         const selectedHirarchyRating = JSON.parse(element.getAttribute('row-data'));
-        
-        element.addEventListener("mouseover", function () {  element.style.color = '#007DFC'; });
 
-        element.addEventListener("mouseout", function () { element.style.color = '#333333'; });
-        console.log(isParentAvailable,"skillDetail.ratingsskillDeskillDetail.ratingsskillDetail.ratings",uniqueIdentifier)
-        element.addEventListener("click", function(){
-                if (selectedHirarchyRating) {
-                this.changeRateModelElement(selectedHirarchyRating, uniqueIdentifier);
-                }
-              })
+      breadcrumbsArray.forEach((item) => {
+        const element = document.getElementsByClassName(`${item.id}`)[0];
+        element.addEventListener("click", () => {
+          if (element && element.classList.contains("hirarchyLevel")) {
+            const selectedHirarchyRating = JSON.parse(
+              element.getAttribute("row-data")
+            );
+
+            element.addEventListener("mouseover", function () {
+              element.style.color = "#007DFC";
+            });
+
+            element.addEventListener("mouseout", function () {
+              element.style.color = "#333333";
+            });
+
+            if (selectedHirarchyRating) {
+              this.changeRateModelElement(
+                selectedHirarchyRating,
+                uniqueIdentifier
+              );
             }
-      
-    }
-    } else {
+          } else {
+            skilldetailKey.innerHTML = "";
 
+            const filteredbreadcrumbsArray = filterArrayBySkillName(
+              item.skillName,
+              breadcrumbsArray
+            );
+            const subChildBreadcrumbs = generateBreadcrumbs(
+              skilldetailKey,
+              skillDetail,
+              filteredbreadcrumbsArray
+            );
+            skilldetailKey.appendChild(subChildBreadcrumbs);
+            this.childrenSkillAPI(
+              element.getAttribute("get-that-id"),
+              "accordionChild",
+              uniqueIdentifier
+            );
+          }
+        });
+      });
+    } else {
       var subElementSpan = document.createElement("span");
       subElementSpan.setAttribute(
         "class",
         "accordion accordion-false cursor-pointer"
       );
       subElementSpan.setAttribute("id", "parent-" + skillDetail.path_addr);
-      subElementSpan.style.width = 'calc(100% - 150px)';
-      subElementSpan.style.textAlign = 'left';
-      subElementSpan.style.fontSize = '16px';
-      subElementSpan.style.color = '#333333';  
+      subElementSpan.style.width = "calc(100% - 150px)";
+      subElementSpan.style.textAlign = "left";
+      subElementSpan.style.fontSize = "16px";
+      subElementSpan.style.color = "#333333";
 
       if (isFuncSkill) {
         subElementSpan.innerHTML = `<i class="fas fa-plus mr-1"  style="color:#007DFC; padding-left:5px;"></i>`;
@@ -2086,6 +2088,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       subElementSpan.addEventListener("click", async (event) => {
+        breadcrumbsArray = [];
         if (isFuncSkill) {
           console.log("if function");
           // clearsessionStorage();
@@ -2300,7 +2303,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       const saveButtonElement = document.getElementById("saveChangesButton");
       // Check if the element exists
-      console.log(saveButtonElement, "saveButtonElement");
+
       if (saveButtonElement) {
         const previousContent = saveButtonElement.innerHTML;
         // Create and append the loader
@@ -2331,7 +2334,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 const elements = document.getElementsByClassName(
                   skillDetail?.path_addr
                 );
-                console.log(elements, "ratedBtn");
+
                 for (const element of elements) {
                   element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
                   element.classList.add(
@@ -2386,10 +2389,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             console.log(elements, "ratedBtn");
             for (const element of elements) {
               element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-              element.classList.add(
-                skillDetail?.path_addr,
-                "selected-skills"
-              );
+              element.classList.add(skillDetail?.path_addr, "selected-skills");
             }
           }
           createSelectedSkillsCount();
@@ -2642,11 +2642,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     var modalBody = document.getElementsByClassName("modal-body")[0];
     closeButton.addEventListener("click", () => {
-      const parentIDByDynamicIDGet = document
-        .getElementById("parent-" + closeButton.getAttribute("data-panel-id"));
-        if(parentIDByDynamicIDGet){
-          parentIDByDynamicIDGet.click();
-        }
+      const parentIDByDynamicIDGet = document.getElementById(
+        "parent-" + closeButton.getAttribute("data-panel-id")
+      );
+      if (parentIDByDynamicIDGet) {
+        parentIDByDynamicIDGet.click();
+      }
       modalBody.querySelector("#spanElementForStar").innerHTML = "";
     });
     // getting data from clicking saveChangesButton
@@ -2916,7 +2917,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     rateButton.addEventListener("click", () => {
       this.changeRateModelElement(skillDetail.skills[0]);
     });
-    console.log(skillDetail, "skillDetail");
+
     rateButton.innerHTML += `  <i class="fas fa-star"></i>`;
     const localdata = sortRatingByLocalStorage();
     const searchText = searchByName(skillDetail.term);
@@ -3143,13 +3144,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       parentIdOfHirarchy !== "" ? parentIdOfHirarchy : skillId
     );
     const selectedSkillDiv = document.querySelector(".breadcrumb-nav");
-    console.log(
-      skillId,
-      identifier,
-      "skillIdElement",
-      skillIdElement,
-      parentIdOfHirarchy
-    );
+
     const loader = document.createElement("div");
     loader.className = "loader";
     loader.style.margin = "100px auto";
@@ -3183,9 +3178,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          skillIdElement.removeChild(loader);
+          if (loader) {
+            skillIdElement.removeChild(loader);
+            skillIdElement.innerHTML = previousContent;
+          }
 
-          skillIdElement.innerHTML = previousContent;
           this.createSelectSkillsChildBox(
             this.cardBodyDiv,
             response,
@@ -3195,14 +3192,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .catch((err) => {
           console.error(err);
-          skillIdElement.removeChild(loader);
-          skillIdElement.innerHTML = previousContent;
+          if (loader) {
+            skillIdElement.removeChild(loader);
+            skillIdElement.innerHTML = previousContent;
+          }
         })
         .finally((err) => {});
     } else {
       const previousContent = selectedSkillDiv.innerHTML;
       // Create and append the loader
-      selectedSkillDiv.appendChild(loader);
+      if (loader) {
+        selectedSkillDiv.appendChild(loader);
+      }
       let url = "";
       if (isLoginUser) {
         url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
@@ -3274,9 +3275,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           } else {
             this.childrenSkillAPI(skillId);
           }
-          setTimeout(()=>{
-              document.getElementById('rateBtn').click();
-          },3000)
+          setTimeout(() => {
+            document.getElementById("rateBtn").click();
+          }, 3000);
         })
         .catch((err) => {
           console.error(err);
