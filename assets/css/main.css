@@ -62,6 +62,11 @@
   background-color: #2196531a !important;
 }
 
+.panel .selected-breadcrumbs-skills {
+  color: rgb(33, 150, 83) !important;
+}
+
+
 /* rating modal style  */
 
 .noUi-value-sub,

@@ -1,6 +1,6 @@
-var isLoginUser = false;
+var isLoginUser =  false;
 const ENDPOINT_URL =
-  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/dev-api/";
+  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/staging/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
@@ -10,14 +10,17 @@ const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 let breadcrumbsArray = [];
 
 function filterArrayBySkillName(skillName, dataArray) {
-  const matchingObjects = dataArray.filter(obj =>
-    obj.skillName === skillName || obj.skillName.startsWith(skillName + ".")
+  const matchingObjects = dataArray.filter(
+    (obj) =>
+      obj.skillName === skillName || obj.skillName.startsWith(skillName + ".")
   );
 
-  return matchingObjects;
+  breadcrumbsArray = matchingObjects ;
 }
 
-function generateBreadcrumbs(skilldetailKey,skillDetail,breadCrumbDataArray){
+function generateBreadcrumbs(skilldetailKey, skillDetail, breadCrumbDataArray) {
+
+  console.log(breadCrumbDataArray,"breadCrumbDataArray")
   const subChildBreadcrumbs = document.createElement("div");
   subChildBreadcrumbs.style.width = "100%";
   subChildBreadcrumbs.style.textAlign = "left";
@@ -31,13 +34,17 @@ function generateBreadcrumbs(skilldetailKey,skillDetail,breadCrumbDataArray){
   subParentChildBreadcrumbsSpan.style.fontSize = "14px";
   subParentChildBreadcrumbsSpan.style.color = "#828282";
   subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpan);
-
   for (
     let breadcrumbIterate = 0;
     breadcrumbIterate < breadCrumbDataArray.length;
     breadcrumbIterate++
   ) {
     const element = breadCrumbDataArray[breadcrumbIterate];
+    const userSkillDetail = sortRatingByLocalStorage();
+    const isBreadcrumbsSelectedSkillAvailable = hasBreadcrumbsSkillIsSelected(
+      userSkillDetail,
+      element.id
+    );
     const hirarchyArrowIcon = document.createElement("span");
     hirarchyArrowIcon.textContent = ">";
     hirarchyArrowIcon.style.fontSize = "14px";
@@ -45,42 +52,42 @@ function generateBreadcrumbs(skilldetailKey,skillDetail,breadCrumbDataArray){
 
     const hirarchyLevelSpan = document.createElement("span");
     hirarchyLevelSpan.innerHTML = ` ${element.skillName} `;
-    hirarchyLevelSpan.className = `${element.id} cursor-pointer`;
+    if (isBreadcrumbsSelectedSkillAvailable) {
+      hirarchyLevelSpan.className = `${element.id} cursor-pointer selected-breadcrumbs-skills`;
+    } else {
+      hirarchyLevelSpan.className = `${element.id} cursor-pointer`;
+    }
     hirarchyLevelSpan.style.fontSize = "14px";
     hirarchyLevelSpan.style.color = "#333333";
     hirarchyLevelSpan.setAttribute("get-that-id", element.id);
-    hirarchyLevelSpan.setAttribute(
-      "row-data",
-      JSON.stringify(skillDetail)
-    );
+    hirarchyLevelSpan.setAttribute("row-data", JSON.stringify(skillDetail));
 
     subChildBreadcrumbs.appendChild(hirarchyArrowIcon);
     subChildBreadcrumbs.appendChild(hirarchyLevelSpan);
     if (breadCrumbDataArray.length - 1 === breadcrumbIterate) {
       const hirarchyLevelSpanPlusIcon = document.createElement("i");
-      hirarchyLevelSpan.className = `${element.id} cursor-pointer hirarchyLevel`;
+      if (isBreadcrumbsSelectedSkillAvailable) {
+        hirarchyLevelSpan.className = `${element.id} cursor-pointer selected-breadcrumbs-skills hirarchyLevel`;
+      } else {
+        hirarchyLevelSpan.className = `${element.id} cursor-pointer hirarchyLevel`;
+      }
       hirarchyLevelSpanPlusIcon.className = "fa fa-plus cursor-pointer";
       hirarchyLevelSpanPlusIcon.style.color = "#007DFC";
       subChildBreadcrumbs.appendChild(hirarchyLevelSpanPlusIcon);
     }
   }
 
-  const subParentChildBreadcrumbsSpanForCount =
-    document.createElement("span");
+  const subParentChildBreadcrumbsSpanForCount = document.createElement("span");
   subParentChildBreadcrumbsSpanForCount.id = "accordion-parent-count";
   subParentChildBreadcrumbsSpanForCount.textContent = `${skillDetail.child_count} sub categories`;
   subParentChildBreadcrumbsSpanForCount.style.float = "right";
   subParentChildBreadcrumbsSpanForCount.style.fontSize = "14px";
   subParentChildBreadcrumbsSpanForCount.style.color = "#BDBDBD";
 
-  subChildBreadcrumbs.appendChild(
-    subParentChildBreadcrumbsSpanForCount
-  );
+  subChildBreadcrumbs.appendChild(subParentChildBreadcrumbsSpanForCount);
 
   return subChildBreadcrumbs;
 }
-
-
 
 function fetchData(url, method) {
   return fetch(url, {
@@ -168,6 +175,21 @@ function findObjectByIsotFileId(array, isotFileId) {
   return null;
 }
 
+// check selected breadcrumb skillid is exist in the whole local storage data
+function hasBreadcrumbsSkillIsSelected(dataArray, targetIsotFileId) {
+  for (const item of dataArray) {
+    const ratedSkills = item.RatedSkills || [];
+
+    for (const ratedSkill of ratedSkills) {
+      if (ratedSkill.isot_file_id === targetIsotFileId) {
+        return true; // Found the isot_file_id
+      }
+    }
+  }
+
+  return null; // Not found
+}
+
 // check selected parentId is exist in the whole local storage data
 function isParentIdAvailable(array, parentIdToCheck) {
   for (let i = 0; i < array.length; i++) {
@@ -176,6 +198,12 @@ function isParentIdAvailable(array, parentIdToCheck) {
     }
   }
   return null; // ParentId not found
+}
+
+// check correct ancestor
+function getStringAfterFirstDot(inputString) {
+  const match = inputString.match(/^[^.]+\.[^.]+/);
+  return match ? match[0] : null;
 }
 
 // change the format of localstorage data
@@ -188,11 +216,20 @@ function sortRatingByLocalStorage() {
   } else {
     inputArray = getListFromlocalStorage();
   }
+
+  let filteredObjects;
   inputArray?.forEach((item) => {
+    if (item.ancestors.length > 0) {
+      filteredObjects = getStringAfterFirstDot(
+        item?.ancestors && item?.ancestors[0]?.path_addr
+      );
+    }
+
     const parentID = item?.ancestors
-      ? item?.ancestors[0]?.path_addr
+      ? filteredObjects
       : item?.parentSkillDetailId;
-    // if (parentID) {
+    console.log(filteredObjects, "parentIdparentID");
+
     if (!output[parentID]) {
       output[parentID] = {
         parentID,
@@ -212,10 +249,9 @@ function sortRatingByLocalStorage() {
       isot_file: item?.isot_file || item?.isot_skill,
       parentSkillDetailId: item?.parentSkillDetailId
         ? item?.parentSkillDetailId
-        : item?.ancestors && item?.ancestors[0]?.path_addr,
+        : item?.ancestors && filteredObjects,
     };
     output[parentID].RatedSkills.push(ratedSkill);
-    // }
   });
   const finalResultArray = Object.values(output);
   return finalResultArray;
@@ -231,7 +267,6 @@ function displaySelctedSkills() {
     if (childDivId) {
       childDivId.innerHTML = "";
       manageModalOnPlusOne(childDivId, userSkillDetail[item]);
-
     }
   }
 
@@ -762,6 +797,22 @@ async function getListFromLoggedInUser(loaderIdentifier) {
           body: raw,
         };
         try {
+          function decodeJwt(token) {
+            const [, payload] = token.split(".");
+            return JSON.parse(atob(payload));
+          }
+
+          function isTokenExpired(token) {
+            const { exp } = decodeJwt(token);
+            return exp ? Date.now() >= exp * 1000 : false;
+          }
+
+          const isExpired = isTokenExpired(refreshtoken);
+          if (isExpired) {
+            localStorage.clear();
+            window.location.href = "/";
+          }
+
           fetch(getaccessYokenEndpoint, requestOptions)
             .then((response) => response.text())
             .then(async (result) => {
@@ -950,7 +1001,7 @@ function ResetButton(htmlElement, disabled) {
 // Function to handle API calling for  "Add Skill" button click
 function addSkillToApi(payload) {
   // API endpoint (replace with your actual API endpoint)
-  const apiEndpoint = `https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/v2/ISOT/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
+  const apiEndpoint = `https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/v2//add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
   // Make the API call using the fetch API
   return fetch(apiEndpoint, {
     method: "POST",
@@ -1708,7 +1759,7 @@ class IysSearchPlugin {
           // div.removeChild(loader);
         });
     } else if (this.searchValue.length > 0) {
-      fetch(`${ENDPOINT_URL}ISOT/?q=${this.searchValue}&limit=10`)
+      fetch(`${ENDPOINT_URL}?q=${this.searchValue}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1854,7 +1905,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = `https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillFileId}`;
+      url = `${ENDPOINT_URL}children/?path_addr=${skillFileId}`;
     }
 
     fetch(url)
@@ -1866,6 +1917,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   /*** creating accordion ***/
+
+  isIdInArray(idToCheck) {
+    return breadcrumbsArray.some(obj => obj.id === idToCheck);
+}
 
   createSkillButton(
     htmlElement,
@@ -1879,6 +1934,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       userSkillDetail,
       skillDetail.path_addr
     );
+
+   
     var parentDiv = document.createElement("div");
     parentDiv.style.width = "100%";
     parentDiv.setAttribute("class", "parent-accordion");
@@ -1945,9 +2002,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           "class",
           `${skillDetail.path_addr} selected-skills`
         );
-        const wordCounting = wordCount(skillDetail.name);
-        if (wordCounting > 2) {
-          panelDiv.innerHTML = `<i class="fa fa-check"></i> ${skillDetail.name} `;
+
+        if (skillDetail.child_count > 0) {
+          panelDiv.innerHTML = `<span >${skillDetail.name}</span>
+          <span style="border-radius: 50%;width: 5px;height: 5px;margin-bottom: 3px;background-color: #828282;display: inline-block;"></span>
+          <span style="color:#828282">${skillDetail.child_count} sub categories </span>`;
+
+          panelDiv.id = `haveChild-${skillDetail.path_addr}`;
         } else {
           panelDiv.innerHTML = `<i class="fa fa-check"></i> ${skillDetail.name}`;
         }
@@ -1970,15 +2031,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
       } else {
         console.log("else working");
-        const wordCounting = wordCount(skillDetail.name);
         if (skillDetail.child_count > 0) {
           panelDiv.innerHTML = `<span >${skillDetail.name}</span>
           <span style="border-radius: 50%;width: 5px;height: 5px;margin-bottom: 3px;background-color: #828282;display: inline-block;"></span>
           <span style="color:#828282">${skillDetail.child_count} sub categories </span>`;
 
           panelDiv.id = `haveChild-${skillDetail.path_addr}`;
-        } else if (wordCounting > 2) {
-          panelDiv.innerHTML = skillDetail.name;
         } else {
           panelDiv.innerHTML = `${skillDetail.name}`;
         }
@@ -1990,32 +2048,51 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         getidparent.addEventListener("click", () => {
           skilldetailKey.innerHTML = "";
           this.childrenSkillAPI(uniqueIdentifier, "accordionChild");
-          breadcrumbsArray =[];
+          breadcrumbsArray = [];
         });
       }
 
       panelDiv.addEventListener("click", () => {
+        let elementsWithClass;
+        const classesArray = panelDiv?.className.split(" ");
+        const numericClass = classesArray.find((cls) =>
+          /^\d+\.(\d+\.)+\d+$/.test(cls)
+        );
+        if (numericClass) {
+          // Extract the numeric part from the class
+          elementsWithClass = numericClass.split(" ")[0];
+        }
         const buttonId = panelDiv?.id;
-        const buttonClass = panelDiv?.className;
-      
-        if (skillDetail.child_count > 0) {
-        breadcrumbsArray.push({ id: buttonClass, skillName: skillDetail.name });
+        const buttonClass = elementsWithClass
+          ? elementsWithClass
+          : panelDiv?.className;
+
+          const isIdCheckIntoArray = this.isIdInArray(buttonClass)
+        if (skillDetail.child_count > 0 && !isIdCheckIntoArray) {
+          breadcrumbsArray.push({
+            id: buttonClass,
+            skillName: skillDetail.name,
+            rating: skillDetail.ratings,
+          });
         }
 
         if (buttonId) {
+        
           skilldetailKey.innerHTML = "";
-         
-          const subChildBreadcrumbs = generateBreadcrumbs(skilldetailKey,skillDetail,breadcrumbsArray)
-          skilldetailKey.appendChild(subChildBreadcrumbs);
 
-          
+          const subChildBreadcrumbs = generateBreadcrumbs(
+            skilldetailKey,
+            skillDetail,
+            breadcrumbsArray
+          );
+          skilldetailKey.appendChild(subChildBreadcrumbs);
           this.childrenSkillAPI(
             buttonClass,
             "accordionChild",
             uniqueIdentifier
           );
         } else {
-          console.log("going thsat skillDetail",skillDetail);
+          console.log("going thsat skillDetail", skillDetail);
 
           if (skillDetail.ratings && skillDetail.ratings.length > 0) {
             this.changeRateModelElement(skillDetail, uniqueIdentifier);
@@ -2025,45 +2102,63 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       });
       skillDetail.description !== null ? panelDiv.appendChild(infoDesBtn) : "";
       skilldetailKey.appendChild(panelDiv);
-   
 
-        breadcrumbsArray.forEach(item => {
-          const element = document.getElementsByClassName(`${item.id}`)[0];
-          element.addEventListener("click", () => {
-          if (element && element.classList.contains('hirarchyLevel')) {
-            const selectedHirarchyRating = JSON.parse(
-                    element.getAttribute("row-data")
-                  );
-        
-                  element.addEventListener("mouseover", function () {
-                    element.style.color = "#007DFC";
-                  });
-        
-                  element.addEventListener("mouseout", function () {
-                    element.style.color = "#333333";
-                  });
-        
-                
-                    if (selectedHirarchyRating) {
-                      this.changeRateModelElement(
-                        selectedHirarchyRating,
-                        uniqueIdentifier
-                      );
-                    }
-
-          } else {
-            skilldetailKey.innerHTML = "";
-            
-           const filteredbreadcrumbsArray =  filterArrayBySkillName(item.skillName,breadcrumbsArray);
-          const subChildBreadcrumbs = generateBreadcrumbs(skilldetailKey,skillDetail,filteredbreadcrumbsArray)
-          skilldetailKey.appendChild(subChildBreadcrumbs);
-          this.childrenSkillAPI(element.getAttribute('get-that-id'), "accordionChild",uniqueIdentifier);
-  
-          }
-      })
+      breadcrumbsArray.forEach((item) => {
+        const element = document.getElementsByClassName(`${item.id}`)[0];
+        element.addEventListener("mouseover", function () {
+          element.style.color = "#007DFC";
         });
 
+        element.addEventListener("mouseout", function () {
+          element.style.color = "#333333";
+        });
 
+        element.addEventListener("click",() =>  {   if (element && element.classList.contains("hirarchyLevel")) {
+          const modalBackdrops = document.querySelectorAll(
+            ".modal-backdrop.fade.show"
+          );
+
+          // Remove all elements except the first one
+          for (let i = 0; i < modalBackdrops.length; i++) {
+            modalBackdrops[i].style.display = "none";
+          }
+
+          const selectedHirarchyRating = JSON.parse(
+            element.getAttribute("row-data")
+          );
+
+          document.body.style.padding = 0;
+          document.body.style.overflow = "auto";
+
+          if (selectedHirarchyRating) {
+            this.changeRateModelElement(
+              selectedHirarchyRating,
+              uniqueIdentifier,
+              "breadcrumbsSelectedSkill"
+            );
+          }
+        } else {
+          skilldetailKey.innerHTML = "";
+
+          // remove hierarchy level after selected hierarchy skill
+          filterArrayBySkillName(item.skillName, breadcrumbsArray);
+
+          const subChildBreadcrumbs = generateBreadcrumbs(
+            skilldetailKey,
+            skillDetail,
+            breadcrumbsArray
+          );
+
+          skilldetailKey.appendChild(subChildBreadcrumbs);
+
+          this.childrenSkillAPI(
+            element.getAttribute("get-that-id"),
+            "accordionChild",
+            uniqueIdentifier
+          );
+        }});
+
+      });
     } else {
       var subElementSpan = document.createElement("span");
       subElementSpan.setAttribute(
@@ -2085,7 +2180,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       subElementSpan.addEventListener("click", async (event) => {
-        breadcrumbsArray=[];
+        breadcrumbsArray = [];
         if (isFuncSkill) {
           console.log("if function");
           // clearsessionStorage();
@@ -2275,8 +2370,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     commentValue,
     ratingValue,
     skillDetail,
-    parentSkillDetailId
+    parentSkillDetailId,
+    checkbreadcrumbsskill
   ) {
+    console.log(
+      skillDetail,
+      parentSkillDetailId,
+      "    skillDetail  parentSkillDetailId"
+    );
     let userRatedSkill = {
       skills: [
         {
@@ -2333,11 +2434,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 );
 
                 for (const element of elements) {
-                  element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-                  element.classList.add(
-                    skillDetail?.path_addr,
-                    "selected-skills"
-                  );
+                  if (checkbreadcrumbsskill) {
+                    element.innerHTML = ` ${skillDetail?.name}`;
+                    element.classList.add("selected-breadcrumbs-skills");
+                  } else {
+                    element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+                    element.classList.add(
+                      skillDetail?.path_addr,
+                      "selected-skills"
+                    );
+                  }
                 }
               }
               saveButtonElement.removeChild(loader);
@@ -2364,7 +2470,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
     } else {
       fetchData(
-        `${ENDPOINT_URL}ISOT/details/?path_addrs=${skillDetail?.path_addr}`,
+        `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`,
         "GET"
       )
         .then((response) => {
@@ -2377,16 +2483,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           });
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
           myrate();
-          // document.getElementById(parentSkillDetailId).innerHTML = "";
-          // document.getElementById("parent-" + parentSkillDetailId).click();
+
           if (skillDetail?.path_addr) {
             const elements = document.getElementsByClassName(
               skillDetail?.path_addr
             );
-            console.log(elements, "ratedBtn");
+
             for (const element of elements) {
-              element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-              element.classList.add(skillDetail?.path_addr, "selected-skills");
+              if (checkbreadcrumbsskill) {
+                element.innerHTML = ` ${skillDetail?.name}`;
+                element.classList.add("selected-breadcrumbs-skills");
+              } else {
+                element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+                element.classList.add(
+                  skillDetail?.path_addr,
+                  "selected-skills"
+                );
+              }
             }
           }
           createSelectedSkillsCount();
@@ -2399,7 +2512,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   //#####################   create a html rating model box   ############s###########
-  changeRateModelElement(skillDetail, parentSkillDetailId) {
+  changeRateModelElement(
+    skillDetail,
+    parentSkillDetailId,
+    checkbreadcrumbsskill
+  ) {
+    console.log(skillDetail, "rating skill detail", parentSkillDetailId);
     const RateSkillModel = document.getElementById("RateSkillModel");
     const RateSkillModelLabel = document.getElementById("RateSkillModelLabel");
     const spanElementForStar = document.getElementById("spanElementForStar");
@@ -2451,11 +2569,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.createRatingElement(
       spanElementForStar,
       skillDetail,
-      parentSkillDetailId
+      parentSkillDetailId,
+      checkbreadcrumbsskill
     );
     button.removeEventListener("click", this.saveTheSkillComment);
 
     button.addEventListener("click", (event) => {
+      // const element = document.getElementsByClassName(`${skillDetail.id}`)[0];
       modalEl.hide();
     });
     modalEl.show();
@@ -2525,7 +2645,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   //###############################################################       get Rating model section data   #############################
-  createRatingElement(htmlElement, skillDetail, parentSkillDetailId) {
+  createRatingElement(
+    htmlElement,
+    skillDetail,
+    parentSkillDetailId,
+    checkbreadcrumbsskill
+  ) {
     // add exception for rating
     try {
       htmlElement.noUiSlider.destroy();
@@ -2685,7 +2810,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         comment,
         inputData,
         skillDetail,
-        parentSkillDetailId
+        parentSkillDetailId,
+        checkbreadcrumbsskill
       );
     });
   }
@@ -3060,7 +3186,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = window.location.origin + "/api-popular-categories/";
     } else {
-      url = `${ENDPOINT_URL}ISOT/popular-categories/`;
+      url = `${ENDPOINT_URL}popular-categories/`;
     }
 
     fetch(url)
@@ -3086,7 +3212,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+      url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -3112,7 +3238,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (isLoginUser) {
       url = window.location.origin + "/api-child/?path_addr=" + skillId;
     } else {
-      url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+      url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
     }
     fetch(url, this.rapidAPIheaders)
       .then((response) => {
@@ -3150,13 +3276,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (skillIdElement) {
       const previousContent = skillIdElement.innerHTML;
       // Create and append the loader
-      skillIdElement.appendChild(loader);
+      if (loader) skillIdElement.appendChild(loader);
 
       let url = "";
       if (isLoginUser) {
         url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
-        url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+        url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
       }
 
       fetch(url, {
@@ -3175,9 +3301,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          if(loader){
-          skillIdElement.removeChild(loader);
-          skillIdElement.innerHTML = previousContent;
+          if (loader) {
+            skillIdElement.removeChild(loader);
+            skillIdElement.innerHTML = previousContent;
           }
 
           this.createSelectSkillsChildBox(
@@ -3189,23 +3315,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .catch((err) => {
           console.error(err);
-          if(loader){
-          skillIdElement.removeChild(loader);
-          skillIdElement.innerHTML = previousContent;
+          if (loader) {
+            skillIdElement.removeChild(loader);
+            skillIdElement.innerHTML = previousContent;
           }
         })
         .finally((err) => {});
     } else {
       const previousContent = selectedSkillDiv.innerHTML;
       // Create and append the loader
-      if(loader){
-      selectedSkillDiv.appendChild(loader);
-    }
+      if (loader) {
+        selectedSkillDiv.appendChild(loader);
+      }
       let url = "";
       if (isLoginUser) {
         url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
-        url = `${ENDPOINT_URL}ISOT/children/?path_addr=${skillId}`;
+        url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
       }
 
       fetch(url, {
@@ -3224,8 +3350,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          selectedSkillDiv.removeChild(loader);
-          selectedSkillDiv.innerHTML = previousContent;
+          if (loader) {
+            selectedSkillDiv.removeChild(loader);
+            selectedSkillDiv.innerHTML = previousContent;
+          }
 
           this.createSelectSkillsChildBox(
             this.cardBodyDiv,
@@ -3235,9 +3363,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           );
         })
         .catch((err) => {
-          selectedSkillDiv.removeChild(loader);
-          selectedSkillDiv.innerHTML = previousContent;
-
+          if (loader) {
+            selectedSkillDiv.removeChild(loader);
+            selectedSkillDiv.innerHTML = previousContent;
+          }
           console.error(err);
         });
     }
@@ -3272,15 +3401,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           } else {
             this.childrenSkillAPI(skillId);
           }
-          setTimeout(() => {
-            document.getElementById("rateBtn").click();
-          }, 3000);
+          const userSkillDetail = sortRatingByLocalStorage();
+          const isParentAvailable = hasBreadcrumbsSkillIsSelected(
+            userSkillDetail,
+            skillId
+          );
+          if (!isParentAvailable) {
+            setTimeout(() => {
+              document.getElementById("rateBtn").click();
+            }, 3000);
+          }
         })
         .catch((err) => {
           console.error(err);
         });
     } else {
-      url = `${ENDPOINT_URL}ISOT/tree/?path_addr=${skillId}`;
+      url = `${ENDPOINT_URL}tree/?path_addr=${skillId}`;
       fetch(url, this.rapidAPIheaders)
         .then((response) => {
           if (response.status === 429) {
@@ -3291,7 +3427,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          // this.createSkillPath(cardBodyDiv, response.ancestors);
           if (response.siblings.length > 0) {
             this.createSelectSkillsChildBox(
               this.cardBodyDiv,
@@ -3299,6 +3434,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             );
           } else {
             this.childrenSkillAPI(skillId);
+          }
+          const userSkillDetail = sortRatingByLocalStorage();
+          const isParentAvailable = hasBreadcrumbsSkillIsSelected(
+            userSkillDetail,
+            skillId
+          );
+          if (!isParentAvailable) {
+            setTimeout(() => {
+              document.getElementById("rateBtn").click();
+            }, 3000);
           }
         })
         .catch((err) => {
