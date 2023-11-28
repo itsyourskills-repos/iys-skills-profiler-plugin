@@ -1180,6 +1180,7 @@ class IysSearchPlugin {
     button.style.right = "0";
     button.style.height = "78%";
     button.style.top = "0px";
+    button.classList.add("d-none", "d-lg-block");
 
     button.innerHTML = `<i class="fas fa-search" style="margin-right: 8px;"></i> ${formattedText}`; // Add your icon HTML here
     button.setAttribute("aria-label", "Search");
@@ -2911,6 +2912,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillDetailArray !== null ? skillDetailArray[0].name : skillDetail.term;
     this.selectedASkillBox.innerHTML = "";
     const cardDiv = document.createElement("div");
+    document.getElementById("replaceholder").innerHTML = "";
     cardDiv.classList.add("card");
     const cardBodyDiv = document.createElement("div");
     cardBodyDiv.classList.add("card-body");
