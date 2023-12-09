@@ -1104,7 +1104,7 @@ class IysSearchPlugin {
   }
   createSearchBox() {
     const div = document.createElement("div");
-    div.classList.add("input-group", "input-group-lg");
+    div.classList.add("input-group", "input-group-lg", "shadow");
     div.style.display = "flex";
     div.style.flexDirection = "row";
     div.style.borderRadius = "30px";
