@@ -2,7 +2,7 @@ var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
 const ENDPOINT_URL =
-  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/latest/dev-api/";
+  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/staging/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
