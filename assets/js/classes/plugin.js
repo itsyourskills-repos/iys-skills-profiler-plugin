@@ -133,8 +133,8 @@ function sortRatingByLocalStorage() {
         item?.rating && item?.rating?.length > 0
           ? item?.rating[0]?.comment
           : item.ratings && item.ratings.length > 0
-          ? item.ratings[0].comment
-          : item?.comment,
+            ? item.ratings[0].comment
+            : item?.comment,
       rating: item?.rating || (item?.ratings[0] && item?.ratings[0].rating),
       isot_file_id: item?.isot_file_id || item?.isot_path_addr,
       isot_file: item?.isot_file || item?.isot_skill,
@@ -441,7 +441,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalLeftSecondContent.id = "modalLeftSecondContent";
     modalLeftSecondContent.innerHTML =
       ratingGet[
-        obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
+      obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
       ];
     modalLeftSecondContent.style.margin = "0 0 0 10px";
     modalLeftSecondContent.style.padding = "4px 12px";
@@ -472,9 +472,8 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalRightContent.appendChild(modalRightFirstContent);
 
     const modalRightSecondContent = document.createElement("button");
-    modalRightSecondContent.id = `modalRightSecondContent-${
-      obj?.id ? obj.id : obj?.isot_file.path_addr
-    }`;
+    modalRightSecondContent.id = `modalRightSecondContent-${obj?.id ? obj.id : obj?.isot_file.path_addr
+      }`;
     modalRightSecondContent.style.background = "transparent";
     modalRightSecondContent.style.border = "none";
     modalRightSecondContent.style.margin = "0px 0px 0px 10px";
@@ -1950,11 +1949,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           manageTooltip(
             infoDesBtn,
             `<div>
-          ${
-            skillDetail.description !== null
+          ${skillDetail.description !== null
               ? `<p>${skillDetail.description}</p>`
               : ""
-          }
+            }
         </div>`
           );
         }
@@ -2180,7 +2178,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           const returnAccordionIcon =
             subElementSpan &&
-            subElementSpan.classList.contains("accordion-true")
+              subElementSpan.classList.contains("accordion-true")
               ? "fas fa-minus"
               : "fas fa-plus";
 
@@ -3216,7 +3214,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillIdElement.removeChild(loader);
           skillIdElement.innerHTML = previousContent;
         })
-        .finally((err) => {});
+        .finally((err) => { });
     } else {
       const previousContent = selectedSkillDiv.innerHTML;
       // Create and append the loader
