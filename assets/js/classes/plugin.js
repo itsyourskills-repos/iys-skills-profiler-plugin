@@ -3245,6 +3245,53 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           selectedSkillDiv.removeChild(loader);
           selectedSkillDiv.innerHTML = previousContent;
 
+          const url = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillId}`;
+          fetchData(url, "GET")
+            .then((response) => {
+              if (response !== undefined) {
+                console.log("get-recommendations", response);
+
+                const h5 = document.createElement("h3");
+                h5.setAttribute("class", "card-title");
+                h5.style.margin = "30px 0px";
+                h5.textContent = "Recommended Skills";
+                selectedSkillDiv.appendChild(h5);
+
+                const recCon = document.createElement("div");
+                recCon.setAttribute("class", "recommended-container");
+                recCon.style.marginBottom = "30px";
+
+                response.forEach((element) => {
+                  const button = document.createElement("button");
+                  button.setAttribute("class", "btn btn-outline-primary");
+                  button.style.textTransform = "none";
+                  button.style.fontSize = "inherit";
+                  button.style.borderRadius = "30px";
+                  button.style.marginRight = "10px";
+                  button.style.marginBottom = "10px";
+                  button.textContent = element.name;
+                  // button.addEventListener("click", () => {
+                  //   this.createSkillSelectBox(skillId);
+                  // });
+                  button.addEventListener("mouseover", () => {
+                    button.style.background = "#007DFC";
+                    button.style.color = "white";
+                  });
+                  button.addEventListener("mouseout", () => {
+                    button.style.background = "white";
+                    button.style.color = "#007DFC";
+                  });
+                  recCon.appendChild(button);
+                });
+
+                selectedSkillDiv.appendChild(recCon);
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+
+
           this.createSelectSkillsChildBox(
             this.cardBodyDiv,
             response,
