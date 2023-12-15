@@ -3254,13 +3254,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 const h5 = document.createElement("h3");
                 h5.setAttribute("class", "card-title");
                 h5.style.margin = "30px 0px";
-                h5.textContent = "Recommended Skills";
-                selectedSkillDiv.appendChild(h5);
-
+                h5.textContent = "Related Skills";
+                
                 const recCon = document.createElement("div");
                 recCon.setAttribute("class", "recommended-container");
                 recCon.style.marginBottom = "30px";
-
+                
                 response.forEach((element) => {
                   const button = document.createElement("button");
                   button.setAttribute("class", "btn btn-outline-primary");
@@ -3283,8 +3282,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                   });
                   recCon.appendChild(button);
                 });
-
-                selectedSkillDiv.appendChild(recCon);
+                
+                this.cardBodyDiv.appendChild(h5);
+                this.cardBodyDiv.appendChild(recCon);
               }
             })
             .catch((error) => {
