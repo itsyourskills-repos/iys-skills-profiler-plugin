@@ -3254,49 +3254,67 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
                 if (response.length > 0) {
 
-                  const h5 = document.createElement("h3");
-                  h5.setAttribute("class", "card-title");
+                  const h5 = document.createElement("div");
+                  h5.setAttribute("class", "card-title text-start");
                   h5.style.margin = "30px 0px";
                   h5.textContent = "Related Skills";
 
-                  const recCon = document.createElement("div");
-                  recCon.setAttribute("class", "recommended-container");
-                  recCon.style.textAlign = "left";
+                  this.cardBodyDiv.appendChild(h5);
+                  
+                  this.createSelectSkillsChildBox(
+                    this.cardBodyDiv,
+                    response,
+                    "Related Skills",
+                    skillId
+                  );
 
-                  const recFlex = document.createElement("div");
-                  recFlex.setAttribute("class", "recommended-flex");
-                  recFlex.style.marginBottom = "30px";
-                  recFlex.style.display = "flex";
-                  recFlex.style.flexWrap = "wrap";
-                  recFlex.style.gap = "10px";
-
-                  recCon.appendChild(h5);
-
-                  response.forEach((element) => {
-                    const button = document.createElement("button");
-                    button.setAttribute("class", "btn btn-outline-primary");
-                    button.style.textTransform = "none";
-                    button.style.fontSize = "inherit";
-                    button.style.borderRadius = "30px";
-                    button.style.marginRight = "10px";
-                    button.style.marginBottom = "10px";
-                    button.textContent = element.name;
-                    button.addEventListener("mouseover", () => {
-                      button.style.background = "#007DFC";
-                      button.style.color = "white";
-                    });
-                    button.addEventListener("mouseout", () => {
-                      button.style.background = "white";
-                      button.style.color = "#007DFC";
-                    });
-                    recFlex.appendChild(button);
-                  });
-
-
-                  recCon.appendChild(recFlex);
-
-                  this.cardBodyDiv.appendChild(recCon);
                 }
+
+                // if (response.length > 0) {
+
+                //   const h5 = document.createElement("h3");
+                //   h5.setAttribute("class", "card-title");
+                //   h5.style.margin = "30px 0px";
+                //   h5.textContent = "Related Skills";
+
+                //   const recCon = document.createElement("div");
+                //   recCon.setAttribute("class", "recommended-container");
+                //   recCon.style.textAlign = "left";
+
+                //   const recFlex = document.createElement("div");
+                //   recFlex.setAttribute("class", "recommended-flex");
+                //   recFlex.style.marginBottom = "30px";
+                //   recFlex.style.display = "flex";
+                //   recFlex.style.flexWrap = "wrap";
+                //   recFlex.style.gap = "10px";
+
+                //   recCon.appendChild(h5);
+
+                //   response.forEach((element) => {
+                //     const button = document.createElement("button");
+                //     button.setAttribute("class", "btn btn-outline-primary");
+                //     button.style.textTransform = "none";
+                //     button.style.fontSize = "inherit";
+                //     button.style.borderRadius = "30px";
+                //     button.style.marginRight = "10px";
+                //     button.style.marginBottom = "10px";
+                //     button.textContent = element.name;
+                //     button.addEventListener("mouseover", () => {
+                //       button.style.background = "#007DFC";
+                //       button.style.color = "white";
+                //     });
+                //     button.addEventListener("mouseout", () => {
+                //       button.style.background = "white";
+                //       button.style.color = "#007DFC";
+                //     });
+                //     recFlex.appendChild(button);
+                //   });
+
+
+                //   recCon.appendChild(recFlex);
+
+                //   this.cardBodyDiv.appendChild(recCon);
+                // }
               }
             })
             .catch((error) => {
