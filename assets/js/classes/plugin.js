@@ -133,8 +133,8 @@ function sortRatingByLocalStorage() {
         item?.rating && item?.rating?.length > 0
           ? item?.rating[0]?.comment
           : item.ratings && item.ratings.length > 0
-          ? item.ratings[0].comment
-          : item?.comment,
+            ? item.ratings[0].comment
+            : item?.comment,
       rating: item?.rating || (item?.ratings[0] && item?.ratings[0].rating),
       isot_file_id: item?.isot_file_id || item?.isot_path_addr,
       isot_file: item?.isot_file || item?.isot_skill,
@@ -441,7 +441,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalLeftSecondContent.id = "modalLeftSecondContent";
     modalLeftSecondContent.innerHTML =
       ratingGet[
-        obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
+      obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
       ];
     modalLeftSecondContent.style.margin = "0 0 0 10px";
     modalLeftSecondContent.style.padding = "4px 12px";
@@ -472,9 +472,8 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalRightContent.appendChild(modalRightFirstContent);
 
     const modalRightSecondContent = document.createElement("button");
-    modalRightSecondContent.id = `modalRightSecondContent-${
-      obj?.id ? obj.id : obj?.isot_file.path_addr
-    }`;
+    modalRightSecondContent.id = `modalRightSecondContent-${obj?.id ? obj.id : obj?.isot_file.path_addr
+      }`;
     modalRightSecondContent.style.background = "transparent";
     modalRightSecondContent.style.border = "none";
     modalRightSecondContent.style.margin = "0px 0px 0px 10px";
@@ -1653,7 +1652,8 @@ class IysSearchPlugin {
 
     const div = document.getElementById("dropdown-plugin-div");
     div.style.padding = "30px";
-    div.style.height = "200px";
+    div.style.minHeight = "auto";
+    div.style.maxHeight = "400px";
     div.style.overflow = "auto";
 
     // Create and append the loader while waiting for the API response
@@ -1950,11 +1950,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           manageTooltip(
             infoDesBtn,
             `<div>
-          ${
-            skillDetail.description !== null
+          ${skillDetail.description !== null
               ? `<p>${skillDetail.description}</p>`
               : ""
-          }
+            }
         </div>`
           );
         }
@@ -2180,7 +2179,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           const returnAccordionIcon =
             subElementSpan &&
-            subElementSpan.classList.contains("accordion-true")
+              subElementSpan.classList.contains("accordion-true")
               ? "fas fa-minus"
               : "fas fa-plus";
 
@@ -3216,7 +3215,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillIdElement.removeChild(loader);
           skillIdElement.innerHTML = previousContent;
         })
-        .finally((err) => {});
+        .finally((err) => { });
     } else {
       const previousContent = selectedSkillDiv.innerHTML;
       // Create and append the loader
@@ -3246,6 +3245,82 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .then((response) => {
           selectedSkillDiv.removeChild(loader);
           selectedSkillDiv.innerHTML = previousContent;
+
+          const url = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillId}`;
+          fetchData(url, "GET")
+            .then((response) => {
+              if (response !== undefined) {
+                console.log("get-recommendations", response);
+
+                if (response.length > 0) {
+
+                  const h5 = document.createElement("div");
+                  h5.setAttribute("class", "card-title text-start");
+                  h5.style.margin = "30px 0px";
+                  h5.textContent = "Related Skills";
+
+                  this.cardBodyDiv.appendChild(h5);
+                  
+                  this.createSelectSkillsChildBox(
+                    this.cardBodyDiv,
+                    response,
+                    "Related Skills",
+                    skillId
+                  );
+
+                }
+
+                // if (response.length > 0) {
+
+                //   const h5 = document.createElement("h3");
+                //   h5.setAttribute("class", "card-title");
+                //   h5.style.margin = "30px 0px";
+                //   h5.textContent = "Related Skills";
+
+                //   const recCon = document.createElement("div");
+                //   recCon.setAttribute("class", "recommended-container");
+                //   recCon.style.textAlign = "left";
+
+                //   const recFlex = document.createElement("div");
+                //   recFlex.setAttribute("class", "recommended-flex");
+                //   recFlex.style.marginBottom = "30px";
+                //   recFlex.style.display = "flex";
+                //   recFlex.style.flexWrap = "wrap";
+                //   recFlex.style.gap = "10px";
+
+                //   recCon.appendChild(h5);
+
+                //   response.forEach((element) => {
+                //     const button = document.createElement("button");
+                //     button.setAttribute("class", "btn btn-outline-primary");
+                //     button.style.textTransform = "none";
+                //     button.style.fontSize = "inherit";
+                //     button.style.borderRadius = "30px";
+                //     button.style.marginRight = "10px";
+                //     button.style.marginBottom = "10px";
+                //     button.textContent = element.name;
+                //     button.addEventListener("mouseover", () => {
+                //       button.style.background = "#007DFC";
+                //       button.style.color = "white";
+                //     });
+                //     button.addEventListener("mouseout", () => {
+                //       button.style.background = "white";
+                //       button.style.color = "#007DFC";
+                //     });
+                //     recFlex.appendChild(button);
+                //   });
+
+
+                //   recCon.appendChild(recFlex);
+
+                //   this.cardBodyDiv.appendChild(recCon);
+                // }
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+
 
           this.createSelectSkillsChildBox(
             this.cardBodyDiv,
