@@ -2,7 +2,7 @@ var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
 const ENDPOINT_URL =
-  "https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/staging/dev-api/";
+  "https://lambdaapi.iysskillstech.com/latest/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
@@ -932,7 +932,7 @@ function ResetButton(htmlElement, disabled) {
 // Function to handle API calling for  "Add Skill" button click
 function addSkillToApi(payload) {
   // API endpoint (replace with your actual API endpoint)
-  const apiEndpoint = `https://5fr8r16ski.execute-api.us-east-1.amazonaws.com/stage/v2/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
+  const apiEndpoint = `https://lambdaapi.iysskillstech.com/v2/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
   // Make the API call using the fetch API
   return fetch(apiEndpoint, {
     method: "POST",
