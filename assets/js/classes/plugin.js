@@ -3576,7 +3576,7 @@ function appendTabularViewContent() {
     tagTitle.innerText = tagsString;
 
     const skillsCount = document.createElement('span');
-    skillsCount.innerText = `${skillsGroup.length} skills selected`;
+    skillsCount.innerText = `${skillsGroup.length} elements selected`;
 
     const dot = document.createElement('i');
     dot.className = 'fa fa-xs fa-circle me-1 text-primary';
