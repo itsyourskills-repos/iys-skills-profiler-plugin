@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin Demo</title>
+  <title>Plugin</title>
   <script src="https://d3js.org/d3.v6.js"></script>
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -40,90 +40,186 @@
 </head>
 
 <body style="background-color: transparent;">
+
   <div class="card">
-    <div class="card-body">
-      <div id="serachid"></div>
-      <div class="elementCountLabel"></div>
-      <div class="tab-content" id="pills-tabContent">
-        <div id="skillPlayground">
-          <div id="replaceholder">
-            <img style="width: 100%; max-width: 50%; max-height: 700px; margin-top: 20px;" src="./assets/img/search.svg" alt="search placeholder">
+
+    <nav class="mb-3 border-bottom" style="padding-bottom: 1px;">
+      <div class="container-fluid d-flex justify-content-center">
+        <div>
+          <ul class="nav nav-tabs" id="myTab0" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button data-mdb-tab-init class="nav-link px-4 py-3 active" id="home-tab0" data-mdb-target="#home0" type="button"
+                role="tab" aria-controls="home" aria-selected="true">
+                <div class="d-flex flex-column align-items-center gap-2">
+                  <i class="fa fa-xl fa-search py-2"></i>
+                  <small>Search</small>
+                </div>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button data-mdb-tab-init class="nav-link px-4 py-3" id="profile-tab0" data-mdb-target="#profile0"
+                type="button" role="tab" aria-controls="profile" aria-selected="false">
+                <div class="d-flex flex-column align-items-center gap-2">
+                  <i class="fa fa-xl fa-user py-2"></i>
+                  <small>Profile</small>
+                </div>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="tab-content" id="myTabContent0">
+      <div class="tab-pane fade show active" id="home0" role="tabpanel" aria-labelledby="home-tab0">
+        <div class="car">
+          <div class="card-body">
+            <div id="serachid"></div>
+            <div class="elementCountLabel"></div>
+            <div class="tab-content" id="pills-tabContent">
+              <div id="skillPlayground">
+                <div id="replaceholder">
+                  <img style="width: 100%; max-width: 50%; max-height: 700px; margin-top: 20px;"
+                    src="./assets/img/search.svg" alt="search placeholder">
+                </div>
+              </div>
+              <div id="selectSkill"></div>
+            </div>
           </div>
         </div>
-        <div id="selectSkill"></div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal -->
-  <div class="modal top fade" id="RateSkillModel" tabindex="-1" aria-labelledby="RateSkillModelLabel" aria-hidden="true"
-    data-mdb-backdrop="true" data-mdb-keyboard="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <p class="modal-title" id="RateSkillModelLabel">Modal title</p>
-          <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="spanElementForStar" style="margin-left: 0px; margin-right: 0px"></div>
+        <!-- Modal -->
+        <div class="modal top fade" id="RateSkillModel" tabindex="-1" aria-labelledby="RateSkillModelLabel"
+          aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+          <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <p class="modal-title" id="RateSkillModelLabel">Modal title</p>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div id="spanElementForStar" style="margin-left: 0px; margin-right: 0px"></div>
 
-          <!-- <hr /> -->
-          <label class="fw-bold">Remark</label>
-          <div class="form-outline">
-            <textarea class="form-control form-control-lg" id="rateSkillCommentBox" rows="4" data-mdb-showcounter="true"
-              maxlength="100"></textarea>
-            <label class="form-label" for="rateSkillCommentBox">Enter Remark (20-100 characters)</label>
-            <div class="form-helper"></div>
+                <!-- <hr /> -->
+                <label class="fw-bold">Remark</label>
+                <div class="form-outline">
+                  <textarea class="form-control form-control-lg" id="rateSkillCommentBox" rows="4"
+                    data-mdb-showcounter="true" maxlength="100"></textarea>
+                  <label class="form-label" for="rateSkillCommentBox">Enter Remark (20-100 characters)</label>
+                  <div class="form-helper"></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <span id="spanElementForSaveButton"> </span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <span id="spanElementForSaveButton"> </span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="modal top fade" id="RateSkillModel" tabindex="-1" aria-labelledby="RateSkillModelLabel" aria-hidden="true"
-    data-mdb-backdrop="true" data-mdb-keyboard="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <p class="modal-title" id="RateSkillModelLabel">Modal title</p>
-          <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"
-            id="RateSkillModelBtn"></button>
-        </div>
-        <div class="modal-body">
-          <div id="spanElementForStar" style="margin-left: 0px; margin-right: 0px"></div>
-          <!-- <hr /> -->
-          <label class="fw-bold" style="margin-bottom: 5px; margin-top: 5px">Remark</label>
-          <div class="form-outline">
-            <textarea class="form-control form-control-lg" id="rateSkillCommentBox" rows="4" data-mdb-showcounter="true"
-              maxlength="100"></textarea>
-            <label class="form-label" for="rateSkillCommentBox">Enter Remark (20-100 characters)</label>
-            <div class="form-helper"></div>
+        <div class="modal top fade show active" id="RateSkillModel" tabindex="-1" aria-labelledby="RateSkillModelLabel"
+          aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+          <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <p class="modal-title" id="RateSkillModelLabel">Modal title</p>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"
+                  id="RateSkillModelBtn"></button>
+              </div>
+              <div class="modal-body">
+                <div id="spanElementForStar" style="margin-left: 0px; margin-right: 0px"></div>
+                <!-- <hr /> -->
+                <label class="fw-bold" style="margin-bottom: 5px; margin-top: 5px">Remark</label>
+                <div class="form-outline">
+                  <textarea class="form-control form-control-lg" id="rateSkillCommentBox" rows="4"
+                    data-mdb-showcounter="true" maxlength="100"></textarea>
+                  <label class="form-label" for="rateSkillCommentBox">Enter Remark (20-100 characters)</label>
+                  <div class="form-helper"></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <span id="spanElementForSaveButton"> </span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <span id="spanElementForSaveButton"> </span>
+        <div id="resetModalContainer" class="modal-container">
+          <div id="confirmModal" class="modal-content">
+            <!-- Modal content here -->
+            <div class="reset-title">
+              <p>Reset Confirm</p>
+              <span id="closeModal" class="close-button">&times;</span>
+            </div>
+            <hr class="reset-hr-line" />
+            <p class="reset-message">Are you sure you want to reset?</p>
+            <button id="confirmReset" class="confirm-button">Confirm</button>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="profile0" role="tabpanel" aria-labelledby="profile-tab0">
+        <div class="container-fluid px-md-3 pb-md-3">
+          <div class="mb-4 mt-3">
+            <p class="h3">Skill Profile</p>
+            <p class="p-0 m-0">You have skills added to your profile.</p>
+          </div>
+          <div class="my-3">
+            <div class="nav nav-pills m-0" id="viewsTab" role="tablist">
+              <div class="btn-group border" role="group" aria-label="Three views" style="padding: 1px;">
+                <button data-mdb-tab-init class="p-3 btn nav-link active" id="quick-tab"
+                  data-mdb-target="#quick-tab-content" type="button" role="tab" aria-controls="home"
+                  aria-selected="true" data-mdb-ripple-init>
+                  <i class="fa fa-wand-magic-sparkles me-1"></i> Quick View
+                </button>
+                <button data-mdb-tab-init class="p-3 btn nav-link" id="tabular-tab"
+                  data-mdb-target="#tabular-tab-content" type="button" role="tab" aria-controls="profile"
+                  aria-selected="false" data-mdb-ripple-init>
+                  <i class="fa fa-table me-1"></i> Tabular View
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="tab-content card shadow border p-3" id="viewsTabContent0">
+            <div class="tab-pane fade show active" id="quick-tab-content" role="tabpanel" aria-labelledby="home-tab0">
+              <div>
+                <p class="h5">Quick View</p>
+                <p class="p-0 m-0">Presents your skills, proficiencies, and notes on the skills. Easy to know what all
+                  skills you have</p>
+                <div id="quickViewContentDiv"></div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tabular-tab-content" role="tabpanel" aria-labelledby="profile-tab0">
+              <div>
+                <p class="h5">Tabular View</p>
+                <p class="p-0 m-0">Presents your skills in a logical and organized way, like that in our report
+                  cards
+                  in school.
+                </p>
+                <br>
+                <div id="tabularViewContentView"></div>
+
+                <div>
+                  <div class="accordion d-none" id="accordionPanelsStayOpenExample">
+                    <div class="accordion-item">
+                      <button data-mdb-collapse-init class="accordion-button" type="button" data-mdb-toggle="collapse"
+                          data-mdb-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseOne" style="background-color: #eff5ff;">
+                        </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div id="resetModalContainer" class="modal-container">
-    <div id="confirmModal" class="modal-content">
-      <!-- Modal content here -->
-      <div class="reset-title">
-        <p>Reset Confirm</p>
-        <span id="closeModal" class="close-button">&times;</span>
-      </div>
-      <hr class="reset-hr-line" />
-      <p class="reset-message">Are you sure you want to reset?</p>
-      <button id="confirmReset" class="confirm-button">Confirm</button>
-    </div>
   </div>
 
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"></script>
+
+
   <script src="assets/js/classes/plugin.js"></script>
   <script src="assets/js/main.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
 </body>
 
 </html>

@@ -261,7 +261,7 @@ function createSelectedSkillsCount() {
     elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-</svg>  ${sumofAllRatings} element added to your profile <a href='/profile'> Check your profile </a> `;
+</svg>  ${sumofAllRatings} element added to your profile <a id='profile-link' href="#" onclick="openProfileTab()">Check your profile</a>`;
   } else {
     elementCountLabel.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -2343,6 +2343,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               toastr.success(
                 `Adding Skill ${skillDetail.name}  Added to profile`
               );
+              updateProfileData();
               await getListFromLoggedInUser("notLoadded");
               myrate();
               if (skillDetail?.path_addr) {
@@ -2394,6 +2395,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             parentSkillDetailId: parentSkillDetailId,
           });
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
+          updateProfileData();
           myrate();
           // document.getElementById(parentSkillDetailId).innerHTML = "";
           // document.getElementById("parent-" + parentSkillDetailId).click();
@@ -3260,7 +3262,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                   h5.textContent = "Related Skills";
 
                   this.cardBodyDiv.appendChild(h5);
-                  
+
                   this.createSelectSkillsChildBox(
                     this.cardBodyDiv,
                     response,
@@ -3386,7 +3388,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          // this.createSkillPath(cardBodyDiv, response.ancestors);
+          // this.createSkillPath(cardBodyDiv, response.ancestors);FromlocalStorage
           if (response.siblings.length > 0) {
             this.createSelectSkillsChildBox(
               this.cardBodyDiv,
@@ -3401,4 +3403,261 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
     }
   }
+}
+
+
+/**
+ * Profile page 
+ */
+
+// Helper function to get tags as a string
+function getTags(tags) {
+  return tags.map(tag => tag.title).join(', ');
+}
+
+// Helper function to get experience level
+function getExperienceLevel(rating) {
+  const experienceLevels = ["0 - 2 years", "2 - 5 years", "5 - 10 years", "10+ years"];
+  return experienceLevels[rating - 1] || 'Not specified';
+}
+
+function getRandomColor(existingColors) {
+  const letters = "0123456789ABCDEF";
+  let color;
+
+  do {
+    color = "#" + Array.from({ length: 6 }, () => letters[Math.floor(Math.random() * 16)]).join('');
+  } while (existingColors.includes(color) || isColorTooLight(color));
+
+  existingColors.push(color);
+  return color;
+}
+
+function isColorTooLight(color) {
+  const rgbColor = hexToRgb(color);
+  const luminance = (0.299 * rgbColor[0] + 0.587 * rgbColor[1] + 0.114 * rgbColor[2]) / 255;
+  return luminance > 0.5;
+}
+
+function hexToRgb(hex) {
+  return hex.match(/[A-Fa-f0-9]{2}/g).map((v) => parseInt(v, 16));
+}
+
+function addLightOpacity(color, opacity) {
+  opacity = opacity >= 0 && opacity <= 1 ? opacity : 0.5;
+  const rgbColor = hexToRgb(color);
+  return `rgba(${rgbColor[0]}, ${rgbColor[1]}, ${rgbColor[2]}, ${opacity})`;
+}
+
+const existingColors = [];
+var buttons = document.getElementsByClassName('random-color-button');
+
+for (var i = 0; i < buttons.length; i++) {
+  const randomColor = getRandomColor(existingColors);
+  const randomColorWithOpacity = addLightOpacity(randomColor, 0.1);
+
+  buttons[i].style.color = `${randomColor}`;
+  buttons[i].style.border = `1px solid ${randomColor}`;
+  buttons[i].style.background = randomColorWithOpacity;
+}
+
+function applyRandomColor(buttons) {
+  const existingColors = [];
+
+  for (let i = 0; i < buttons.length; i++) {
+    const randomColor = getRandomColor(existingColors);
+    const randomColorWithOpacity = addLightOpacity(randomColor, 0.1);
+
+    buttons[i].style.color = `${randomColor}`;
+    buttons[i].style.border = `1px solid ${randomColor}`;
+    buttons[i].style.background = randomColorWithOpacity;
+  }
+}
+
+function appendQuickViewContent() {
+  const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
+
+  if (!skillsData || skillsData.length === 0) {
+    document.getElementById('quickViewContentDiv').innerHTML = '<br>No skills data available.';
+    return;
+  }
+  // Group skills based on tags
+  const groupedSkills = {};
+  skillsData.forEach(skill => {
+    const tagsString = getTags(skill.isot_file.tags);
+    if (!groupedSkills[tagsString]) {
+      groupedSkills[tagsString] = [];
+    }
+    groupedSkills[tagsString].push(skill);
+  });
+
+  // Append content to quickViewContentDiv
+  const quickViewContentDiv = document.getElementById('quickViewContentDiv');
+
+  for (const tagsString in groupedSkills) {
+    const skillsGroup = groupedSkills[tagsString];
+
+    const section = document.createElement('section');
+    const tagElement = document.createElement('div');
+    const skillsContainer = document.createElement('div');
+
+    tagElement.className = 'tag mb-2 mt-3 fw-bold';
+    skillsContainer.className = 'd-flex flex-wrap gap-3 mb-4';
+
+    tagElement.innerText = tagsString;
+    section.appendChild(tagElement);
+
+    skillsGroup.forEach(skill => {
+      const skillContainer = document.createElement('div');
+      skillContainer.className = 'btn-rounded border d-flex align-items-center gap-2 px-2';
+      skillContainer.style = 'font-size: 14px; padding: 6px 0px;';
+      skillContainer.innerHTML = `
+      <span>&nbsp;&nbsp;${skill.isot_file.name}</span>
+      <button class="btn btn-rounded shadow-0 random-color-button">${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length}
+      Rating</button>
+      `;
+      skillsContainer.appendChild(skillContainer);
+    });
+
+    section.appendChild(skillsContainer);
+    quickViewContentDiv.appendChild(section);
+  }
+}
+
+function appendTabularViewContent() {
+  const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
+
+  if (!skillsData || skillsData.length === 0) {
+    document.getElementById('tabularViewContentView').innerHTML = 'No skills data available.';
+    return;
+  }
+
+  // Group skills based on tags
+  const groupedSkills = {};
+  skillsData.forEach(skill => {
+    const tagsString = getTags(skill.isot_file.tags);
+    if (!groupedSkills[tagsString]) {
+      groupedSkills[tagsString] = [];
+    }
+    groupedSkills[tagsString].push(skill);
+  });
+
+  // Append content to tabularViewContentView
+  const tabularViewContentDiv = document.getElementById('tabularViewContentView');
+  const accordionContainer = document.createElement('div');
+  accordionContainer.className = 'accordion';
+  const accordionIdPrefix = 'accordion';
+
+  let accordionIndex = 1;
+
+  for (const tagsString in groupedSkills) {
+    const skillsGroup = groupedSkills[tagsString];
+
+    const accordionItem = document.createElement('div');
+    accordionItem.className = 'accordion-item';
+
+    const accordionHeader = document.createElement('h2');
+    accordionHeader.className = 'accordion-header';
+
+    const accordionButton = document.createElement('button');
+    accordionButton.setAttribute('data-mdb-collapse-init', true);
+    accordionButton.className = 'accordion-button';
+    accordionButton.type = 'button';
+    accordionButton.setAttribute('data-mdb-toggle', 'collapse');
+    accordionButton.setAttribute('data-mdb-target', `#${accordionIdPrefix}-collapse-${accordionIndex}`);
+    accordionButton.setAttribute('aria-expanded', 'true');
+    accordionButton.setAttribute('aria-controls', `${accordionIdPrefix}-collapse-${accordionIndex}`);
+    accordionButton.style.backgroundColor = '#eff5ff';
+
+    const headerContent = document.createElement('div');
+    headerContent.className = 'd-flex gap-3 align-items-center';
+
+    const tagTitle = document.createElement('b');
+    tagTitle.innerText = tagsString;
+
+    const skillsCount = document.createElement('span');
+    skillsCount.innerText = `${skillsGroup.length} elements selected`;
+
+    const dot = document.createElement('i');
+    dot.className = 'fa fa-xs fa-circle me-1';
+    dot.style.fontSize = '8px';
+
+    headerContent.appendChild(tagTitle);
+    headerContent.appendChild(dot);
+    headerContent.appendChild(skillsCount);
+
+    accordionButton.appendChild(headerContent);
+    accordionHeader.appendChild(accordionButton);
+
+    const accordionCollapse = document.createElement('div');
+    accordionCollapse.id = `${accordionIdPrefix}-collapse-${accordionIndex}`;
+    accordionCollapse.className = 'accordion-collapse collapse show';
+    accordionCollapse.setAttribute('aria-labelledby', `${accordionIdPrefix}-heading-${accordionIndex}`);
+
+    const accordionBody = document.createElement('div');
+    accordionBody.className = 'accordion-body p-0';
+
+    skillsGroup.forEach((skill, index) => {
+      const skillContainer = document.createElement('div');
+      skillContainer.className = 'taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3';
+
+      const skillName = document.createElement('div');
+      skillName.className = 'bg-';
+      skillName.innerText = skill.isot_file.name || 'Skill Name Not Available';
+
+      const skillDetails = document.createElement('div');
+      skillDetails.className = 'd-flex';
+
+      const experienceDetails = document.createElement('div');
+      experienceDetails.className = 'pe-3 border-end border-2';
+      experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(skill.rating[1])}`;
+
+      const ratingDetails = document.createElement('div');
+      ratingDetails.className = 'ps-3';
+      ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
+
+      skillDetails.appendChild(experienceDetails);
+      skillDetails.appendChild(ratingDetails);
+
+      skillContainer.appendChild(skillName);
+      skillContainer.appendChild(skillDetails);
+
+      // Check if the skill container is the last child
+      if (index < skillsGroup.length - 1) {
+        skillContainer.classList.add('border-bottom', 'p-3');
+      } else {
+        skillContainer.classList.add('p-3');  // No border-bottom for the last child
+      }
+
+      accordionBody.appendChild(skillContainer);
+    });
+
+    accordionCollapse.appendChild(accordionBody);
+    accordionItem.appendChild(accordionHeader);
+    accordionItem.appendChild(accordionCollapse);
+
+    accordionContainer.appendChild(accordionItem);
+    accordionIndex++;
+  }
+
+  // Append the generated content to the tabularViewContentView div
+  tabularViewContentDiv.innerHTML = '';
+  tabularViewContentDiv.appendChild(accordionContainer);
+}
+
+function openProfileTab() {
+  var profileButton = document.getElementById("profile-tab0");
+  if (profileButton) {
+    profileButton.click();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  updateProfileData();
+});
+
+function updateProfileData() {
+  appendQuickViewContent();
+  applyRandomColor(buttons);
+  appendTabularViewContent();
 }
