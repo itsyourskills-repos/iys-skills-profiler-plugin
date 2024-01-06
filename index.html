@@ -162,8 +162,7 @@
           </div>
           <div class="my-3">
             <div class="nav nav-pills m-0" id="viewsTab" role="tablist">
-              <div class="btn-group rounded-0 rounded-top border border-bottom-0 w-100" role="group"
-                aria-label="Three views" style="padding: 1px;">
+              <div class="btn-group border" role="group" aria-label="Three views" style="padding: 1px;">
                 <button data-mdb-tab-init class="p-3 btn nav-link active" id="quick-tab"
                   data-mdb-target="#quick-tab-content" type="button" role="tab" aria-controls="home"
                   aria-selected="true" data-mdb-ripple-init>
@@ -174,22 +173,20 @@
                   aria-selected="false" data-mdb-ripple-init>
                   <i class="fa fa-table me-1"></i> Tabular View
                 </button>
-                <button data-mdb-tab-init class="p-3 btn nav-link" id="smart-tab" data-mdb-target="#smart-tab-content"
-                  type="button" role="tab" aria-controls="contact" aria-selected="false" data-mdb-ripple-init>
-                  <i class="fa fa-chart-pie me-1"></i> Smart View
-                </button>
               </div>
             </div>
-            <div class="tab-content card shadow border rounded-0 rounded-bottom p-3" id="viewsTabContent0">
-              <div class="tab-pane fade show active" id="quick-tab-content" role="tabpanel" aria-labelledby="home-tab0">
-                <div>
-                  <p class="h5">Quick View</p>
-                  <p class="p-0 m-0">Presents your skills, proficiencies, and notes on the skills. Easy to know what all
-                    skills you have</p>
-                  <div id="quickViewContentDiv"></div>
-                  <hr>
-                  <div class="my-3">
-                    <b>Knowledge and Skills</b>
+          </div>
+          <div class="tab-content card shadow border p-3" id="viewsTabContent0">
+            <div class="tab-pane fade" id="quick-tab-content" role="tabpanel" aria-labelledby="home-tab0">
+              <div>
+                <p class="h5">Quick View</p>
+                <p class="p-0 m-0">Presents your skills, proficiencies, and notes on the skills. Easy to know what all
+                  skills you have</p>
+                <div id="quickViewContentDiv"></div>
+                <hr>
+                <div class="my-3">
+                  <section>
+                    <b class="tag">Knowledge and Skills</b>
                     <div class="d-flex flex-wrap gap-3 mt-3">
                       <div class="btn-rounded border d-flex align-items-center gap-2 px-2"
                         style="font-size: 14px; padding: 6px 0px;">
@@ -197,40 +194,69 @@
                         <button class="btn btn-rounded shadow-0 random-color-button">2/5 Rating</button>
                       </div>
                     </div>
-                  </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade show active" id="tabular-tab-content" role="tabpanel"
+              aria-labelledby="profile-tab0">
+              <div>
+                <p class="h5">Tabular View</p>
+                <p class="p-0 m-0">Presents your skills in a logical and organized way, like that in our report
+                  cards
+                  in school.
+                </p>
+                <div id="tabularViewContentView"></div>
+                <hr>
 
-                </div>
-                <div class="tab-pane fade" id="tabular-tab-content" role="tabpanel" aria-labelledby="profile-tab0">
-                  <div>
-                    <p class="h5">Tabular View</p>
-                    <p class="p-0 m-0">Presents your skills in a logical and organized way, like that in our report
-                      cards
-                      in school.
-                    <div id="tabularViewContentView"></div>
-                    </p>
+                <div>
+                  <div class="accordion" id="accordionPanelsStayOpenExample">
+                    <div class="accordion-item"> <!--each accordian item for each tag and all the skills in that particular tag will be printed as taggedSkills-->
+                      <h2 class="accordion-header" id="headingOne">
+                        <button data-mdb-collapse-init class="accordion-button" type="button" data-mdb-toggle="collapse"
+                          data-mdb-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseOne" style="background-color: #eff5ff;">
+                          <div class="d-flex gap-3 align-items-center">
+                            <b>Domain And Context</b>
+                            <i class="fa fa-xs fa-circle me-1 text-primary" style="font-size: 8px;"></i>
+                            8 skills selected
+                          </div>
+                        </button>
+                      </h2>
+                      <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+                        aria-labelledby="headingOne">
+                        <div class="accordion-body">
+                          <div class="taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <div class="bg-">skill name</div>
+                            <div class="d-flex">
+                              <div class="pe-3 border-end border-2">
+                                <i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> 10+ Years
+                              </div>
+                              <div class="ps-3 ">
+                                2/5 Rating
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div class="tab-pane fade" id="smart-tab-content" role="tabpanel" aria-labelledby="contact-tab0">
-                  <div>
-                    <p class="h5">Smart View</p>
-                    <p class="p-0 m-0">Present your skills in engaging and attractive way. Easy to compare proficiencies
-                      in your different skills.</p>
-                    <div id="smartViewContentDiv"></div>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+  </div>
 
 
 
-    <script src="assets/js/classes/plugin.js"></script>
-    <script src="assets/js/main.js"></script>
-    <script type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
+  <script src="assets/js/classes/plugin.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
 </body>
 
 </html>
