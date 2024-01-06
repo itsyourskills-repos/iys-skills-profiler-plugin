@@ -3478,7 +3478,7 @@ function appendQuickViewContent() {
   const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
 
   if (!skillsData || skillsData.length === 0) {
-    document.getElementById('quickViewContentDiv').innerHTML = 'No skills data available.';
+    document.getElementById('quickViewContentDiv').innerHTML = '<br>No skills data available.';
     return;
   }
   // Group skills based on tags
