@@ -48,8 +48,8 @@
         <div>
           <ul class="nav nav-tabs" id="myTab0" role="tablist">
             <li class="nav-item" role="presentation">
-              <button data-mdb-tab-init class="nav-link px-4 py-2 py-md-3" id="home-tab0" data-mdb-target="#home0"
-                type="button" role="tab" aria-controls="home" aria-selected="true">
+              <button data-mdb-tab-init class="nav-link px-4 py-3" id="home-tab0" data-mdb-target="#home0" type="button"
+                role="tab" aria-controls="home" aria-selected="true">
                 <div class="d-flex flex-column align-items-center gap-2">
                   <i class="fa fa-xl fa-search py-2"></i>
                   <small>Search</small>
@@ -57,8 +57,8 @@
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button data-mdb-tab-init class="nav-link px-4 py-2 py-md-3 active" id="profile-tab0"
-                data-mdb-target="#profile0" type="button" role="tab" aria-controls="profile" aria-selected="false">
+              <button data-mdb-tab-init class="nav-link px-4 py-3 active" id="profile-tab0" data-mdb-target="#profile0"
+                type="button" role="tab" aria-controls="profile" aria-selected="false">
                 <div class="d-flex flex-column align-items-center gap-2">
                   <i class="fa fa-xl fa-user py-2"></i>
                   <small>Profile</small>
@@ -161,51 +161,62 @@
             <p class="p-0 m-0">You have skills added to your profile.</p>
           </div>
           <div class="my-3">
-            <div class="nav nav-tabs" id="viewsTab" role="tablist">
-              <div class="btn-group rounded-0 rounded-top border border-bottom-0 w-100" role="group" aria-label="Three views"
-                style="padding: 1px;">
-                <button data-mdb-tab-init class="border-end p-3 btn nav-link active" id="quick-tab"
+            <div class="nav nav-pills m-0" id="viewsTab" role="tablist">
+              <div class="btn-group rounded-0 rounded-top border border-bottom-0 w-100" role="group"
+                aria-label="Three views" style="padding: 1px;">
+                <button data-mdb-tab-init class="p-3 btn nav-link active" id="quick-tab"
                   data-mdb-target="#quick-tab-content" type="button" role="tab" aria-controls="home"
                   aria-selected="true" data-mdb-ripple-init>
                   <i class="fa fa-wand-magic-sparkles me-1"></i> Quick View
                 </button>
-                <button data-mdb-tab-init class="border-start border-end p-3 btn nav-link" id="tabular-tab"
+                <button data-mdb-tab-init class="p-3 btn nav-link" id="tabular-tab"
                   data-mdb-target="#tabular-tab-content" type="button" role="tab" aria-controls="profile"
                   aria-selected="false" data-mdb-ripple-init>
                   <i class="fa fa-table me-1"></i> Tabular View
                 </button>
-                <button data-mdb-tab-init class="border-start p-3 btn nav-link" id="smart-tab"
-                  data-mdb-target="#smart-tab-content" type="button" role="tab" aria-controls="contact"
-                  aria-selected="false" data-mdb-ripple-init>
+                <button data-mdb-tab-init class="p-3 btn nav-link" id="smart-tab" data-mdb-target="#smart-tab-content"
+                  type="button" role="tab" aria-controls="contact" aria-selected="false" data-mdb-ripple-init>
                   <i class="fa fa-chart-pie me-1"></i> Smart View
                 </button>
               </div>
             </div>
-            <div class="tab-content card shadow border rounded-0 rounded-bottom rounded-lg-end p-3" id="viewsTabContent0">
+            <div class="tab-content card shadow border rounded-0 rounded-bottom p-3" id="viewsTabContent0">
               <div class="tab-pane fade show active" id="quick-tab-content" role="tabpanel" aria-labelledby="home-tab0">
                 <div>
                   <p class="h5">Quick View</p>
                   <p class="p-0 m-0">Presents your skills, proficiencies, and notes on the skills. Easy to know what all
                     skills you have</p>
                   <div id="quickViewContentDiv"></div>
-                </div>
+                  <hr>
+                  <div class="my-3">
+                    <b>Knowledge and Skills</b>
+                    <div class="d-flex flex-wrap gap-3 mt-3">
+                      <div class="btn-rounded border d-flex align-items-center gap-2 px-2"
+                        style="font-size: 14px; padding: 6px 0px;">
+                        <span>&nbsp;&nbsp;Python</span>
+                        <button class="btn btn-rounded shadow-0 random-color-button">2/5 Rating</button>
+                      </div>
+                    </div>
+                  </div>
 
-              </div>
-              <div class="tab-pane fade" id="tabular-tab-content" role="tabpanel" aria-labelledby="profile-tab0">
-                <div>
-                  <p class="h5">Tabular View</p>
-                  <p class="p-0 m-0">Presents your skills in a logical and organized way, like that in our report cards
-                    in school.
-                  <div id="tabularViewContentView"></div>
-                  </p>
                 </div>
-              </div>
-              <div class="tab-pane fade" id="smart-tab-content" role="tabpanel" aria-labelledby="contact-tab0">
-                <div>
-                  <p class="h5">Smart View</p>
-                  <p class="p-0 m-0">Present your skills in engaging and attractive way. Easy to compare proficiencies
-                    in your different skills.</p>
-                  <div id="smartViewContentDiv"></div>
+                <div class="tab-pane fade" id="tabular-tab-content" role="tabpanel" aria-labelledby="profile-tab0">
+                  <div>
+                    <p class="h5">Tabular View</p>
+                    <p class="p-0 m-0">Presents your skills in a logical and organized way, like that in our report
+                      cards
+                      in school.
+                    <div id="tabularViewContentView"></div>
+                    </p>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="smart-tab-content" role="tabpanel" aria-labelledby="contact-tab0">
+                  <div>
+                    <p class="h5">Smart View</p>
+                    <p class="p-0 m-0">Present your skills in engaging and attractive way. Easy to compare proficiencies
+                      in your different skills.</p>
+                    <div id="smartViewContentDiv"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -213,15 +224,13 @@
         </div>
       </div>
     </div>
-  </div>
 
 
 
-  <script src="assets/js/classes/plugin.js"></script>
-  <script src="assets/js/main.js"></script>
-  <!-- MDB -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
-
+    <script src="assets/js/classes/plugin.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
 </body>
 
 </html>

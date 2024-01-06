@@ -3407,6 +3407,48 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 /**
  * Profile page 
  */
+
+function getRandomColor(existingColors) {
+  const letters = "0123456789ABCDEF";
+  let color;
+
+  do {
+    color = "#" + Array.from({ length: 6 }, () => letters[Math.floor(Math.random() * 16)]).join('');
+  } while (existingColors.includes(color) || isColorTooLight(color));
+
+  existingColors.push(color);
+  return color;
+}
+
+function isColorTooLight(color) {
+  const rgbColor = hexToRgb(color);
+  const luminance = (0.299 * rgbColor[0] + 0.587 * rgbColor[1] + 0.114 * rgbColor[2]) / 255;
+  return luminance > 0.5;
+}
+
+function hexToRgb(hex) {
+  return hex.match(/[A-Fa-f0-9]{2}/g).map((v) => parseInt(v, 16));
+}
+
+function addLightOpacity(color, opacity) {
+  opacity = opacity >= 0 && opacity <= 1 ? opacity : 0.5;
+  const rgbColor = hexToRgb(color);
+  return `rgba(${rgbColor[0]}, ${rgbColor[1]}, ${rgbColor[2]}, ${opacity})`;
+}
+
+const existingColors = [];
+var buttons = document.getElementsByClassName('random-color-button');
+
+for (var i = 0; i < buttons.length; i++) {
+  const randomColor = getRandomColor(existingColors);
+  const randomColorWithOpacity = addLightOpacity(randomColor, 0.1);
+
+  buttons[i].style.color = `${randomColor}`;
+  buttons[i].style.border = `1px solid ${randomColor}`;
+  buttons[i].style.background = randomColorWithOpacity;
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
   // Profile link
   var profileLink = document.getElementById("profile-link");
@@ -3425,7 +3467,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (skillsData && skillsData.length > 0) {
     // Get the container element
-    const skillsContainer = document.getElementById('quickViewContentDiv');
+    const skillsContainer = document.getElementById('profileContainer');
 
     // Create an object to store skill containers based on tags
     const tagContainers = {};
