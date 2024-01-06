@@ -261,7 +261,7 @@ function createSelectedSkillsCount() {
     elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-</svg>  ${sumofAllRatings} element added to your profile <a id='profile-link' href='/profile'> Check your profile </a> `;
+</svg>  ${sumofAllRatings} element added to your profile <a id='profile-link' href="#" onclick="openProfileTab()">Check your profile</a>`;
   } else {
     elementCountLabel.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -3595,9 +3595,9 @@ function appendTabularViewContent() {
     const accordionBody = document.createElement('div');
     accordionBody.className = 'accordion-body p-0';
 
-    skillsGroup.forEach(skill => {
+    skillsGroup.forEach((skill, index) => {
       const skillContainer = document.createElement('div');
-      skillContainer.className = 'border-bottom p-3 d-flex flex-wrap align-items-center justify-content-between gap-3';
+      skillContainer.className = 'taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3';
 
       const skillName = document.createElement('div');
       skillName.className = 'bg-';
@@ -3620,6 +3620,13 @@ function appendTabularViewContent() {
       skillContainer.appendChild(skillName);
       skillContainer.appendChild(skillDetails);
 
+      // Check if the skill container is the last child
+      if (index < skillsGroup.length - 1) {
+        skillContainer.classList.add('border-bottom', 'p-3');
+      } else {
+        skillContainer.classList.add('p-3');  // No border-bottom for the last child
+      }
+
       accordionBody.appendChild(skillContainer);
     });
 
@@ -3636,19 +3643,14 @@ function appendTabularViewContent() {
   tabularViewContentDiv.appendChild(accordionContainer);
 }
 
-
+function openProfileTab() {
+  var profileButton = document.getElementById("profile-tab0");
+  if (profileButton) {
+    profileButton.click();
+  }
+}
 
 document.addEventListener('DOMContentLoaded', function () {
-  var profileLink = document.getElementById("profile-link");
-  profileLink.addEventListener("click", function (e) {
-    e.preventDefault();
-
-    var profileButton = document.getElementById("profile-tab0");
-    if (profileButton) {
-      profileButton.click();
-    }
-  });
-
   appendQuickViewContent();
   applyRandomColor(buttons);
   appendTabularViewContent();
