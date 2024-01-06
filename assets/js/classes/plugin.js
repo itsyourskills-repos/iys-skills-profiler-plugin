@@ -3579,7 +3579,7 @@ function appendTabularViewContent() {
     skillsCount.innerText = `${skillsGroup.length} elements selected`;
 
     const dot = document.createElement('i');
-    dot.className = 'fa fa-xs fa-circle me-1 text-primary';
+    dot.className = 'fa fa-xs fa-circle me-1';
     dot.style.fontSize = '8px';
 
     headerContent.appendChild(tagTitle);
