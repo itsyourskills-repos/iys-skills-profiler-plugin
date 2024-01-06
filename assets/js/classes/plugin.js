@@ -2343,6 +2343,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               toastr.success(
                 `Adding Skill ${skillDetail.name}  Added to profile`
               );
+              updateProfileData();
               await getListFromLoggedInUser("notLoadded");
               myrate();
               if (skillDetail?.path_addr) {
@@ -2394,6 +2395,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             parentSkillDetailId: parentSkillDetailId,
           });
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
+          updateProfileData();
           myrate();
           // document.getElementById(parentSkillDetailId).innerHTML = "";
           // document.getElementById("parent-" + parentSkillDetailId).click();
@@ -3651,7 +3653,11 @@ function openProfileTab() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  updateProfileData();
+});
+
+function updateProfileData() {
   appendQuickViewContent();
   applyRandomColor(buttons);
   appendTabularViewContent();
-});
+}
