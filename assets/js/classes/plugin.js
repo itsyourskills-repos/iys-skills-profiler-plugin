@@ -261,7 +261,7 @@ function createSelectedSkillsCount() {
     elementCountLabel.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#219653" class="bi bi-check-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-</svg>  ${sumofAllRatings} element added to your profile <a href='/profile'> Check your profile </a> `;
+</svg>  ${sumofAllRatings} element added to your profile <a id='profile-link' href='/profile'> Check your profile </a> `;
   } else {
     elementCountLabel.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F2994A" class="bi bi-info-circle" viewBox="0 0 16 16" style="margin: -4px 10px 0 0;" >
   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -3260,7 +3260,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                   h5.textContent = "Related Skills";
 
                   this.cardBodyDiv.appendChild(h5);
-                  
+
                   this.createSelectSkillsChildBox(
                     this.cardBodyDiv,
                     response,
@@ -3386,7 +3386,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          // this.createSkillPath(cardBodyDiv, response.ancestors);
+          // this.createSkillPath(cardBodyDiv, response.ancestors);FromlocalStorage
           if (response.siblings.length > 0) {
             this.createSelectSkillsChildBox(
               this.cardBodyDiv,
@@ -3402,3 +3402,82 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
 }
+
+
+/**
+ * Profile page 
+ */
+document.addEventListener('DOMContentLoaded', function () {
+  // Profile link
+  var profileLink = document.getElementById("profile-link");
+  profileLink.addEventListener("click", function (e) {
+    e.preventDefault(); // Prevent the default behavior of the anchor tag
+
+    // Perform actions similar to the button click
+    var profileButton = document.getElementById("profile-tab0");
+    if (profileButton) {
+      profileButton.click(); // Simulate a click on the button
+    }
+  });
+
+  // Read data from local storage
+  const skillsData = getListFromlocalStorage();
+
+  if (skillsData && skillsData.length > 0) {
+    // Get the container element
+    const skillsContainer = document.getElementById('quickViewContentDiv');
+
+    // Create an object to store skill containers based on tags
+    const tagContainers = {};
+
+    // Iterate through skills and display all parameters
+    skillsData.forEach(skill => {
+      // Get the tags as a comma-separated string
+      const tagsString = getTags(skill.isot_file.tags);
+
+      // Check if the container for the tag exists, create it if not
+      if (!tagContainers[tagsString]) {
+        tagContainers[tagsString] = document.createElement('div');
+        tagContainers[tagsString].innerHTML = `<h3>${tagsString}</h3>`;
+        skillsContainer.appendChild(tagContainers[tagsString]);
+      }
+
+      // Create a new div for each skill
+      const skillDiv = document.createElement('div');
+      skillDiv.innerHTML = `
+        <strong>Skill Name:</strong> ${skill.isot_file.name}<br>
+        <strong>Comment:</strong> ${skill.comment || 'No comment'}<br>
+        <strong>File ID:</strong> ${skill.isot_file_id}<br>
+        <strong>Path Address:</strong> ${skill.isot_file.path_addr}<br>
+        <strong>Description:</strong> ${skill.isot_file.description || 'No description'}<br>
+        <strong>Expertise Level:</strong> ${getExpertiseLevel(skill.rating[0].rating)}<br>
+        <strong>Experience Level:</strong> ${getExperienceLevel(skill.rating[1])}<br>
+        <strong>Tags:</strong> ${tagsString}<br>
+        <strong>Parent Skill Detail ID:</strong> ${skill.parentSkillDetailId || 'Not available'}<br><hr>`;
+
+      // Append the skill div to the corresponding tag container
+      tagContainers[tagsString].appendChild(skillDiv);
+    });
+  } else {
+    // Display a message if no skills data is available or if the page URL is not /profile
+    document.getElementById('profileContainer').innerHTML = 'No skills data available.';
+  }
+
+  // Function to get expertise level label
+  function getExpertiseLevel(rating) {
+    const expertiseLevels = ["Learning / Basic Understanding", "Familiar / Applied Understanding", "Advanced / Complex Applications", "Expert / Guru"];
+    return expertiseLevels[rating - 1];
+  }
+
+  // Function to get experience level label
+  function getExperienceLevel(rating) {
+    const experienceLevels = ["0 - 2 years", "2 - 5 years", "5 - 10 years", "10+ years"];
+    return experienceLevels[rating - 1];
+  }
+
+  // Function to get tags as a comma-separated string
+  function getTags(tags) {
+    return tags.map(tag => tag.title).join(', ');
+  }
+});
+
