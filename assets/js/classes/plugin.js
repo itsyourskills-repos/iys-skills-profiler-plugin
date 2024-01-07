@@ -1,8 +1,7 @@
 var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
-const ENDPOINT_URL =
-  "https://lambdaapi.iysskillstech.com/latest/dev-api/";
+const ENDPOINT_URL = "https://lambdaapi.iysskillstech.com/latest/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
@@ -133,8 +132,8 @@ function sortRatingByLocalStorage() {
         item?.rating && item?.rating?.length > 0
           ? item?.rating[0]?.comment
           : item.ratings && item.ratings.length > 0
-            ? item.ratings[0].comment
-            : item?.comment,
+          ? item.ratings[0].comment
+          : item?.comment,
       rating: item?.rating || (item?.ratings[0] && item?.ratings[0].rating),
       isot_file_id: item?.isot_file_id || item?.isot_path_addr,
       isot_file: item?.isot_file || item?.isot_skill,
@@ -441,7 +440,7 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalLeftSecondContent.id = "modalLeftSecondContent";
     modalLeftSecondContent.innerHTML =
       ratingGet[
-      obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
+        obj?.rating.length > 0 ? obj?.rating[0]?.rating - 1 : obj?.rating - 1
       ];
     modalLeftSecondContent.style.margin = "0 0 0 10px";
     modalLeftSecondContent.style.padding = "4px 12px";
@@ -472,8 +471,9 @@ function manageModalOnPlusOne(htmlElementForPlusOne, contentToShowInModal) {
     modalRightContent.appendChild(modalRightFirstContent);
 
     const modalRightSecondContent = document.createElement("button");
-    modalRightSecondContent.id = `modalRightSecondContent-${obj?.id ? obj.id : obj?.isot_file.path_addr
-      }`;
+    modalRightSecondContent.id = `modalRightSecondContent-${
+      obj?.id ? obj.id : obj?.isot_file.path_addr
+    }`;
     modalRightSecondContent.style.background = "transparent";
     modalRightSecondContent.style.border = "none";
     modalRightSecondContent.style.margin = "0px 0px 0px 10px";
@@ -1772,7 +1772,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             );
           }
 
-          this.createListProfileSkills();
+          // this.createListProfileSkills();
         });
       } else {
         await getListFromLoggedInUser();
@@ -1785,7 +1785,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // this.createAreaBox();
     // this.crea
     this.createRateSelectedSkills(this.options.skillPlayground);
-    this.createListProfileSkills();
+    // this.createListProfileSkills();
   }
   createPlayground() {
     this.selectedASkillBox = document.createElement("div");
@@ -1950,10 +1950,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           manageTooltip(
             infoDesBtn,
             `<div>
-          ${skillDetail.description !== null
+          ${
+            skillDetail.description !== null
               ? `<p>${skillDetail.description}</p>`
               : ""
-            }
+          }
         </div>`
           );
         }
@@ -2179,7 +2180,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           const returnAccordionIcon =
             subElementSpan &&
-              subElementSpan.classList.contains("accordion-true")
+            subElementSpan.classList.contains("accordion-true")
               ? "fas fa-minus"
               : "fas fa-plus";
 
@@ -2765,7 +2766,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 iElement.parentElement.remove();
                 delete_skill(skill.id);
                 console.log("refess the connect");
-                this.createListProfileSkills();
+                // this.createListProfileSkills();
               });
               button.appendChild(iElement);
 
@@ -2850,7 +2851,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           console.log("delted the skill", skill, skill.isot_file_id);
           delete_skill(skill.isot_file_id);
           console.log("refess the connect");
-          // this.createListProfileSkills();
+          this.createListProfileSkills();
         });
         button.appendChild(iElement);
 
@@ -3217,7 +3218,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillIdElement.removeChild(loader);
           skillIdElement.innerHTML = previousContent;
         })
-        .finally((err) => { });
+        .finally((err) => {});
     } else {
       const previousContent = selectedSkillDiv.innerHTML;
       // Create and append the loader
@@ -3255,7 +3256,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 console.log("get-recommendations", response);
 
                 if (response.length > 0) {
-
                   const h5 = document.createElement("div");
                   h5.setAttribute("class", "card-title text-start");
                   h5.style.margin = "30px 0px";
@@ -3269,7 +3269,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     "Related Skills",
                     skillId
                   );
-
                 }
 
                 // if (response.length > 0) {
@@ -3312,7 +3311,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 //     recFlex.appendChild(button);
                 //   });
 
-
                 //   recCon.appendChild(recFlex);
 
                 //   this.cardBodyDiv.appendChild(recCon);
@@ -3322,7 +3320,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             .catch((error) => {
               console.error(error);
             });
-
 
           this.createSelectSkillsChildBox(
             this.cardBodyDiv,
@@ -3405,20 +3402,24 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 }
 
-
 /**
- * Profile page 
+ * Profile page
  */
 
 // Helper function to get tags as a string
 function getTags(tags) {
-  return tags.map(tag => tag.title).join(', ');
+  return tags.map((tag) => tag.title).join(", ");
 }
 
 // Helper function to get experience level
 function getExperienceLevel(rating) {
-  const experienceLevels = ["0 - 2 years", "2 - 5 years", "5 - 10 years", "10+ years"];
-  return experienceLevels[rating - 1] || 'Not specified';
+  const experienceLevels = [
+    "0 - 2 years",
+    "2 - 5 years",
+    "5 - 10 years",
+    "10+ years",
+  ];
+  return experienceLevels[rating - 1] || "Not specified";
 }
 
 function getRandomColor(existingColors) {
@@ -3426,7 +3427,12 @@ function getRandomColor(existingColors) {
   let color;
 
   do {
-    color = "#" + Array.from({ length: 6 }, () => letters[Math.floor(Math.random() * 16)]).join('');
+    color =
+      "#" +
+      Array.from(
+        { length: 6 },
+        () => letters[Math.floor(Math.random() * 16)]
+      ).join("");
   } while (existingColors.includes(color) || isColorTooLight(color));
 
   existingColors.push(color);
@@ -3435,7 +3441,8 @@ function getRandomColor(existingColors) {
 
 function isColorTooLight(color) {
   const rgbColor = hexToRgb(color);
-  const luminance = (0.299 * rgbColor[0] + 0.587 * rgbColor[1] + 0.114 * rgbColor[2]) / 255;
+  const luminance =
+    (0.299 * rgbColor[0] + 0.587 * rgbColor[1] + 0.114 * rgbColor[2]) / 255;
   return luminance > 0.5;
 }
 
@@ -3450,7 +3457,7 @@ function addLightOpacity(color, opacity) {
 }
 
 const existingColors = [];
-var buttons = document.getElementsByClassName('random-color-button');
+var buttons = document.getElementsByClassName("random-color-button");
 
 for (var i = 0; i < buttons.length; i++) {
   const randomColor = getRandomColor(existingColors);
@@ -3478,12 +3485,13 @@ function appendQuickViewContent() {
   const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
 
   if (!skillsData || skillsData.length === 0) {
-    document.getElementById('quickViewContentDiv').innerHTML = '<br>No skills data available.';
+    document.getElementById("quickViewContentDiv").innerHTML =
+      "<br>No skills data available.";
     return;
   }
   // Group skills based on tags
   const groupedSkills = {};
-  skillsData.forEach(skill => {
+  skillsData.forEach((skill) => {
     const tagsString = getTags(skill.isot_file.tags);
     if (!groupedSkills[tagsString]) {
       groupedSkills[tagsString] = [];
@@ -3492,25 +3500,26 @@ function appendQuickViewContent() {
   });
 
   // Append content to quickViewContentDiv
-  const quickViewContentDiv = document.getElementById('quickViewContentDiv');
+  const quickViewContentDiv = document.getElementById("quickViewContentDiv");
 
   for (const tagsString in groupedSkills) {
     const skillsGroup = groupedSkills[tagsString];
 
-    const section = document.createElement('section');
-    const tagElement = document.createElement('div');
-    const skillsContainer = document.createElement('div');
+    const section = document.createElement("section");
+    const tagElement = document.createElement("div");
+    const skillsContainer = document.createElement("div");
 
-    tagElement.className = 'tag mb-2 mt-3 fw-bold';
-    skillsContainer.className = 'd-flex flex-wrap gap-3 mb-4';
+    tagElement.className = "tag mb-2 mt-3 fw-bold";
+    skillsContainer.className = "d-flex flex-wrap gap-3 mb-4";
 
     tagElement.innerText = tagsString;
     section.appendChild(tagElement);
 
-    skillsGroup.forEach(skill => {
-      const skillContainer = document.createElement('div');
-      skillContainer.className = 'btn-rounded border d-flex align-items-center gap-2 px-2';
-      skillContainer.style = 'font-size: 14px; padding: 6px 0px;';
+    skillsGroup.forEach((skill) => {
+      const skillContainer = document.createElement("div");
+      skillContainer.className =
+        "btn-rounded border d-flex align-items-center gap-2 px-2";
+      skillContainer.style = "font-size: 14px; padding: 6px 0px;";
       skillContainer.innerHTML = `
       <span>&nbsp;&nbsp;${skill.isot_file.name}</span>
       <button class="btn btn-rounded shadow-0 random-color-button">${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length}
@@ -3528,13 +3537,14 @@ function appendTabularViewContent() {
   const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
 
   if (!skillsData || skillsData.length === 0) {
-    document.getElementById('tabularViewContentView').innerHTML = 'No skills data available.';
+    document.getElementById("tabularViewContentView").innerHTML =
+      "No skills data available.";
     return;
   }
 
   // Group skills based on tags
   const groupedSkills = {};
-  skillsData.forEach(skill => {
+  skillsData.forEach((skill) => {
     const tagsString = getTags(skill.isot_file.tags);
     if (!groupedSkills[tagsString]) {
       groupedSkills[tagsString] = [];
@@ -3543,44 +3553,52 @@ function appendTabularViewContent() {
   });
 
   // Append content to tabularViewContentView
-  const tabularViewContentDiv = document.getElementById('tabularViewContentView');
-  const accordionContainer = document.createElement('div');
-  accordionContainer.className = 'accordion';
-  const accordionIdPrefix = 'accordion';
+  const tabularViewContentDiv = document.getElementById(
+    "tabularViewContentView"
+  );
+  const accordionContainer = document.createElement("div");
+  accordionContainer.className = "accordion";
+  const accordionIdPrefix = "accordion";
 
   let accordionIndex = 1;
 
   for (const tagsString in groupedSkills) {
     const skillsGroup = groupedSkills[tagsString];
 
-    const accordionItem = document.createElement('div');
-    accordionItem.className = 'accordion-item';
+    const accordionItem = document.createElement("div");
+    accordionItem.className = "accordion-item";
 
-    const accordionHeader = document.createElement('h2');
-    accordionHeader.className = 'accordion-header';
+    const accordionHeader = document.createElement("h2");
+    accordionHeader.className = "accordion-header";
 
-    const accordionButton = document.createElement('button');
-    accordionButton.setAttribute('data-mdb-collapse-init', true);
-    accordionButton.className = 'accordion-button';
-    accordionButton.type = 'button';
-    accordionButton.setAttribute('data-mdb-toggle', 'collapse');
-    accordionButton.setAttribute('data-mdb-target', `#${accordionIdPrefix}-collapse-${accordionIndex}`);
-    accordionButton.setAttribute('aria-expanded', 'true');
-    accordionButton.setAttribute('aria-controls', `${accordionIdPrefix}-collapse-${accordionIndex}`);
-    accordionButton.style.backgroundColor = '#eff5ff';
+    const accordionButton = document.createElement("button");
+    accordionButton.setAttribute("data-mdb-collapse-init", true);
+    accordionButton.className = "accordion-button";
+    accordionButton.type = "button";
+    accordionButton.setAttribute("data-mdb-toggle", "collapse");
+    accordionButton.setAttribute(
+      "data-mdb-target",
+      `#${accordionIdPrefix}-collapse-${accordionIndex}`
+    );
+    accordionButton.setAttribute("aria-expanded", "true");
+    accordionButton.setAttribute(
+      "aria-controls",
+      `${accordionIdPrefix}-collapse-${accordionIndex}`
+    );
+    accordionButton.style.backgroundColor = "#eff5ff";
 
-    const headerContent = document.createElement('div');
-    headerContent.className = 'd-flex gap-3 align-items-center';
+    const headerContent = document.createElement("div");
+    headerContent.className = "d-flex gap-3 align-items-center";
 
-    const tagTitle = document.createElement('b');
+    const tagTitle = document.createElement("b");
     tagTitle.innerText = tagsString;
 
-    const skillsCount = document.createElement('span');
+    const skillsCount = document.createElement("span");
     skillsCount.innerText = `${skillsGroup.length} elements selected`;
 
-    const dot = document.createElement('i');
-    dot.className = 'fa fa-xs fa-circle me-1';
-    dot.style.fontSize = '8px';
+    const dot = document.createElement("i");
+    dot.className = "fa fa-xs fa-circle me-1";
+    dot.style.fontSize = "8px";
 
     headerContent.appendChild(tagTitle);
     headerContent.appendChild(dot);
@@ -3589,31 +3607,37 @@ function appendTabularViewContent() {
     accordionButton.appendChild(headerContent);
     accordionHeader.appendChild(accordionButton);
 
-    const accordionCollapse = document.createElement('div');
+    const accordionCollapse = document.createElement("div");
     accordionCollapse.id = `${accordionIdPrefix}-collapse-${accordionIndex}`;
-    accordionCollapse.className = 'accordion-collapse collapse show';
-    accordionCollapse.setAttribute('aria-labelledby', `${accordionIdPrefix}-heading-${accordionIndex}`);
+    accordionCollapse.className = "accordion-collapse collapse show";
+    accordionCollapse.setAttribute(
+      "aria-labelledby",
+      `${accordionIdPrefix}-heading-${accordionIndex}`
+    );
 
-    const accordionBody = document.createElement('div');
-    accordionBody.className = 'accordion-body p-0';
+    const accordionBody = document.createElement("div");
+    accordionBody.className = "accordion-body p-0";
 
     skillsGroup.forEach((skill, index) => {
-      const skillContainer = document.createElement('div');
-      skillContainer.className = 'taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3';
+      const skillContainer = document.createElement("div");
+      skillContainer.className =
+        "taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3";
 
-      const skillName = document.createElement('div');
-      skillName.className = 'bg-';
-      skillName.innerText = skill.isot_file.name || 'Skill Name Not Available';
+      const skillName = document.createElement("div");
+      skillName.className = "bg-";
+      skillName.innerText = skill.isot_file.name || "Skill Name Not Available";
 
-      const skillDetails = document.createElement('div');
-      skillDetails.className = 'd-flex';
+      const skillDetails = document.createElement("div");
+      skillDetails.className = "d-flex";
 
-      const experienceDetails = document.createElement('div');
-      experienceDetails.className = 'pe-3 border-end border-2';
-      experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(skill.rating[1])}`;
+      const experienceDetails = document.createElement("div");
+      experienceDetails.className = "pe-3 border-end border-2";
+      experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(
+        skill.rating[1]
+      )}`;
 
-      const ratingDetails = document.createElement('div');
-      ratingDetails.className = 'ps-3';
+      const ratingDetails = document.createElement("div");
+      ratingDetails.className = "ps-3";
       ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
 
       skillDetails.appendChild(experienceDetails);
@@ -3624,9 +3648,9 @@ function appendTabularViewContent() {
 
       // Check if the skill container is the last child
       if (index < skillsGroup.length - 1) {
-        skillContainer.classList.add('border-bottom', 'p-3');
+        skillContainer.classList.add("border-bottom", "p-3");
       } else {
-        skillContainer.classList.add('p-3');  // No border-bottom for the last child
+        skillContainer.classList.add("p-3"); // No border-bottom for the last child
       }
 
       accordionBody.appendChild(skillContainer);
@@ -3641,7 +3665,7 @@ function appendTabularViewContent() {
   }
 
   // Append the generated content to the tabularViewContentView div
-  tabularViewContentDiv.innerHTML = '';
+  tabularViewContentDiv.innerHTML = "";
   tabularViewContentDiv.appendChild(accordionContainer);
 }
 
@@ -3652,7 +3676,7 @@ function openProfileTab() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   updateProfileData();
 });
 
