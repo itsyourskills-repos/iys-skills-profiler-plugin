@@ -8,6 +8,7 @@ const plugin = new IysFunctionalAreasPlugin({
   selectedSkilldiv: "selectSkill",
   skillPlayground: "skillPlayground",
   ratedSkillEvent: ratedSkillEvent,
+  // skillsData: previousData,
 });
 plugin.init();
 function ratedSkillEvent(params) {

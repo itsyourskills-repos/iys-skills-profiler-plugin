@@ -1732,6 +1732,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.options.experienceProfilerAreaBox = document.getElementById(
       this.options.experienceProfilerAreaBox
     );
+    if (this.options.skillsData) {
+      console.log("updatinf thing thignd");
+      // replace with local storage
+      localStorage.setItem(
+        "userRatedSkills",
+        JSON.stringify(this.options.skillsData)
+      );
+    }
+    if (this.options?.showProfilerOnly == true) {
+      console.log("showProfilerOnly");
+    }
+
     this.fillStarImageUrl =
       "https://i.ibb.co/zxrDfTN/Screenshot-from-2023-04-29-09-48-17.png";
     this.emptyStarImageUrl =
@@ -1787,6 +1799,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.createRateSelectedSkills(this.options.skillPlayground);
     // this.createListProfileSkills();
   }
+
   createPlayground() {
     this.selectedASkillBox = document.createElement("div");
     this.selectedASkillBox.classList.add("selected-skill-div");
@@ -2983,7 +2996,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Create the tab navigation li elements
     const tabNavLi1 = document.createElement("li");
-    tabNavLi1.classList.add("nav-item");
+
+    tabNavLi1.classList.add("nav-item ");
     tabNavLi1.setAttribute("role", "presentation");
 
     const tabNavLi2 = document.createElement("li");
