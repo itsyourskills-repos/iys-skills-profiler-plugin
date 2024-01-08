@@ -3,10 +3,8 @@ function selectedSkill(params) {
 }
 
 const plugin = new IysFunctionalAreasPlugin({
-  divID: "serachid",
+  pluginDivId: "iys-functional-areas-plugin",
   onSearchSkillClick: selectedSkill,
-  selectedSkilldiv: "selectSkill",
-  skillPlayground: "skillPlayground",
   ratedSkillEvent: ratedSkillEvent,
   // skillsData: previousData,
 });

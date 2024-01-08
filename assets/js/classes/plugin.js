@@ -863,7 +863,7 @@ function ResetButton(htmlElement, disabled) {
   const getResetModalContainer = document.querySelector(".modal-container");
 
   htmlElement.innerHTML = `<i class="fas fa-undo"></i> Reset Changes`;
-  htmlElement.id = "ResetChanges";
+  htmlElement.id = "Reset Changes";
   htmlElement.style.padding = "5px 15px";
   htmlElement.style.borderRadius = "5px";
   htmlElement.style.border = disabled ? "" : "1px solid #007DFC";
@@ -1084,12 +1084,6 @@ class IysSearchPlugin {
         ...this.options,
         ...config,
       };
-    }
-    if (this.options.divID) {
-      this.searchValue = "";
-      this.searchResultsList = [];
-    } else {
-      console.error("ApiKey  divID not set correctly ");
     }
   }
   //initi fuctions
@@ -1619,7 +1613,10 @@ class IysSearchPlugin {
     modalContent.appendChild(modalButton);
 
     // Append the modal to the document body
-    document.body.appendChild(modalDiv);
+
+    let pluginDiv = document.getElementById(this.options.pluginDivId);
+
+    pluginDiv.body.appendChild(modalDiv);
 
     function createInputContainer(labelText) {
       const container = document.createElement("div");
