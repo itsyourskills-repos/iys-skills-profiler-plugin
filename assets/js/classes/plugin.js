@@ -4394,7 +4394,6 @@ function appendTabularViewContent() {
 
     const accordionBody = document.createElement("div");
     accordionBody.className = "accordion-body p-0";
-
     skillsGroup.forEach((skill, index) => {
       const skillContainer = document.createElement("div");
       skillContainer.className =
@@ -4402,15 +4401,22 @@ function appendTabularViewContent() {
 
       const skillName = document.createElement("div");
       skillName.className = "bg-";
-      skillName.innerText = skill.isot_file.name || "Skill Name Not Available";
+      skillName.innerHTML =
+        `${
+          skill.isot_file.name
+        } <span class="badge rounded-pill badge-primary">${
+          getExpertiseLevel(skill.rating, skill.isot_file.ratings)
+            ? getExpertiseLevel(skill.rating, skill.isot_file.ratings)
+            : ""
+        }</span>` || "Skill Name Not Available";
 
       const skillDetails = document.createElement("div");
       skillDetails.className = "d-flex";
 
       const experienceDetails = document.createElement("div");
-      experienceDetails.className = "pe-3 border-end border-2";
+      experienceDetails.className = "px-3 border-end border-2";
       experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(
-        skill.rating[1]
+        skill.rating[0].rating
       )}`;
 
       const ratingDetails = document.createElement("div");
@@ -4445,7 +4451,19 @@ function appendTabularViewContent() {
   tabularViewContentDiv.innerHTML = "";
   tabularViewContentDiv.appendChild(accordionContainer);
 }
-
+function getExpertiseLevel(ratingValue, ratingLabel) {
+  // Assuming the rating category for expertise level is 'Expertise Level'
+  const expertiseLevelRating = ratingLabel.find(
+    (r) => r.rating_category === "Expertise Level"
+  );
+  if (expertiseLevelRating) {
+    const labelIndex = ratingValue.find(
+      (r) => r.isot_rating_id === expertiseLevelRating._id
+    );
+    return expertiseLevelRating.rating_scale_label[labelIndex.rating - 1];
+  }
+  return 0;
+}
 function openProfileTab() {
   var profileButton = document.getElementById("profile-tab0");
   if (profileButton) {
