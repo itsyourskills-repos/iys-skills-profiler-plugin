@@ -3603,15 +3603,10 @@ function appendTabularViewContent() {
 
       const skillName = document.createElement('div');
       skillName.className = 'bg-';
-      skillName.innerText = skill.isot_file.name || 'Skill Name Not Available';
+      skillName.innerHTML = `${skill.isot_file.name} <span class="badge rounded-pill badge-primary">${getExpertiseLevel(skill.rating, skill.isot_file.ratings) ? getExpertiseLevel(skill.rating, skill.isot_file.ratings) : ""}</span>` || 'Skill Name Not Available';
 
       const skillDetails = document.createElement('div');
       skillDetails.className = 'd-flex';
-
-
-      const expertiseDetails = document.createElement('div');
-      expertiseDetails.className = 'px-3 border-end border-2 text-primary fw-bold';
-      expertiseDetails.innerHTML = `<span class="badge rounded-pill badge-primary">${getExpertiseLevel(skill.rating, skill.isot_file.ratings)}</span>`;
 
       const experienceDetails = document.createElement('div');
       experienceDetails.className = 'px-3 border-end border-2';
@@ -3620,10 +3615,6 @@ function appendTabularViewContent() {
       const ratingDetails = document.createElement('div');
       ratingDetails.className = 'ps-3';
       ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
-
-      if(getExpertiseLevel(skill.rating, skill.isot_file.ratings)){
-        skillDetails.appendChild(expertiseDetails);
-      }
 
       skillDetails.appendChild(experienceDetails);
       skillDetails.appendChild(ratingDetails);
