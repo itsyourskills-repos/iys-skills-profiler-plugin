@@ -3608,13 +3608,22 @@ function appendTabularViewContent() {
       const skillDetails = document.createElement('div');
       skillDetails.className = 'd-flex';
 
+
+      const expertiseDetails = document.createElement('div');
+      expertiseDetails.className = 'px-3 border-end border-2 text-primary fw-bold';
+      expertiseDetails.innerHTML = `<span class="badge rounded-pill badge-primary">${getExpertiseLevel(skill.rating, skill.isot_file.ratings)}</span>`;
+
       const experienceDetails = document.createElement('div');
-      experienceDetails.className = 'pe-3 border-end border-2';
-      experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(skill.rating[1])}`;
+      experienceDetails.className = 'px-3 border-end border-2';
+      experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(skill.rating[0].rating)}`;
 
       const ratingDetails = document.createElement('div');
       ratingDetails.className = 'ps-3';
       ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
+
+      if(getExpertiseLevel(skill.rating, skill.isot_file.ratings)){
+        skillDetails.appendChild(expertiseDetails);
+      }
 
       skillDetails.appendChild(experienceDetails);
       skillDetails.appendChild(ratingDetails);
@@ -3643,6 +3652,17 @@ function appendTabularViewContent() {
   // Append the generated content to the tabularViewContentView div
   tabularViewContentDiv.innerHTML = '';
   tabularViewContentDiv.appendChild(accordionContainer);
+}
+
+
+function getExpertiseLevel(ratingValue, ratingLabel) {
+  // Assuming the rating category for expertise level is 'Expertise Level'
+  const expertiseLevelRating = ratingLabel.find(r => r.rating_category === 'Expertise Level');
+  if (expertiseLevelRating) {
+    const labelIndex = ratingValue.find(r => r.isot_rating_id === expertiseLevelRating._id);
+    return expertiseLevelRating.rating_scale_label[labelIndex.rating-1];
+  }
+  return 0;
 }
 
 function openProfileTab() {
