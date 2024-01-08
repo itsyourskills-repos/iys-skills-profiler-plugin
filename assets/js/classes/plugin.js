@@ -1086,7 +1086,6 @@ class IysSearchPlugin {
       };
     }
     if (this.options.divID) {
-      this.selectedDiv = document.getElementById(this.options.divID);
       this.searchValue = "";
       this.searchResultsList = [];
     } else {
@@ -1256,7 +1255,7 @@ class IysSearchPlugin {
       console.info("You can use 'onSearchSkillClick' to capture the skill");
     }
     this.createSkillSearchList([]);
-    if (this.options.selectedSkilldiv) {
+    if (this.selectedSkilldiv) {
       this.createSelectedSkillList();
     }
   }
@@ -1267,7 +1266,7 @@ class IysSearchPlugin {
   }
 
   createSelectedSkillList() {
-    const div = document.getElementById(this.options.selectedSkilldiv);
+    const div = document.getElementById(this.selectedSkilldiv);
     div.innerHTML = "";
 
     const ul = document.createElement("ul");
@@ -1718,9 +1717,7 @@ class IysSearchPlugin {
 class IysFunctionalAreasPlugin extends IysSearchPlugin {
   constructor(config) {
     super(config);
-    this.options.skillPlayground = document.getElementById(
-      this.options.skillPlayground
-    );
+    this.skillPlayground = document.getElementById(this.skillPlayground);
 
     this.ratedSkillEvent = this.options.ratedSkillEvent;
     this.options.skilFunctionalAreaDiv = document.getElementById(
@@ -1752,7 +1749,772 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.ratedSelectedSkills = [];
   }
 
+  setupDiv() {
+    // Create card div
+    var cardDiv = document.createElement("div");
+    cardDiv.className = "card";
+
+    // Create nav element
+    var navElement = document.createElement("nav");
+    navElement.className = "mb-3 border-bottom";
+    navElement.style = "padding-bottom: 1px";
+
+    // Create container div
+    var containerDiv = document.createElement("div");
+    containerDiv.className = "container-fluid d-flex justify-content-center";
+
+    // Create button container div
+    var buttonContainerDiv = document.createElement("div");
+
+    // Create ul element
+    var ulElement = document.createElement("ul");
+    ulElement.className = "nav nav-tabs";
+    ulElement.id = "myTab0";
+
+    // Create home tab li element
+    var homeLi = document.createElement("li");
+    homeLi.className = "nav-item";
+    var homeButton = document.createElement("button");
+    homeButton.setAttribute("data-mdb-tab-init", "");
+    homeButton.className = "nav-link px-4 py-3 active";
+    homeButton.id = "home-tab0";
+    homeButton.setAttribute("data-mdb-target", "#home0");
+    homeButton.type = "button";
+    homeButton.setAttribute("role", "tab");
+    homeButton.setAttribute("aria-controls", "home");
+    homeButton.setAttribute("aria-selected", "true");
+    var homeIconDiv = document.createElement("div");
+    homeIconDiv.className = "d-flex flex-column align-items-center gap-2";
+    var homeIcon = document.createElement("i");
+    homeIcon.className = "fa fa-xl fa-search py-2";
+    var homeSmall = document.createElement("small");
+    homeSmall.textContent = "Search";
+    homeIconDiv.appendChild(homeIcon);
+    homeIconDiv.appendChild(homeSmall);
+    homeButton.appendChild(homeIconDiv);
+    homeLi.appendChild(homeButton);
+
+    // Create profile tab li element
+    var profileLi = document.createElement("li");
+    profileLi.className = "nav-item";
+    var profileButton = document.createElement("button");
+    profileButton.setAttribute("data-mdb-tab-init", "");
+    profileButton.className = "nav-link px-4 py-3";
+    profileButton.id = "profile-tab0";
+    profileButton.setAttribute("data-mdb-target", "#profile0");
+    profileButton.type = "button";
+    profileButton.setAttribute("role", "tab");
+    profileButton.setAttribute("aria-controls", "profile");
+    profileButton.setAttribute("aria-selected", "false");
+    var profileIconDiv = document.createElement("div");
+    profileIconDiv.className = "d-flex flex-column align-items-center gap-2";
+    var profileIcon = document.createElement("i");
+    profileIcon.className = "fa fa-xl fa-user py-2";
+    var profileSmall = document.createElement("small");
+    profileSmall.textContent = "Profile";
+    profileIconDiv.appendChild(profileIcon);
+    profileIconDiv.appendChild(profileSmall);
+    profileButton.appendChild(profileIconDiv);
+    profileLi.appendChild(profileButton);
+
+    // Append li elements to ul element
+    ulElement.appendChild(homeLi);
+    ulElement.appendChild(profileLi);
+
+    // Append ul element to button container div
+    buttonContainerDiv.appendChild(ulElement);
+
+    // Append button container div to container div
+    containerDiv.appendChild(buttonContainerDiv);
+
+    // Append container div to nav element
+    navElement.appendChild(containerDiv);
+
+    // Append nav element to card div
+    cardDiv.appendChild(navElement);
+
+    // Create tab content div
+    var tabContentDiv = document.createElement("div");
+    tabContentDiv.className = "tab-content";
+    tabContentDiv.id = "myTabContent0";
+
+    // Create home tab pane div
+    var homeTabDiv = document.createElement("div");
+    homeTabDiv.className = "tab-pane fade show active";
+    homeTabDiv.id = "home0";
+    homeTabDiv.setAttribute("role", "tabpanel");
+    homeTabDiv.setAttribute("aria-labelledby", "home-tab0");
+
+    var cardBodyDiv = document.createElement("div");
+    cardBodyDiv.className = "card-body";
+    var searchDiv = document.createElement("div");
+    searchDiv.id = "serachid";
+    var elementCountLabelDiv = document.createElement("div");
+    elementCountLabelDiv.className = "elementCountLabel";
+    var tabContentDiv2 = document.createElement("div");
+    tabContentDiv2.className = "tab-content";
+    tabContentDiv2.id = "pills-tabContent";
+    var skillPlaygroundDiv = document.createElement("div");
+    skillPlaygroundDiv.id = "skillPlayground";
+    var replaceholderDiv = document.createElement("div");
+    replaceholderDiv.id = "replaceholder";
+
+    tabContentDiv2.appendChild(skillPlaygroundDiv);
+    tabContentDiv2.appendChild(replaceholderDiv);
+
+    cardBodyDiv.appendChild(searchDiv);
+    cardBodyDiv.appendChild(elementCountLabelDiv);
+    cardBodyDiv.appendChild(tabContentDiv2);
+    homeTabDiv.appendChild(cardBodyDiv);
+
+    // Append home tab pane div to tab content div
+    tabContentDiv.appendChild(homeTabDiv);
+
+    // Create profile tab pane div
+    var profileTabDiv = document.createElement("div");
+    profileTabDiv.className = "tab-pane fade";
+    profileTabDiv.id = "profile0";
+    profileTabDiv.setAttribute("role", "tabpanel");
+    profileTabDiv.setAttribute("aria-labelledby", "profile-tab0");
+
+    var containerFluidDiv = document.createElement("div");
+    containerFluidDiv.className = "container-fluid px-md-3 pb-md-3";
+
+    var mb4mt3Div = document.createElement("div");
+    mb4mt3Div.className = "mb-4 mt-3";
+    var h3Element = document.createElement("p");
+    h3Element.className = "h3";
+    h3Element.textContent = "Skill Profile";
+    var pElement = document.createElement("p");
+    pElement.className = "p-0 m-0";
+    pElement.textContent = "You have skills added to your profile.";
+
+    mb4mt3Div.appendChild(h3Element);
+    mb4mt3Div.appendChild(pElement);
+
+    var my3Div = document.createElement("div");
+    my3Div.className = "my-3";
+
+    var navPillsDiv = document.createElement("div");
+    navPillsDiv.className = "nav nav-pills m-0";
+    navPillsDiv.id = "viewsTab";
+
+    var btnGroupDiv = document.createElement("div");
+    btnGroupDiv.className = "btn-group border";
+    btnGroupDiv.setAttribute("role", "group");
+    btnGroupDiv.setAttribute("aria-label", "Three views");
+    btnGroupDiv.style = "padding: 1px";
+
+    var quickTabButton = createTabButton(
+      "quick-tab",
+      "#quick-tab-content",
+      "fa-wand-magic-sparkles",
+      "Quick View"
+    );
+    var tabularTabButton = createTabButton(
+      "tabular-tab",
+      "#tabular-tab-content",
+      "fa-table",
+      "Tabular View"
+    );
+
+    btnGroupDiv.appendChild(quickTabButton);
+    btnGroupDiv.appendChild(tabularTabButton);
+
+    navPillsDiv.appendChild(btnGroupDiv);
+
+    my3Div.appendChild(navPillsDiv);
+
+    var tabContentDiv3 = document.createElement("div");
+    tabContentDiv3.className = "tab-content card shadow border p-3";
+    tabContentDiv3.id = "viewsTabContent0";
+
+    var quickTabContentDiv = document.createElement("div");
+    quickTabContentDiv.className = "tab-pane fade show active";
+    quickTabContentDiv.id = "quick-tab-content";
+    quickTabContentDiv.setAttribute("role", "tabpanel");
+    quickTabContentDiv.setAttribute("aria-labelledby", "home-tab0");
+
+    var h5QuickView = document.createElement("p");
+    h5QuickView.className = "h5";
+    h5QuickView.textContent = "Quick View";
+    var pQuickView = document.createElement("p");
+    pQuickView.className = "p-0 m-0";
+    pQuickView.textContent =
+      "Presents your skills, proficiencies, and notes on the skills. Easy to know what all skills you have";
+    var quickViewContentDiv = document.createElement("div");
+    quickViewContentDiv.id = "quickViewContentDiv";
+
+    quickTabContentDiv.appendChild(h5QuickView);
+    quickTabContentDiv.appendChild(pQuickView);
+    quickTabContentDiv.appendChild(quickViewContentDiv);
+
+    var tabularTabContentDiv = document.createElement("div");
+    tabularTabContentDiv.className = "tab-pane fade";
+    tabularTabContentDiv.id = "tabular-tab-content";
+    tabularTabContentDiv.setAttribute("role", "tabpanel");
+    tabularTabContentDiv.setAttribute("aria-labelledby", "profile-tab0");
+
+    var h5TabularView = document.createElement("p");
+    h5TabularView.className = "h5";
+    h5TabularView.textContent = "Tabular View";
+    var pTabularView = document.createElement("p");
+    pTabularView.className = "p-0 m-0";
+    pTabularView.textContent =
+      "Presents your skills in a logical and organized way, like that in our report cards in school.";
+    var brElement = document.createElement("br");
+    var tabularViewContentViewDiv = document.createElement("div");
+    tabularViewContentViewDiv.id = "tabularViewContentView";
+    var accordionDiv = document.createElement("div");
+    accordionDiv.className = "accordion d-none";
+    accordionDiv.id = "accordionPanelsStayOpenExample";
+    var accordionItemDiv = document.createElement("div");
+    accordionItemDiv.className = "accordion-item";
+    var accordionButton = document.createElement("button");
+    accordionButton.setAttribute("data-mdb-collapse-init", "");
+    accordionButton.className = "accordion-button";
+    accordionButton.type = "button";
+    accordionButton.setAttribute("data-mdb-toggle", "collapse");
+    accordionButton.setAttribute(
+      "data-mdb-target",
+      "#panelsStayOpen-collapseOne"
+    );
+    accordionButton.setAttribute("aria-expanded", "true");
+    accordionButton.setAttribute("aria-controls", "panelsStayOpen-collapseOne");
+    accordionButton.style = "background-color: #eff5ff";
+
+    accordionItemDiv.appendChild(accordionButton);
+    accordionDiv.appendChild(accordionItemDiv);
+
+    tabularTabContentDiv.appendChild(h5TabularView);
+    tabularTabContentDiv.appendChild(pTabularView);
+    tabularTabContentDiv.appendChild(brElement);
+    tabularTabContentDiv.appendChild(tabularViewContentViewDiv);
+    tabularTabContentDiv.appendChild(accordionDiv);
+
+    tabContentDiv3.appendChild(quickTabContentDiv);
+    tabContentDiv3.appendChild(tabularTabContentDiv);
+
+    containerFluidDiv.appendChild(mb4mt3Div);
+    containerFluidDiv.appendChild(my3Div);
+    containerFluidDiv.appendChild(tabContentDiv3);
+
+    profileTabDiv.appendChild(containerFluidDiv);
+
+    tabContentDiv.appendChild(profileTabDiv);
+
+    // Create modal div
+    var modalDiv = document.createElement("div");
+    modalDiv.className = "modal top fade";
+    modalDiv.id = "RateSkillModel";
+    modalDiv.tabIndex = "-1";
+    modalDiv.setAttribute("aria-labelledby", "RateSkillModelLabel");
+    modalDiv.setAttribute("aria-hidden", "true");
+    modalDiv.setAttribute("data-mdb-backdrop", "true");
+    modalDiv.setAttribute("data-mdb-keyboard", "true");
+
+    // Create modal dialog div
+    var modalDialogDiv = document.createElement("div");
+    modalDialogDiv.className = "modal-dialog modal-xl modal-dialog-centered";
+
+    // Create modal content div
+    var modalContentDiv = document.createElement("div");
+    modalContentDiv.className = "modal-content";
+
+    // Create modal header div
+    var modalHeaderDiv = document.createElement("div");
+    modalHeaderDiv.className = "modal-header";
+
+    // Create modal title paragraph
+    var modalTitleParagraph = document.createElement("p");
+    modalTitleParagraph.className = "modal-title";
+    modalTitleParagraph.id = "RateSkillModelLabel";
+    modalTitleParagraph.textContent = "Modal title";
+
+    // Create close button
+    var closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "btn-close";
+    closeButton.setAttribute("data-mdb-dismiss", "modal");
+    closeButton.setAttribute("aria-label", "Close");
+
+    // Append modal title and close button to modal header
+    modalHeaderDiv.appendChild(modalTitleParagraph);
+    modalHeaderDiv.appendChild(closeButton);
+
+    // Create modal body div
+    var modalBodyDiv = document.createElement("div");
+    modalBodyDiv.className = "modal-body";
+
+    // Create span element for star
+    var spanElementForStar = document.createElement("div");
+    spanElementForStar.id = "spanElementForStar";
+    spanElementForStar.style.marginLeft = "0px";
+    spanElementForStar.style.marginRight = "0px";
+
+    // Create label for "Remark"
+    var remarkLabel = document.createElement("label");
+    remarkLabel.className = "fw-bold";
+    remarkLabel.textContent = "Remark";
+
+    // Create form outline div
+    var formOutlineDiv = document.createElement("div");
+    formOutlineDiv.className = "form-outline";
+
+    // Create textarea for "rateSkillCommentBox"
+    var rateSkillCommentBoxTextarea = document.createElement("textarea");
+    rateSkillCommentBoxTextarea.className = "form-control form-control-lg";
+    rateSkillCommentBoxTextarea.id = "rateSkillCommentBox";
+    rateSkillCommentBoxTextarea.rows = "4";
+    rateSkillCommentBoxTextarea.setAttribute("data-mdb-showcounter", "true");
+    rateSkillCommentBoxTextarea.maxLength = "100";
+
+    // Create label for "rateSkillCommentBox"
+    var rateSkillCommentBoxLabel = document.createElement("label");
+    rateSkillCommentBoxLabel.className = "form-label";
+    rateSkillCommentBoxLabel.setAttribute("for", "rateSkillCommentBox");
+    rateSkillCommentBoxLabel.textContent = "Enter Remark (20-100 characters)";
+
+    // Create form helper div
+    var formHelperDiv = document.createElement("div");
+    formHelperDiv.className = "form-helper";
+
+    // Append textarea, label, and form helper to form outline div
+    formOutlineDiv.appendChild(rateSkillCommentBoxTextarea);
+    formOutlineDiv.appendChild(rateSkillCommentBoxLabel);
+    formOutlineDiv.appendChild(formHelperDiv);
+
+    // Append elements to modal body
+    modalBodyDiv.appendChild(spanElementForStar);
+    modalBodyDiv.appendChild(remarkLabel);
+    modalBodyDiv.appendChild(formOutlineDiv);
+
+    // Create modal footer div
+    var modalFooterDiv = document.createElement("div");
+    modalFooterDiv.className = "modal-footer";
+
+    // Create span element for save button
+    var spanElementForSaveButton = document.createElement("span");
+    spanElementForSaveButton.id = "spanElementForSaveButton";
+
+    // Append span element to modal footer
+    modalFooterDiv.appendChild(spanElementForSaveButton);
+
+    // Append modal header, body, and footer to modal content
+    modalContentDiv.appendChild(modalHeaderDiv);
+    modalContentDiv.appendChild(modalBodyDiv);
+    modalContentDiv.appendChild(modalFooterDiv);
+
+    // Append modal content to modal dialog
+    modalDialogDiv.appendChild(modalContentDiv);
+
+    // Append modal dialog to modal div
+    modalDiv.appendChild(modalDialogDiv);
+
+    // Append modal div to document body
+    cardDiv.appendChild(modalDiv);
+
+    cardDiv.appendChild(tabContentDiv);
+
+    // /dkslgfkdffmg
+
+    // Create modal container div
+    var resetModalContainer = document.createElement("div");
+    resetModalContainer.id = "resetModalContainer";
+    resetModalContainer.className = "modal-container";
+
+    // Create modal content div
+    var confirmModal = document.createElement("div");
+    confirmModal.id = "confirmModal";
+    confirmModal.className = "modal-content";
+
+    // Create reset title div
+    var resetTitleDiv = document.createElement("div");
+    resetTitleDiv.className = "reset-title";
+
+    // Create reset title paragraph
+    var resetTitleParagraph = document.createElement("p");
+    resetTitleParagraph.textContent = "Reset Confirm";
+
+    // Create close button
+    var closeModalSpan = document.createElement("span");
+    closeModalSpan.id = "closeModal";
+    closeModalSpan.className = "close-button";
+    closeModalSpan.innerHTML = "&times;";
+
+    // Append title paragraph and close button to reset title div
+    resetTitleDiv.appendChild(resetTitleParagraph);
+    resetTitleDiv.appendChild(closeModalSpan);
+
+    // Create HR line
+    var resetHrLine = document.createElement("hr");
+    resetHrLine.className = "reset-hr-line";
+
+    // Create reset message paragraph
+    var resetMessageParagraph = document.createElement("p");
+    resetMessageParagraph.className = "reset-message";
+    resetMessageParagraph.textContent = "Are you sure you want to reset?";
+
+    // Create confirm button
+    var confirmResetButton = document.createElement("button");
+    confirmResetButton.id = "confirmReset";
+    confirmResetButton.className = "confirm-button";
+    confirmResetButton.textContent = "Confirm";
+
+    // Append elements to modal content div
+    confirmModal.appendChild(resetTitleDiv);
+    confirmModal.appendChild(resetHrLine);
+    confirmModal.appendChild(resetMessageParagraph);
+    confirmModal.appendChild(confirmResetButton);
+
+    // Append modal content to modal container div
+    resetModalContainer.appendChild(confirmModal);
+
+    // Append modal container div to document body
+    cardDiv.appendChild(resetModalContainer);
+
+    // Create modal div
+    var modalDiv = document.createElement("div");
+    modalDiv.className = "modal top fade show active";
+    modalDiv.id = "RateSkillModel";
+    modalDiv.tabIndex = "-1";
+    modalDiv.setAttribute("aria-labelledby", "RateSkillModelLabel");
+    modalDiv.setAttribute("aria-hidden", "true");
+    modalDiv.setAttribute("data-mdb-backdrop", "true");
+    modalDiv.setAttribute("data-mdb-keyboard", "true");
+
+    // Create modal dialog div
+    var modalDialogDiv = document.createElement("div");
+    modalDialogDiv.className = "modal-dialog modal-xl modal-dialog-centered";
+
+    // Create modal content div
+    var modalContentDiv = document.createElement("div");
+    modalContentDiv.className = "modal-content";
+
+    // Create modal header div
+    var modalHeaderDiv = document.createElement("div");
+    modalHeaderDiv.className = "modal-header";
+
+    // Create modal title paragraph
+    var modalTitleParagraph = document.createElement("p");
+    modalTitleParagraph.className = "modal-title";
+    modalTitleParagraph.id = "RateSkillModelLabel";
+    modalTitleParagraph.textContent = "Modal title";
+
+    // Create close button
+    var closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "btn-close";
+    closeButton.setAttribute("data-mdb-dismiss", "modal");
+    closeButton.setAttribute("aria-label", "Close");
+    closeButton.id = "RateSkillModelBtn";
+
+    // Append modal title and close button to modal header
+    modalHeaderDiv.appendChild(modalTitleParagraph);
+    modalHeaderDiv.appendChild(closeButton);
+
+    // Create modal body div
+    var modalBodyDiv = document.createElement("div");
+    modalBodyDiv.className = "modal-body";
+
+    // Create span element for star
+    var spanElementForStar = document.createElement("div");
+    spanElementForStar.id = "spanElementForStar";
+    spanElementForStar.style.marginLeft = "0px";
+    spanElementForStar.style.marginRight = "0px";
+
+    // Create label for "Remark"
+    var remarkLabel = document.createElement("label");
+    remarkLabel.className = "fw-bold";
+    remarkLabel.textContent = "Remark";
+    remarkLabel.style.marginBottom = "5px";
+    remarkLabel.style.marginTop = "5px";
+
+    // Create form outline div
+    var formOutlineDiv = document.createElement("div");
+    formOutlineDiv.className = "form-outline";
+
+    // Create textarea for "rateSkillCommentBox"
+    var rateSkillCommentBoxTextarea = document.createElement("textarea");
+    rateSkillCommentBoxTextarea.className = "form-control form-control-lg";
+    rateSkillCommentBoxTextarea.id = "rateSkillCommentBox";
+    rateSkillCommentBoxTextarea.rows = "4";
+    rateSkillCommentBoxTextarea.setAttribute("data-mdb-showcounter", "true");
+    rateSkillCommentBoxTextarea.maxLength = "100";
+
+    // Create label for "rateSkillCommentBox"
+    var rateSkillCommentBoxLabel = document.createElement("label");
+    rateSkillCommentBoxLabel.className = "form-label";
+    rateSkillCommentBoxLabel.setAttribute("for", "rateSkillCommentBox");
+    rateSkillCommentBoxLabel.textContent = "Enter Remark (20-100 characters)";
+
+    // Create form helper div
+    var formHelperDiv = document.createElement("div");
+    formHelperDiv.className = "form-helper";
+
+    // Append textarea, label, and form helper to form outline div
+    formOutlineDiv.appendChild(rateSkillCommentBoxTextarea);
+    formOutlineDiv.appendChild(rateSkillCommentBoxLabel);
+    formOutlineDiv.appendChild(formHelperDiv);
+
+    // Append elements to modal body
+    modalBodyDiv.appendChild(spanElementForStar);
+    modalBodyDiv.appendChild(remarkLabel);
+    modalBodyDiv.appendChild(formOutlineDiv);
+
+    // Create modal footer div
+    var modalFooterDiv = document.createElement("div");
+    modalFooterDiv.className = "modal-footer";
+
+    // Create span element for save button
+    var spanElementForSaveButton = document.createElement("span");
+    spanElementForSaveButton.id = "spanElementForSaveButton";
+
+    // Append span element to modal footer
+    modalFooterDiv.appendChild(spanElementForSaveButton);
+
+    // Append modal header, body, and footer to modal content
+    modalContentDiv.appendChild(modalHeaderDiv);
+    modalContentDiv.appendChild(modalBodyDiv);
+    modalContentDiv.appendChild(modalFooterDiv);
+
+    // Append modal content to modal dialog
+    modalDialogDiv.appendChild(modalContentDiv);
+
+    // Append modal dialog to modal div
+    modalDiv.appendChild(modalDialogDiv);
+
+    // Append modal div to document body
+    cardDiv.appendChild(modalDiv);
+    // kljdsfkgdf
+
+    // Create tab pane div
+    var tabPaneDiv = document.createElement("div");
+    tabPaneDiv.className = "tab-pane fade";
+    tabPaneDiv.id = "profile0";
+    tabPaneDiv.setAttribute("role", "tabpanel");
+    tabPaneDiv.setAttribute("aria-labelledby", "profile-tab0");
+
+    // Create container fluid div
+    var containerFluidDiv = document.createElement("div");
+    containerFluidDiv.className = "container-fluid px-md-3 pb-md-3";
+
+    // Create heading and description div
+    var headingDescriptionDiv = document.createElement("div");
+    headingDescriptionDiv.className = "mb-4 mt-3";
+
+    // Create heading paragraph
+    var headingParagraph = document.createElement("p");
+    headingParagraph.className = "h3";
+    headingParagraph.textContent = "Skill Profile";
+
+    // Create description paragraph
+    var descriptionParagraph = document.createElement("p");
+    descriptionParagraph.className = "p-0 m-0";
+    descriptionParagraph.textContent = "You have skills added to your profile.";
+
+    // Append heading and description paragraphs to their parent div
+    headingDescriptionDiv.appendChild(headingParagraph);
+    headingDescriptionDiv.appendChild(descriptionParagraph);
+
+    // Create navigation tab div
+    var navTabDiv = document.createElement("div");
+    navTabDiv.className = "my-3";
+
+    // Create nav pills div
+    var navPillsDiv = document.createElement("div");
+    navPillsDiv.className = "nav nav-pills m-0";
+    navPillsDiv.id = "viewsTab";
+    navPillsDiv.setAttribute("role", "tablist");
+
+    // Create btn group div
+    var btnGroupDiv = document.createElement("div");
+    btnGroupDiv.className = "btn-group border";
+    btnGroupDiv.setAttribute("role", "group");
+    btnGroupDiv.setAttribute("aria-label", "Three views");
+    btnGroupDiv.style.padding = "1px";
+
+    // Create quick view button
+    var quickTabButton = document.createElement("button");
+    quickTabButton.setAttribute("data-mdb-tab-init", "");
+    quickTabButton.className = "p-3 btn nav-link active";
+    quickTabButton.id = "quick-tab";
+    quickTabButton.setAttribute("data-mdb-target", "#quick-tab-content");
+    quickTabButton.type = "button";
+    quickTabButton.setAttribute("role", "tab");
+    quickTabButton.setAttribute("aria-controls", "home");
+    quickTabButton.setAttribute("aria-selected", "true");
+    quickTabButton.setAttribute("data-mdb-ripple-init", "true");
+    quickTabButton.innerHTML =
+      '<i class="fa fa-wand-magic-sparkles me-1"></i> Quick View';
+
+    // Create tabular view button
+    var tabularTabButton = document.createElement("button");
+    tabularTabButton.setAttribute("data-mdb-tab-init", "");
+    tabularTabButton.className = "p-3 btn nav-link";
+    tabularTabButton.id = "tabular-tab";
+    tabularTabButton.setAttribute("data-mdb-target", "#tabular-tab-content");
+    tabularTabButton.type = "button";
+    tabularTabButton.setAttribute("role", "tab");
+    tabularTabButton.setAttribute("aria-controls", "profile");
+    tabularTabButton.setAttribute("aria-selected", "false");
+    tabularTabButton.setAttribute("data-mdb-ripple-init", "true");
+    tabularTabButton.innerHTML =
+      '<i class="fa fa-table me-1"></i> Tabular View';
+
+    // Append quick view and tabular view buttons to btn group div
+    btnGroupDiv.appendChild(quickTabButton);
+    btnGroupDiv.appendChild(tabularTabButton);
+
+    // Append btn group div to nav pills div
+    navPillsDiv.appendChild(btnGroupDiv);
+
+    // Append nav pills div to nav tab div
+    navTabDiv.appendChild(navPillsDiv);
+
+    // Create tab content div
+    var tabContentDiv = document.createElement("div");
+    tabContentDiv.className = "tab-content card shadow border p-3";
+    tabContentDiv.id = "viewsTabContent0";
+
+    // Create quick view content div
+    var quickViewContentDiv = document.createElement("div");
+    quickViewContentDiv.id = "quickViewContentDiv";
+
+    // Create tabular view content div
+    var tabularViewContentViewDiv = document.createElement("div");
+    tabularViewContentViewDiv.id = "tabularViewContentView";
+
+    // Create quick view tab pane div
+    var quickViewTabPaneDiv = document.createElement("div");
+    quickViewTabPaneDiv.className = "tab-pane fade show active";
+    quickViewTabPaneDiv.id = "quick-tab-content";
+    quickViewTabPaneDiv.setAttribute("role", "tabpanel");
+    quickViewTabPaneDiv.setAttribute("aria-labelledby", "home-tab0");
+
+    // Create quick view content heading
+    var quickViewHeading = document.createElement("p");
+    quickViewHeading.className = "h5";
+    quickViewHeading.textContent = "Quick View";
+
+    // Create quick view content description
+    var quickViewDescription = document.createElement("p");
+    quickViewDescription.className = "p-0 m-0";
+    quickViewDescription.textContent =
+      "Presents your skills, proficiencies, and notes on the skills. Easy to know what all skills you have";
+
+    // Append quick view heading, description, and content div to quick view tab pane div
+    quickViewTabPaneDiv.appendChild(quickViewHeading);
+    quickViewTabPaneDiv.appendChild(quickViewDescription);
+    quickViewTabPaneDiv.appendChild(quickViewContentDiv);
+
+    // Create tabular view tab pane div
+    var tabularViewTabPaneDiv = document.createElement("div");
+    tabularViewTabPaneDiv.className = "tab-pane fade";
+    tabularViewTabPaneDiv.id = "tabular-tab-content";
+    tabularViewTabPaneDiv.setAttribute("role", "tabpanel");
+    tabularViewTabPaneDiv.setAttribute("aria-labelledby", "profile-tab0");
+
+    // Create tabular view content heading
+    var tabularViewHeading = document.createElement("p");
+    tabularViewHeading.className = "h5";
+    tabularViewHeading.textContent = "Tabular View";
+
+    // Create tabular view content description
+    var tabularViewDescription = document.createElement("p");
+    tabularViewDescription.className = "p-0 m-0";
+    tabularViewDescription.textContent =
+      "Presents your skills in a logical and organized way, like that in our report cards in school.";
+
+    // Create br element
+    var brElement = document.createElement("br");
+
+    // Create accordion div
+    var accordionDiv = document.createElement("div");
+    accordionDiv.className = "accordion d-none";
+    accordionDiv.id = "accordionPanelsStayOpenExample";
+
+    // Create accordion item div
+    var accordionItemDiv = document.createElement("div");
+    accordionItemDiv.className = "accordion-item";
+
+    // Create accordion button
+    var accordionButton = document.createElement("button");
+    accordionButton.setAttribute("data-mdb-collapse-init", "");
+    accordionButton.className = "accordion-button";
+    accordionButton.type = "button";
+    accordionButton.setAttribute("data-mdb-toggle", "collapse");
+    accordionButton.setAttribute(
+      "data-mdb-target",
+      "#panelsStayOpen-collapseOne"
+    );
+    accordionButton.setAttribute("aria-expanded", "true");
+    accordionButton.setAttribute("aria-controls", "panelsStayOpen-collapseOne");
+    accordionButton.style.backgroundColor = "#eff5ff";
+
+    // Append accordion button to accordion item div
+    accordionItemDiv.appendChild(accordionButton);
+
+    // Append accordion item div to accordion div
+    accordionDiv.appendChild(accordionItemDiv);
+
+    // Append tabular view heading, description, br element, tabular view content div, accordion div, and content div to tabular view tab pane div
+    tabularViewTabPaneDiv.appendChild(tabularViewHeading);
+    tabularViewTabPaneDiv.appendChild(tabularViewDescription);
+    tabularViewTabPaneDiv.appendChild(brElement);
+    tabularViewTabPaneDiv.appendChild(tabularViewContentViewDiv);
+    tabularViewTabPaneDiv.appendChild(accordionDiv);
+
+    // Append quick view and tabular view tab panes to tab content div
+    tabContentDiv.appendChild(quickViewTabPaneDiv);
+    tabContentDiv.appendChild(tabularViewTabPaneDiv);
+
+    // Append heading and description div, nav tab div, tab content div to container fluid div
+    containerFluidDiv.appendChild(headingDescriptionDiv);
+    containerFluidDiv.appendChild(navTabDiv);
+    containerFluidDiv.appendChild(tabContentDiv);
+
+    // Append container fluid div to tab pane div
+    tabPaneDiv.appendChild(containerFluidDiv);
+
+    // Append tab pane div to document body
+    cardDiv.appendChild(tabPaneDiv);
+
+    // mndnfgmnfnjkghf
+
+    document.body.appendChild(cardDiv);
+
+    // Function to create tab button
+    function createTabButton(id, dataTarget, iconClass, labelText) {
+      var button = document.createElement("button");
+      button.setAttribute("data-mdb-tab-init", "");
+
+      if (id == "quick-tab") {
+        button.className = "p-3 btn nav-link active";
+      } else {
+        button.className = "p-3 btn nav-link";
+      }
+
+      button.id = id;
+      button.setAttribute("data-mdb-target", dataTarget);
+      button.type = "button";
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-controls", "home");
+      button.setAttribute("aria-selected", "true");
+      var iconElement = document.createElement("i");
+      iconElement.className = `fa ${iconClass} me-1`;
+      button.appendChild(iconElement);
+      button.innerHTML += labelText;
+      return button;
+    }
+  }
+
   async init() {
+    this.setupDiv();
+    this.selectedDiv = document.getElementById("serachid");
+    this.selectedSkillDiv = document.getElementById("selectSkill");
+
+    this.skillPlayground = document.getElementById("skillPlayground");
     if (isLoginUser) {
       //  For rating saved
       const transformSkillList = transformDataFromLocalStorage(
@@ -1796,7 +2558,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.createPlayground();
     // this.createAreaBox();
     // this.crea
-    this.createRateSelectedSkills(this.options.skillPlayground);
+    this.createRateSelectedSkills(this.skillPlayground);
     // this.createListProfileSkills();
   }
 
@@ -1804,7 +2566,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.selectedASkillBox = document.createElement("div");
     this.selectedASkillBox.classList.add("selected-skill-div");
     this.selectedASkillBox.id = "selected-skill-div";
-    this.options.skillPlayground.appendChild(this.selectedASkillBox);
+    this.skillPlayground.appendChild(this.selectedASkillBox);
   }
 
   skillClick(skillListId) {
@@ -1814,7 +2576,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   createSelectedSkillList(htmlElement) {
-    const div = document.getElementById(this.options.selectedSkilldiv);
+    const div = document.getElementById(this.selectedSkilldiv);
     div.innerHTML = "";
 
     const ul = document.createElement("ul");
@@ -2961,6 +3723,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       rateButton.style.fontWeight = "normal";
     }
     this.cardBodyDiv = cardBodyDiv;
+    console.log("cardBodyDiv", this.cardBodyDiv);
     if (skillDetail?.term) {
       addTosessionStorage(skillDetail.skills[0]);
     }
@@ -2973,7 +3736,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       cardTitleH4.appendChild(rateButton);
     }
     cardBodyDiv.appendChild(cardTitleH4);
-    this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
+    this.createSkillPath(this.cardBodyDiv, getListFromsessionStorage());
     if (skillDetail?.skills?.length > 0) {
       skillDetail.skills.forEach((skill) => {
         // clearsessionStorage();
