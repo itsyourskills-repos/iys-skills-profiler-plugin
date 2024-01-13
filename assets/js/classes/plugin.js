@@ -806,7 +806,83 @@ async function getListFromLoggedInUser(loaderIdentifier) {
     return [];
   }
 }
+function reduceToOldFormat(data) {
+  let oldFormat = [];
+  data.forEach((element) => {
+    let obj = {};
+    obj["skill_id"] = element.isot_file_id;
+    obj["skill_name"] = element.isot_file.name;
+    obj["uid"] = element.isot_file_id;
+    obj["has_direct_child_skills"] = element.isot_file.child_count;
+    obj["has_indirect_child_skills"] = 0;
+    obj["has_siblings_skills"] = 0;
+    obj["has_relatives_skills_categories"] = 0;
 
+    obj["rating"] = element.rating.find(
+      (rating) => rating.isot_rating_id === "ratings/2"
+    ).rating;
+    obj["metaData"] = {
+      rating: element.rating.find(
+        (rating) => rating.isot_rating_id === "ratings/2"
+      ),
+      tags: element.isot_file.tags,
+    };
+
+    obj["rating_type"] = 0;
+    obj["rating_legend"] = 1;
+    obj["parent_name"] = "";
+    obj["proxy_name"] = "";
+    obj["syn_names"] = "";
+    obj["description"] = element.isot_file.description;
+    obj["ancestors"] = [];
+
+    oldFormat.push(obj);
+  });
+  console.log("oldFormAT", oldFormat);
+  return oldFormat;
+}
+
+function reduceToNewFormat(data) {
+  let newFormat = [];
+  data.forEach((element) => {
+    let obj = {};
+    obj["comment"] = "";
+    obj["rating"] = [
+      {
+        isot_rating_id: "ratings/2",
+        rating: element.rating,
+        comment: "",
+      },
+    ];
+    // obj["rating"] = element.rating;
+    obj["isot_file_id"] = element.skill_id;
+    obj["isot_file"] = {
+      path_addr: element.skill_id,
+      name: element.skill_name,
+      description: element.description,
+      ratings: [
+        {
+          _id: "ratings/2",
+          rating_category: "Experience Level",
+          rating_scale_type: "Four Scale Rating",
+          rating_scale_label: [
+            "0 - 2 years",
+            "2 - 5 years",
+            "5 - 10 years",
+            "10+ years",
+          ],
+        },
+      ],
+      tags: element.metaData.tags,
+      display_order: null,
+      child_count: element.has_direct_child_skills,
+    };
+
+    newFormat.push(obj);
+  });
+  console.log("newFormat", newFormat);
+  return newFormat;
+}
 // remove item from local storage when the skill isot_file_id is given
 function removeItemFromlocalStorage(isot_file_id) {
   const existingList = JSON.parse(
