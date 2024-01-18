@@ -75,6 +75,7 @@ function addTosessionStorage(item) {
 
 // check selected childId is exist in  the whole localStorage data
 function findObjectByIsotFileId(array, isotFileId) {
+  console.log(array, isotFileId, "array, isotFileId");
   // Iterate through each object in the array
   for (const obj of array) {
     // Check if the RatedSkils array exists in the object
@@ -88,6 +89,21 @@ function findObjectByIsotFileId(array, isotFileId) {
       if (foundObject) {
         return foundObject;
       }
+    }
+  }
+  let userRatedSkills = JSON.parse(
+    localStorage.getItem("userRatedSkills", "[]")
+  );
+  // example for isot_file_id =13279269.12962433.12901833.12116859
+  // get the last two id from isot_file_id in this case 12901833.12116859
+  const lastTwoId = isotFileId.split(".").slice(-2).join(".");
+  // checking it atlest have parent id
+  if (lastTwoId.split(".").length >= 2) {
+    const foundObject = userRatedSkills.find((skill) =>
+      skill.isot_file_id.endsWith(lastTwoId)
+    );
+    if (foundObject) {
+      return foundObject;
     }
   }
 
@@ -698,6 +714,16 @@ function getListFromlocalStorage() {
   } else {
     return [];
   }
+}
+
+function deleteSkillsFromLocalStorage(index) {
+  let userRatedSkills = JSON.parse(
+    localStorage.getItem("userRatedSkills", "[]")
+  );
+  // delete the skills by index
+  userRatedSkills.splice(index, 1);
+  localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
+  updateProfileData();
 }
 
 function getLoggedInUserListFromlocalStorage() {
@@ -1661,13 +1687,16 @@ class IysSearchPlugin {
     div.appendChild(loader);
 
     if (isLoginUser && this.searchValue.length > 0) {
-      fetch(`https://api.myskillsplus.com/api-search/?q=${this.searchValue}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getAccessToken?.access}`,
-        },
-      })
+      fetch(
+        `https://api.myskillsplus.com/api-search/?q=${this.searchValue.trim()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getAccessToken?.access}`,
+          },
+        }
+      )
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1686,8 +1715,8 @@ class IysSearchPlugin {
           // Remove the loader when the API call is complete
           // div.removeChild(loader);
         });
-    } else if (this.searchValue.length > 0) {
-      fetch(`${ENDPOINT_URL}?q=${this.searchValue}&limit=10`)
+    } else if (this.searchValue.trim().length > 0) {
+      fetch(`${ENDPOINT_URL}?q=${this.searchValue.trim()}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1698,7 +1727,10 @@ class IysSearchPlugin {
         })
         .then((response) => {
           if (this.searchValue == response.query) {
-            this.createSkillSearchList(response.matches, this.searchValue);
+            this.createSkillSearchList(
+              response.matches,
+              this.searchValue.trim()
+            );
           }
         })
         .catch((err) => console.error(err))
@@ -3250,6 +3282,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     button.addEventListener("click", (event) => {
       modalEl.hide();
+      // updating view
+      appendQuickViewContent();
     });
     modalEl.show();
   }
@@ -4265,19 +4299,21 @@ function appendQuickViewContent() {
   }
   // Group skills based on tags
   const groupedSkills = {};
-  skillsData.forEach((skill) => {
+  skillsData.forEach((skill, index) => {
     const tagsString = getTags(skill.isot_file.tags);
     if (!groupedSkills[tagsString]) {
       groupedSkills[tagsString] = [];
     }
-    groupedSkills[tagsString].push(skill);
+    groupedSkills[tagsString].push({ ...skill, index });
   });
 
   // Append content to quickViewContentDiv
   const quickViewContentDiv = document.getElementById("quickViewContentDiv");
+  quickViewContentDiv.innerHTML = "";
 
   for (const tagsString in groupedSkills) {
     const skillsGroup = groupedSkills[tagsString];
+    console.log(skillsGroup, "skillsGroup");
 
     const section = document.createElement("section");
     const tagElement = document.createElement("div");
@@ -4293,12 +4329,39 @@ function appendQuickViewContent() {
       const skillContainer = document.createElement("div");
       skillContainer.className =
         "btn-rounded border d-flex align-items-center gap-2 px-2";
-      skillContainer.style = "font-size: 14px; padding: 6px 0px;";
-      skillContainer.innerHTML = `
-      <span>&nbsp;&nbsp;${skill.isot_file.name}</span>
-      <button class="btn btn-rounded shadow-0 random-color-button">${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length}
-      Rating</button>
-      `;
+      skillContainer.style.fontSize = "14px";
+      skillContainer.style.padding = "6px 0px";
+
+      const skillName = document.createElement("span");
+      skillName.innerHTML = "&nbsp;&nbsp;" + skill.isot_file.name;
+      skillContainer.appendChild(skillName);
+
+      const ratingButton = document.createElement("button");
+      ratingButton.className = "btn btn-rounded shadow-0 random-color-button";
+      ratingButton.innerHTML =
+        skill.rating[0].rating +
+        "/" +
+        skill.isot_file.ratings[0].rating_scale_label.length +
+        " Rating";
+      skillContainer.appendChild(ratingButton);
+
+      const deleteIcon = document.createElement("i");
+      deleteIcon.className = "fas fa-trash";
+      deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+      deleteIcon.setAttribute("title", "Click to Delete");
+      skillContainer.appendChild(deleteIcon);
+      console.log(deleteIcon);
+      deleteIcon.addEventListener("click", () => {
+        console.log("delete the skill", skill);
+        // delete_skill(skill.id);
+        console.log("refess the connect", skill.index);
+
+        deleteSkillsFromLocalStorage(skill.index);
+        skillContainer.remove();
+
+        // this.createListProfileSkills();
+      });
+
       skillsContainer.appendChild(skillContainer);
     });
 
@@ -4408,7 +4471,7 @@ function appendTabularViewContent() {
         }</span>` || "Skill Name Not Available";
 
       const skillDetails = document.createElement("div");
-      skillDetails.className = "d-flex";
+      skillDetails.className = "d-flex ";
 
       const experienceDetails = document.createElement("div");
       experienceDetails.className = "px-3 border-end border-2";
@@ -4417,14 +4480,35 @@ function appendTabularViewContent() {
       )}`;
 
       const ratingDetails = document.createElement("div");
-      ratingDetails.className = "ps-3";
+      ratingDetails.className = "ps-3 border-end border-2  px-2";
       ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
+
+      const deleteIconDiv = document.createElement("div");
+      deleteIconDiv.className = "ps-3";
+      const deleteIcon = document.createElement("i");
+      deleteIcon.className = "fas fa-trash";
+      deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+      deleteIcon.setAttribute("title", "Click to Delete");
+      deleteIconDiv.appendChild(deleteIcon);
 
       skillDetails.appendChild(experienceDetails);
       skillDetails.appendChild(ratingDetails);
+      skillDetails.appendChild(deleteIconDiv);
 
       skillContainer.appendChild(skillName);
       skillContainer.appendChild(skillDetails);
+      // skillContainer.appendChild(deleteIcon);
+
+      deleteIcon.addEventListener("click", () => {
+        console.log("delete the skill", skill);
+        // delete_skill(skill.id);
+        console.log("refess the connect", skill.index);
+
+        deleteSkillsFromLocalStorage(skill.index);
+        skillContainer.remove();
+
+        // this.createListProfileSkills();
+      });
 
       // Check if the skill container is the last child
       if (index < skillsGroup.length - 1) {
