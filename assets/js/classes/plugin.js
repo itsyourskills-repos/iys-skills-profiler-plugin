@@ -1661,13 +1661,16 @@ class IysSearchPlugin {
     div.appendChild(loader);
 
     if (isLoginUser && this.searchValue.length > 0) {
-      fetch(`https://api.myskillsplus.com/api-search/?q=${this.searchValue}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getAccessToken?.access}`,
-        },
-      })
+      fetch(
+        `https://api.myskillsplus.com/api-search/?q=${this.searchValue.trim()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getAccessToken?.access}`,
+          },
+        }
+      )
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1686,8 +1689,8 @@ class IysSearchPlugin {
           // Remove the loader when the API call is complete
           // div.removeChild(loader);
         });
-    } else if (this.searchValue.length > 0) {
-      fetch(`${ENDPOINT_URL}?q=${this.searchValue}&limit=10`)
+    } else if (this.searchValue.trim().length > 0) {
+      fetch(`${ENDPOINT_URL}?q=${this.searchValue.trim()}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -1698,7 +1701,10 @@ class IysSearchPlugin {
         })
         .then((response) => {
           if (this.searchValue == response.query) {
-            this.createSkillSearchList(response.matches, this.searchValue);
+            this.createSkillSearchList(
+              response.matches,
+              this.searchValue.trim()
+            );
           }
         })
         .catch((err) => console.error(err))
@@ -3250,6 +3256,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     button.addEventListener("click", (event) => {
       modalEl.hide();
+      // updating view
+      appendQuickViewContent();
     });
     modalEl.show();
   }
@@ -4265,19 +4273,21 @@ function appendQuickViewContent() {
   }
   // Group skills based on tags
   const groupedSkills = {};
-  skillsData.forEach((skill) => {
+  skillsData.forEach((skill, index) => {
     const tagsString = getTags(skill.isot_file.tags);
     if (!groupedSkills[tagsString]) {
       groupedSkills[tagsString] = [];
     }
-    groupedSkills[tagsString].push(skill);
+    groupedSkills[tagsString].push({ ...skill, index });
   });
 
   // Append content to quickViewContentDiv
   const quickViewContentDiv = document.getElementById("quickViewContentDiv");
+  quickViewContentDiv.innerHTML = "";
 
   for (const tagsString in groupedSkills) {
     const skillsGroup = groupedSkills[tagsString];
+    console.log(skillsGroup, "skillsGroup");
 
     const section = document.createElement("section");
     const tagElement = document.createElement("div");
@@ -4293,12 +4303,28 @@ function appendQuickViewContent() {
       const skillContainer = document.createElement("div");
       skillContainer.className =
         "btn-rounded border d-flex align-items-center gap-2 px-2";
-      skillContainer.style = "font-size: 14px; padding: 6px 0px;";
-      skillContainer.innerHTML = `
-      <span>&nbsp;&nbsp;${skill.isot_file.name}</span>
-      <button class="btn btn-rounded shadow-0 random-color-button">${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length}
-      Rating</button>
-      `;
+      skillContainer.style.fontSize = "14px";
+      skillContainer.style.padding = "6px 0px";
+
+      const skillName = document.createElement("span");
+      skillName.innerHTML = "&nbsp;&nbsp;" + skill.isot_file.name;
+      skillContainer.appendChild(skillName);
+
+      const ratingButton = document.createElement("button");
+      ratingButton.className = "btn btn-rounded shadow-0 random-color-button";
+      ratingButton.innerHTML =
+        skill.rating[0].rating +
+        "/" +
+        skill.isot_file.ratings[0].rating_scale_label.length +
+        " Rating";
+      skillContainer.appendChild(ratingButton);
+
+      const deleteIcon = document.createElement("i");
+      deleteIcon.className = "fas fa-trash";
+      deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+      deleteIcon.setAttribute("title", "Click to Delete");
+      skillContainer.appendChild(deleteIcon);
+
       skillsContainer.appendChild(skillContainer);
     });
 
