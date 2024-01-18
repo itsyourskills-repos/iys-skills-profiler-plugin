@@ -94,11 +94,13 @@ function findObjectByIsotFileId(array, isotFileId) {
   let userRatedSkills = JSON.parse(
     localStorage.getItem("userRatedSkills", "[]")
   );
+
+  console.log(userRatedSkills);
   // example for isot_file_id =13279269.12962433.12901833.12116859
   // get the last two id from isot_file_id in this case 12901833.12116859
   const lastTwoId = isotFileId.split(".").slice(-2).join(".");
   // checking it atlest have parent id
-  if (lastTwoId.split(".").length >= 2) {
+  if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
     const foundObject = userRatedSkills.find((skill) =>
       skill.isot_file_id.endsWith(lastTwoId)
     );
@@ -4381,12 +4383,12 @@ function appendTabularViewContent() {
 
   // Group skills based on tags
   const groupedSkills = {};
-  skillsData.forEach((skill) => {
+  skillsData.forEach((skill, index) => {
     const tagsString = getTags(skill.isot_file.tags);
     if (!groupedSkills[tagsString]) {
       groupedSkills[tagsString] = [];
     }
-    groupedSkills[tagsString].push(skill);
+    groupedSkills[tagsString].push({ ...skill, index });
   });
 
   // Append content to tabularViewContentView
