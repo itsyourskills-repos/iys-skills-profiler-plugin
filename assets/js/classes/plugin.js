@@ -75,6 +75,7 @@ function addTosessionStorage(item) {
 
 // check selected childId is exist in  the whole localStorage data
 function findObjectByIsotFileId(array, isotFileId) {
+  console.log(array, isotFileId, "array, isotFileId");
   // Iterate through each object in the array
   for (const obj of array) {
     // Check if the RatedSkils array exists in the object
@@ -88,6 +89,21 @@ function findObjectByIsotFileId(array, isotFileId) {
       if (foundObject) {
         return foundObject;
       }
+    }
+  }
+  let userRatedSkills = JSON.parse(
+    localStorage.getItem("userRatedSkills", "[]")
+  );
+  // example for isot_file_id =13279269.12962433.12901833.12116859
+  // get the last two id from isot_file_id in this case 12901833.12116859
+  const lastTwoId = isotFileId.split(".").slice(-2).join(".");
+  // checking it atlest have parent id
+  if (lastTwoId.split(".").length >= 2) {
+    const foundObject = userRatedSkills.find((skill) =>
+      skill.isot_file_id.endsWith(lastTwoId)
+    );
+    if (foundObject) {
+      return foundObject;
     }
   }
 
@@ -698,6 +714,16 @@ function getListFromlocalStorage() {
   } else {
     return [];
   }
+}
+
+function deleteSkillsFromLocalStorage(index) {
+  let userRatedSkills = JSON.parse(
+    localStorage.getItem("userRatedSkills", "[]")
+  );
+  // delete the skills by index
+  userRatedSkills.splice(index, 1);
+  localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
+  updateProfileData();
 }
 
 function getLoggedInUserListFromlocalStorage() {
@@ -4324,6 +4350,17 @@ function appendQuickViewContent() {
       deleteIcon.setAttribute("data-mdb-tooltip-init", "");
       deleteIcon.setAttribute("title", "Click to Delete");
       skillContainer.appendChild(deleteIcon);
+      console.log(deleteIcon);
+      deleteIcon.addEventListener("click", () => {
+        console.log("delete the skill", skill);
+        // delete_skill(skill.id);
+        console.log("refess the connect", skill.index);
+
+        deleteSkillsFromLocalStorage(skill.index);
+        skillContainer.remove();
+
+        // this.createListProfileSkills();
+      });
 
       skillsContainer.appendChild(skillContainer);
     });
@@ -4434,7 +4471,7 @@ function appendTabularViewContent() {
         }</span>` || "Skill Name Not Available";
 
       const skillDetails = document.createElement("div");
-      skillDetails.className = "d-flex";
+      skillDetails.className = "d-flex ";
 
       const experienceDetails = document.createElement("div");
       experienceDetails.className = "px-3 border-end border-2";
@@ -4443,14 +4480,35 @@ function appendTabularViewContent() {
       )}`;
 
       const ratingDetails = document.createElement("div");
-      ratingDetails.className = "ps-3";
+      ratingDetails.className = "ps-3 border-end border-2  px-2";
       ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
+
+      const deleteIconDiv = document.createElement("div");
+      deleteIconDiv.className = "ps-3";
+      const deleteIcon = document.createElement("i");
+      deleteIcon.className = "fas fa-trash";
+      deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+      deleteIcon.setAttribute("title", "Click to Delete");
+      deleteIconDiv.appendChild(deleteIcon);
 
       skillDetails.appendChild(experienceDetails);
       skillDetails.appendChild(ratingDetails);
+      skillDetails.appendChild(deleteIconDiv);
 
       skillContainer.appendChild(skillName);
       skillContainer.appendChild(skillDetails);
+      // skillContainer.appendChild(deleteIcon);
+
+      deleteIcon.addEventListener("click", () => {
+        console.log("delete the skill", skill);
+        // delete_skill(skill.id);
+        console.log("refess the connect", skill.index);
+
+        deleteSkillsFromLocalStorage(skill.index);
+        skillContainer.remove();
+
+        // this.createListProfileSkills();
+      });
 
       // Check if the skill container is the last child
       if (index < skillsGroup.length - 1) {
