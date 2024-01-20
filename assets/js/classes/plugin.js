@@ -128,7 +128,7 @@ function checkElementExist(skillDetail) {
       return foundObject;
     }
   }
-  let foundObject = userRatedSkills.find((skill) =>
+  let foundObject = userRatedSkills?.find((skill) =>
     skill.isot_file_id.endsWith(skillDetail.path_addr)
   );
   if (foundObject) {
