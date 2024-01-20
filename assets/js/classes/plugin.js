@@ -112,6 +112,31 @@ function findObjectByIsotFileId(array, isotFileId) {
   // If no match is found, return null or handle as needed
   return null;
 }
+function checkElementExist(skillDetail) {
+  console.log(skillDetail, "skillDetail");
+  let userRatedSkills = JSON.parse(
+    localStorage.getItem("userRatedSkills", "[]")
+  );
+
+  const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
+  // checking it atlest have parent id
+  if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
+    let foundObject = userRatedSkills.find((skill) =>
+      skill.isot_file_id.endsWith(lastTwoId)
+    );
+    if (foundObject) {
+      return foundObject;
+    }
+  }
+  let foundObject = userRatedSkills.find((skill) =>
+    skill.isot_file_id.endsWith(skillDetail.path_addr)
+  );
+  if (foundObject) {
+    return foundObject;
+  } else {
+    return null;
+  }
+}
 
 // check selected parentId is exist in the whole local storage data
 function isParentIdAvailable(array, parentIdToCheck) {
@@ -3260,6 +3285,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         titleText = skillDetail.name;
       }
     }
+    console.log("skillDetail", skillDetail);
+
+    let objExist = checkElementExist(skillDetail);
+
+    console.log("objExist", objExist);
     const modalContent = RateSkillModel.querySelector(".modal-content");
     if (modalContent) {
       modalContent.style.padding = "20px"; // Adjust the border style as needed
@@ -3268,7 +3298,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (modalHeader) {
       modalHeader.style.borderBottom = "1px solid #ccc"; // Adjust the border style as needed
     }
-    rateSkillCommentBox.value = "";
+    if (objExist) {
+      rateSkillCommentBox.value = objExist.comment;
+    } else {
+      rateSkillCommentBox.value = "";
+    }
     const modalEl = new mdb.Modal(RateSkillModel);
     RateSkillModelLabel.style.fontSize = "17px";
     RateSkillModelLabel.innerHTML = `<span style="color: #333333; font-weight:600">Ratings </span>
@@ -3278,7 +3312,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.createRatingElement(
       spanElementForStar,
       skillDetail,
-      parentSkillDetailId
+      parentSkillDetailId,
+      objExist
     );
     button.removeEventListener("click", this.saveTheSkillComment);
 
@@ -3354,7 +3389,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   //###############################################################       get Rating model section data   #############################
-  createRatingElement(htmlElement, skillDetail, parentSkillDetailId) {
+  createRatingElement(htmlElement, skillDetail, parentSkillDetailId, objExist) {
     // add exception for rating
     try {
       htmlElement.noUiSlider.destroy();
@@ -3387,22 +3422,34 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             radioContainer.style.marginRight = "10px";
             let radioInput = document.createElement("input");
             radioInput.type = "radio";
-            radioInput.name = `rating-${sliderObj._id}`;
+            radioInput.name = `${sliderObj._id}`;
             radioInput.value = index + 1;
             radioInput.checked = index === 0;
-            radioInput.id = `${sliderObj._id}-${index}`;
+            radioInput.id = `rating-${sliderObj._id}-${index + 1}`;
             radioInput.className = "radio-input";
             let radioLabel = document.createElement("label");
-            radioLabel.htmlFor = `${sliderObj._id}-${index}`;
+            radioLabel.htmlFor = `${sliderObj._id}`;
             radioLabel.textContent = option;
             radioLabel.className = "radio-label";
             radioLabel.style.marginLeft = "5px";
             radioContainer.appendChild(radioInput);
             radioContainer.appendChild(radioLabel);
             spanSliderInnerDiv.appendChild(radioContainer);
+
+            if (objExist) {
+              // check if the rating is already exist
+              objExist.rating.forEach((obj) => {
+                if (obj.isot_rating_id === sliderObj._id) {
+                  if (obj.rating === index + 1) {
+                    radioInput.checked = true;
+                  }
+                }
+              });
+            }
           });
         } else {
           // Creating a slider
+          console.log("options", options);
           var format = {
             to: function (value) {
               return options[Math.round(value - 1)];
@@ -3411,23 +3458,56 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               return options.indexOf(value);
             },
           };
+
           const connectArray = new Array(options.length).fill(false);
           connectArray[0] = true;
-          noUiSlider.create(spanSliderInnerDiv, {
+          let noUiSliderElement = noUiSlider.create(spanSliderInnerDiv, {
             start: options[0],
             range: {
               min: 1,
               max: options.length,
             },
             step: 1,
-            format: format,
+            // format: format,
             pips: { mode: "steps", format: format, density: 50 },
             connect: "lower",
           });
+          console.log(
+            noUiSliderElement,
+            "noUiSliderElement",
+            spanSliderInnerDiv
+          );
+
+          if (objExist) {
+            // check if the rating is already exist
+            objExist.rating.forEach((obj) => {
+              if (obj.isot_rating_id === sliderObj._id) {
+                console.log(
+                  options[obj.rating - 1],
+                  "silder object",
+                  obj,
+                  "obj.rating"
+                );
+
+                noUiSliderElement.set(obj.rating);
+              }
+            });
+          }
+
           spanSliderInnerDiv.classList.add("slider");
         }
         modalBodyGet.appendChild(htmlElementLabel);
         modalBodyGet.appendChild(spanSliderInnerDiv);
+
+        // if (objExist) {
+        //   // check if the rating is already exist
+        //   objExist.rating.forEach((obj) => {
+        //     if (obj.isot_rating_id === sliderObj._id) {
+        //       console.log("silder object", obj, "obj.rating");
+        //       spanSliderInnerDiv.set(obj.rating);
+        //     }
+        //   });
+        // }
       });
       var sliderStyleConnect = document.createElement("style");
       sliderStyleConnect.innerHTML =
@@ -3484,13 +3564,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       // Retrieving data value from the radio buttons and sliders
       arbitraryValuesForSlider.forEach((sliderObj) => {
         if (sliderObj.rating_scale_label.length === 2) {
-          const radioInputs = document.getElementsByName(
-            `rating-${sliderObj._id}`
-          );
+          const radioInputs = document.getElementsByName(`${sliderObj._id}`);
           radioInputs.forEach((input) => {
             if (input.checked) {
               inputData.push({
-                isot_rating_id: input?.id,
+                isot_rating_id: input?.name,
                 rating: parseInt(input.value),
                 comment: comment,
               });
