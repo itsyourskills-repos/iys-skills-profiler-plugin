@@ -3452,23 +3452,41 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           console.log("options", options);
           var format = {
             to: function (value) {
-              return options[Math.round(value - 1)];
+              console.log(options, "to", value, options[Math.round(value - 1)]);
+              if (options[Math.round(value - 1)]) {
+                return options[Math.round(value - 1)];
+              }
+              return options.indexOf(value);
             },
             from: function (value) {
+              console.log("from", value, options.indexOf(value));
               return options.indexOf(value);
             },
           };
 
           const connectArray = new Array(options.length).fill(false);
+          let startValue = options[0];
+
+          if (objExist) {
+            // check if the rating is already exist
+            objExist.rating.forEach((obj) => {
+              if (obj.isot_rating_id === sliderObj._id) {
+                startValue = options[obj.rating];
+              }
+            });
+          }
+
+          console.log("startValue", startValue);
           connectArray[0] = true;
           let noUiSliderElement = noUiSlider.create(spanSliderInnerDiv, {
-            start: options[0],
+            start: startValue,
             range: {
-              min: 1,
-              max: options.length,
+              min: 0,
+              max: options.length - 1,
             },
             step: 1,
-            // format: format,
+            tooltips: true,
+            format: format,
             pips: { mode: "steps", format: format, density: 50 },
             connect: "lower",
           });
@@ -3477,22 +3495,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             "noUiSliderElement",
             spanSliderInnerDiv
           );
-
-          if (objExist) {
-            // check if the rating is already exist
-            objExist.rating.forEach((obj) => {
-              if (obj.isot_rating_id === sliderObj._id) {
-                console.log(
-                  options[obj.rating - 1],
-                  "silder object",
-                  obj,
-                  "obj.rating"
-                );
-
-                noUiSliderElement.set(obj.rating);
-              }
-            });
-          }
 
           spanSliderInnerDiv.classList.add("slider");
         }
