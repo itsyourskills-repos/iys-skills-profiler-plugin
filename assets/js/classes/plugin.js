@@ -3141,7 +3141,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         var ratedButton = document.getElementById("rateBtn");
         ratedButton.style.backgroundColor = "#21965333";
         ratedButton.textContent = "rated";
-        ratedButton.innerHTML += `  <i class="fas fa-star"></i>`;
+        ratedButton.innerHTML += `<i class="fas fa-star"></i>`;
         ratedButton.style.color = "black";
         ratedButton.style.fontWeight = "normal";
       }
