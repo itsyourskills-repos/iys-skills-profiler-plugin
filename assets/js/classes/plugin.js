@@ -3214,18 +3214,38 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           });
       }
     } else {
-      fetchData(
-        `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`,
-        "GET"
-      )
+      console.log("creating parent for you", parentSkillDetailId);
+
+      let url = "";
+      if (parentSkillDetailId) {
+        url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}&path_addrs=${parentSkillDetailId}`;
+      } else {
+        url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`;
+      }
+
+      fetchData(url, "GET")
         .then((response) => {
-          addTolocalStorage({
-            comment: commentValue,
-            rating: ratingValue,
-            isot_file_id: skillDetail?.path_addr,
-            isot_file: response[0],
-            parentSkillDetailId: parentSkillDetailId,
-          });
+          if (parentSkillDetailId) {
+            console.log("creating parent for you", parentSkillDetailId);
+            addTolocalStorage({
+              comment: commentValue,
+              rating: ratingValue,
+              isot_file_id: skillDetail?.path_addr,
+              isot_file: response[0],
+              parentSkillDetailId: parentSkillDetailId,
+              parentSkillDetail: response[1],
+            });
+          } else {
+            addTolocalStorage({
+              comment: commentValue,
+              rating: ratingValue,
+              isot_file_id: skillDetail?.path_addr,
+              isot_file: response[0],
+              parentSkillDetailId: parentSkillDetailId,
+              parentSkillDetail: null,
+            });
+          }
+
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
           updateProfileData();
           myrate();
