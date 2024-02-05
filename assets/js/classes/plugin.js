@@ -743,16 +743,6 @@ function getListFromlocalStorage() {
   }
 }
 
-function deleteSkillsFromLocalStorage(index) {
-  let userRatedSkills = JSON.parse(
-    localStorage.getItem("userRatedSkills", "[]")
-  );
-  // delete the skills by index
-  userRatedSkills.splice(index, 1);
-  localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
-  updateProfileData();
-}
-
 function getLoggedInUserListFromlocalStorage() {
   if (localStorage.getItem("logginUserRatedSkills")) {
     return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
@@ -2563,6 +2553,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       button.innerHTML += labelText;
       return button;
     }
+
+    this.updateProfileData();
   }
 
   async init() {
@@ -3202,12 +3194,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
               saveButtonElement.removeChild(loader);
               saveButtonElement.innerHTML = previousContent;
+              this.updateProfileData();
             }
           })
           .catch((error) => {
             if (loader && saveButtonElement) {
               saveButtonElement.removeChild(loader);
               saveButtonElement.innerHTML = previousContent;
+              this.updateProfileData();
             }
             // Handle network errors
             console.error("Error:", error);
@@ -3247,7 +3241,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
 
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
-          updateProfileData();
+          this.updateProfileData();
           myrate();
           // document.getElementById(parentSkillDetailId).innerHTML = "";
           // document.getElementById("parent-" + parentSkillDetailId).click();
@@ -3340,7 +3334,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     button.addEventListener("click", (event) => {
       modalEl.hide();
       // updating view
-      appendQuickViewContent();
+      this.updateProfileData();
     });
     modalEl.show();
   }
@@ -4006,7 +4000,285 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       })
       .catch((err) => console.error(err));
   }
+  appendQuickViewContent() {
+    const skillsData = getListFromlocalStorage(); // Assuming this  retrieves the skills data
 
+    if (!skillsData || skillsData.length === 0) {
+      document.getElementById("quickViewContentDiv").innerHTML =
+        "<br>No skills data available.";
+      return;
+    }
+    // Group skills based on tags
+    const groupedSkills = {};
+    skillsData.forEach((skill, index) => {
+      const tagsString = this.getTags(skill.isot_file.tags);
+      if (!groupedSkills[tagsString]) {
+        groupedSkills[tagsString] = [];
+      }
+      groupedSkills[tagsString].push({ ...skill, index });
+    });
+
+    // Append content to quickViewContentDiv
+    const quickViewContentDiv = document.getElementById("quickViewContentDiv");
+    quickViewContentDiv.innerHTML = "";
+
+    for (const tagsString in groupedSkills) {
+      const skillsGroup = groupedSkills[tagsString];
+      console.log(skillsGroup, "skillsGroup");
+
+      const section = document.createElement("section");
+      const tagElement = document.createElement("div");
+      const skillsContainer = document.createElement("div");
+
+      tagElement.className = "tag mb-2 mt-3 fw-bold";
+      skillsContainer.className = "d-flex flex-wrap gap-3 mb-4";
+
+      tagElement.innerText = tagsString;
+      section.appendChild(tagElement);
+
+      skillsGroup.forEach((skill) => {
+        const skillContainer = document.createElement("div");
+        skillContainer.className =
+          "btn-rounded border d-flex align-items-center gap-2 px-2";
+        skillContainer.style.fontSize = "14px";
+        skillContainer.style.padding = "6px 0px";
+
+        const skillName = document.createElement("span");
+        skillName.innerHTML = "&nbsp;&nbsp;" + skill.isot_file.name;
+        skillContainer.appendChild(skillName);
+
+        const ratingButton = document.createElement("button");
+        ratingButton.className = "btn btn-rounded shadow-0 random-color-button";
+        ratingButton.innerHTML =
+          skill.rating[0].rating +
+          "/" +
+          skill.isot_file.ratings[0].rating_scale_label.length +
+          " Rating";
+        skillContainer.appendChild(ratingButton);
+
+        const deleteIcon = document.createElement("i");
+        deleteIcon.className = "fas fa-trash";
+        deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+        deleteIcon.setAttribute("title", "Click to Delete");
+        skillContainer.appendChild(deleteIcon);
+
+        const editIcon = document.createElement("i");
+        editIcon.className = "fas fa-pen";
+        editIcon.setAttribute("data-mdb-tooltip-init", "");
+        editIcon.setAttribute("title", "Click to edit");
+        skillContainer.appendChild(editIcon);
+
+        console.log(deleteIcon);
+        editIcon.addEventListener("click", () => {
+          console.log("editing things", skill.isot_file);
+
+          this.changeRateModelElement(skill.isot_file);
+          // console.log("delete the skill", skill);
+          // // delete_skill(skill.id);
+          // console.log("refess the connect", skill.index);
+
+          // this.createListProfileSkills();
+        });
+
+        deleteIcon.addEventListener("click", () => {
+          console.log("delete the skill", skill);
+          // delete_skill(skill.id);
+          console.log("refess the connect", skill.index);
+
+          this.deleteSkillsFromLocalStorage(skill.index);
+          skillContainer.remove();
+
+          // this.createListProfileSkills();
+        });
+
+        skillsContainer.appendChild(skillContainer);
+      });
+
+      section.appendChild(skillsContainer);
+      quickViewContentDiv.appendChild(section);
+    }
+  }
+
+  appendTabularViewContent() {
+    const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
+
+    if (!skillsData || skillsData.length === 0) {
+      document.getElementById("tabularViewContentView").innerHTML =
+        "No skills data available.";
+      return;
+    }
+
+    // Group skills based on tags
+    const groupedSkills = {};
+    skillsData.forEach((skill, index) => {
+      const tagsString = this.getTags(skill.isot_file.tags);
+      if (!groupedSkills[tagsString]) {
+        groupedSkills[tagsString] = [];
+      }
+      groupedSkills[tagsString].push({ ...skill, index });
+    });
+
+    // Append content to tabularViewContentView
+    const tabularViewContentDiv = document.getElementById(
+      "tabularViewContentView"
+    );
+    const accordionContainer = document.createElement("div");
+    accordionContainer.className = "accordion";
+    const accordionIdPrefix = "accordion";
+
+    let accordionIndex = 1;
+
+    for (const tagsString in groupedSkills) {
+      const skillsGroup = groupedSkills[tagsString];
+
+      const accordionItem = document.createElement("div");
+      accordionItem.className = "accordion-item";
+
+      const accordionHeader = document.createElement("h2");
+      accordionHeader.className = "accordion-header";
+
+      const accordionButton = document.createElement("button");
+      accordionButton.setAttribute("data-mdb-collapse-init", true);
+      accordionButton.className = "accordion-button";
+      accordionButton.type = "button";
+      accordionButton.setAttribute("data-mdb-toggle", "collapse");
+      accordionButton.setAttribute(
+        "data-mdb-target",
+        `#${accordionIdPrefix}-collapse-${accordionIndex}`
+      );
+      accordionButton.setAttribute("aria-expanded", "true");
+      accordionButton.setAttribute(
+        "aria-controls",
+        `${accordionIdPrefix}-collapse-${accordionIndex}`
+      );
+      accordionButton.style.backgroundColor = "#eff5ff";
+
+      const headerContent = document.createElement("div");
+      headerContent.className = "d-flex gap-3 align-items-center";
+
+      const tagTitle = document.createElement("b");
+      tagTitle.innerText = tagsString;
+
+      const skillsCount = document.createElement("span");
+      skillsCount.innerText = `${skillsGroup.length} elements selected`;
+
+      const dot = document.createElement("i");
+      dot.className = "fa fa-xs fa-circle me-1";
+      dot.style.fontSize = "8px";
+
+      headerContent.appendChild(tagTitle);
+      headerContent.appendChild(dot);
+      headerContent.appendChild(skillsCount);
+
+      accordionButton.appendChild(headerContent);
+      accordionHeader.appendChild(accordionButton);
+
+      const accordionCollapse = document.createElement("div");
+      accordionCollapse.id = `${accordionIdPrefix}-collapse-${accordionIndex}`;
+      accordionCollapse.className = "accordion-collapse collapse show";
+      accordionCollapse.setAttribute(
+        "aria-labelledby",
+        `${accordionIdPrefix}-heading-${accordionIndex}`
+      );
+
+      const accordionBody = document.createElement("div");
+      accordionBody.className = "accordion-body p-0";
+      skillsGroup.forEach((skill, index) => {
+        const skillContainer = document.createElement("div");
+        skillContainer.className =
+          "taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3";
+
+        const skillName = document.createElement("div");
+        skillName.className = "bg-";
+        skillName.innerHTML =
+          `${
+            skill.isot_file.name
+          } <span class="badge rounded-pill badge-primary">${
+            getExpertiseLevel(skill.rating, skill.isot_file.ratings)
+              ? getExpertiseLevel(skill.rating, skill.isot_file.ratings)
+              : ""
+          }</span>` || "Skill Name Not Available";
+
+        const skillDetails = document.createElement("div");
+        skillDetails.className = "d-flex ";
+
+        const experienceDetails = document.createElement("div");
+        experienceDetails.className = "px-3 border-end border-2";
+        experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(
+          skill.rating[0].rating
+        )}`;
+
+        const ratingDetails = document.createElement("div");
+        ratingDetails.className = "ps-3 border-end border-2  px-2";
+        ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
+
+        const actionsIconDiv = document.createElement("div");
+        actionsIconDiv.className = "ps-3";
+        const deleteIcon = document.createElement("i");
+        deleteIcon.className = "fas fa-trash me-3";
+        deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+        deleteIcon.setAttribute("title", "Click to Delete");
+        actionsIconDiv.appendChild(deleteIcon);
+
+        const editIcon = document.createElement("i");
+        editIcon.className = "fas fa-pen";
+        editIcon.setAttribute("data-mdb-tooltip-init", "");
+        editIcon.setAttribute("title", "Click to edit");
+        actionsIconDiv.appendChild(editIcon);
+
+        skillDetails.appendChild(experienceDetails);
+        skillDetails.appendChild(ratingDetails);
+        skillDetails.appendChild(actionsIconDiv);
+
+        skillContainer.appendChild(skillName);
+        skillContainer.appendChild(skillDetails);
+        // skillContainer.appendChild(deleteIcon);
+
+        deleteIcon.addEventListener("click", () => {
+          console.log("delete the skill", skill);
+          // delete_skill(skill.id);
+          console.log("refess the connect", skill.index);
+
+          this.deleteSkillsFromLocalStorage(skill.index);
+          skillContainer.remove();
+          this.updateProfileData();
+
+          // this.createListProfileSkills();
+        });
+
+        editIcon.addEventListener("click", () => {
+          console.log("editing things", skill.isot_file);
+
+          this.changeRateModelElement(skill.isot_file);
+          // console.log("delete the skill", skill);
+          // // delete_skill(skill.id);
+          // console.log("refess the connect", skill.index);
+
+          // this.createListProfileSkills();
+        });
+
+        // Check if the skill container is the last child
+        if (index < skillsGroup.length - 1) {
+          skillContainer.classList.add("border-bottom", "p-3");
+        } else {
+          skillContainer.classList.add("p-3"); // No border-bottom for the last child
+        }
+
+        accordionBody.appendChild(skillContainer);
+      });
+
+      accordionCollapse.appendChild(accordionBody);
+      accordionItem.appendChild(accordionHeader);
+      accordionItem.appendChild(accordionCollapse);
+
+      accordionContainer.appendChild(accordionItem);
+      accordionIndex++;
+    }
+
+    // Append the generated content to the tabularViewContentView div
+    tabularViewContentDiv.innerHTML = "";
+    tabularViewContentDiv.appendChild(accordionContainer);
+  }
   softLanguageProficiencySkillAPI() {
     let skillId = "files/a54b2fe8-dfce-4ff8-977d-af63d7777e89";
     let url = "";
@@ -4062,6 +4334,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .catch((err) => console.error(err));
   }
 
+  deleteSkillsFromLocalStorage(index) {
+    let userRatedSkills = JSON.parse(
+      localStorage.getItem("userRatedSkills", "[]")
+    );
+    // delete the skills by index
+    userRatedSkills.splice(index, 1);
+    localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
+    this.updateProfileData();
+  }
   childrenSkillAPI(skillId, identifier, parentIdOfHirarchy = "") {
     // Get the element with the class ".card-body"
     const skillIdElement = document.getElementById(
@@ -4241,6 +4522,26 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
     }
   }
+  updateProfileData() {
+    this.appendQuickViewContent();
+
+    const existingColors = [];
+    var buttons = document.getElementsByClassName("random-color-button");
+
+    for (var i = 0; i < buttons.length; i++) {
+      const randomColor = getRandomColor(existingColors);
+      const randomColorWithOpacity = addLightOpacity(randomColor, 0.1);
+
+      buttons[i].style.color = `${randomColor}`;
+      buttons[i].style.border = `1px solid ${randomColor}`;
+      buttons[i].style.background = randomColorWithOpacity;
+    }
+    applyRandomColor(buttons);
+    this.appendTabularViewContent();
+  }
+  getTags(tags) {
+    return tags.map((tag) => tag.title).join(", ");
+  }
 
   treeSkillAPI(cardBodyDiv, skillId) {
     let url = "";
@@ -4312,9 +4613,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
  */
 
 // Helper function to get tags as a string
-function getTags(tags) {
-  return tags.map((tag) => tag.title).join(", ");
-}
 
 // Helper function to get experience level
 function getExperienceLevel(rating) {
@@ -4386,249 +4684,6 @@ function applyRandomColor(buttons) {
   }
 }
 
-function appendQuickViewContent() {
-  const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
-
-  if (!skillsData || skillsData.length === 0) {
-    document.getElementById("quickViewContentDiv").innerHTML =
-      "<br>No skills data available.";
-    return;
-  }
-  // Group skills based on tags
-  const groupedSkills = {};
-  skillsData.forEach((skill, index) => {
-    const tagsString = getTags(skill.isot_file.tags);
-    if (!groupedSkills[tagsString]) {
-      groupedSkills[tagsString] = [];
-    }
-    groupedSkills[tagsString].push({ ...skill, index });
-  });
-
-  // Append content to quickViewContentDiv
-  const quickViewContentDiv = document.getElementById("quickViewContentDiv");
-  quickViewContentDiv.innerHTML = "";
-
-  for (const tagsString in groupedSkills) {
-    const skillsGroup = groupedSkills[tagsString];
-    console.log(skillsGroup, "skillsGroup");
-
-    const section = document.createElement("section");
-    const tagElement = document.createElement("div");
-    const skillsContainer = document.createElement("div");
-
-    tagElement.className = "tag mb-2 mt-3 fw-bold";
-    skillsContainer.className = "d-flex flex-wrap gap-3 mb-4";
-
-    tagElement.innerText = tagsString;
-    section.appendChild(tagElement);
-
-    skillsGroup.forEach((skill) => {
-      const skillContainer = document.createElement("div");
-      skillContainer.className =
-        "btn-rounded border d-flex align-items-center gap-2 px-2";
-      skillContainer.style.fontSize = "14px";
-      skillContainer.style.padding = "6px 0px";
-
-      const skillName = document.createElement("span");
-      skillName.innerHTML = "&nbsp;&nbsp;" + skill.isot_file.name;
-      skillContainer.appendChild(skillName);
-
-      const ratingButton = document.createElement("button");
-      ratingButton.className = "btn btn-rounded shadow-0 random-color-button";
-      ratingButton.innerHTML =
-        skill.rating[0].rating +
-        "/" +
-        skill.isot_file.ratings[0].rating_scale_label.length +
-        " Rating";
-      skillContainer.appendChild(ratingButton);
-
-      const deleteIcon = document.createElement("i");
-      deleteIcon.className = "fas fa-trash";
-      deleteIcon.setAttribute("data-mdb-tooltip-init", "");
-      deleteIcon.setAttribute("title", "Click to Delete");
-      skillContainer.appendChild(deleteIcon);
-      console.log(deleteIcon);
-      deleteIcon.addEventListener("click", () => {
-        console.log("delete the skill", skill);
-        // delete_skill(skill.id);
-        console.log("refess the connect", skill.index);
-
-        deleteSkillsFromLocalStorage(skill.index);
-        skillContainer.remove();
-
-        // this.createListProfileSkills();
-      });
-
-      skillsContainer.appendChild(skillContainer);
-    });
-
-    section.appendChild(skillsContainer);
-    quickViewContentDiv.appendChild(section);
-  }
-}
-
-function appendTabularViewContent() {
-  const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
-
-  if (!skillsData || skillsData.length === 0) {
-    document.getElementById("tabularViewContentView").innerHTML =
-      "No skills data available.";
-    return;
-  }
-
-  // Group skills based on tags
-  const groupedSkills = {};
-  skillsData.forEach((skill, index) => {
-    const tagsString = getTags(skill.isot_file.tags);
-    if (!groupedSkills[tagsString]) {
-      groupedSkills[tagsString] = [];
-    }
-    groupedSkills[tagsString].push({ ...skill, index });
-  });
-
-  // Append content to tabularViewContentView
-  const tabularViewContentDiv = document.getElementById(
-    "tabularViewContentView"
-  );
-  const accordionContainer = document.createElement("div");
-  accordionContainer.className = "accordion";
-  const accordionIdPrefix = "accordion";
-
-  let accordionIndex = 1;
-
-  for (const tagsString in groupedSkills) {
-    const skillsGroup = groupedSkills[tagsString];
-
-    const accordionItem = document.createElement("div");
-    accordionItem.className = "accordion-item";
-
-    const accordionHeader = document.createElement("h2");
-    accordionHeader.className = "accordion-header";
-
-    const accordionButton = document.createElement("button");
-    accordionButton.setAttribute("data-mdb-collapse-init", true);
-    accordionButton.className = "accordion-button";
-    accordionButton.type = "button";
-    accordionButton.setAttribute("data-mdb-toggle", "collapse");
-    accordionButton.setAttribute(
-      "data-mdb-target",
-      `#${accordionIdPrefix}-collapse-${accordionIndex}`
-    );
-    accordionButton.setAttribute("aria-expanded", "true");
-    accordionButton.setAttribute(
-      "aria-controls",
-      `${accordionIdPrefix}-collapse-${accordionIndex}`
-    );
-    accordionButton.style.backgroundColor = "#eff5ff";
-
-    const headerContent = document.createElement("div");
-    headerContent.className = "d-flex gap-3 align-items-center";
-
-    const tagTitle = document.createElement("b");
-    tagTitle.innerText = tagsString;
-
-    const skillsCount = document.createElement("span");
-    skillsCount.innerText = `${skillsGroup.length} elements selected`;
-
-    const dot = document.createElement("i");
-    dot.className = "fa fa-xs fa-circle me-1";
-    dot.style.fontSize = "8px";
-
-    headerContent.appendChild(tagTitle);
-    headerContent.appendChild(dot);
-    headerContent.appendChild(skillsCount);
-
-    accordionButton.appendChild(headerContent);
-    accordionHeader.appendChild(accordionButton);
-
-    const accordionCollapse = document.createElement("div");
-    accordionCollapse.id = `${accordionIdPrefix}-collapse-${accordionIndex}`;
-    accordionCollapse.className = "accordion-collapse collapse show";
-    accordionCollapse.setAttribute(
-      "aria-labelledby",
-      `${accordionIdPrefix}-heading-${accordionIndex}`
-    );
-
-    const accordionBody = document.createElement("div");
-    accordionBody.className = "accordion-body p-0";
-    skillsGroup.forEach((skill, index) => {
-      const skillContainer = document.createElement("div");
-      skillContainer.className =
-        "taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3";
-
-      const skillName = document.createElement("div");
-      skillName.className = "bg-";
-      skillName.innerHTML =
-        `${
-          skill.isot_file.name
-        } <span class="badge rounded-pill badge-primary">${
-          getExpertiseLevel(skill.rating, skill.isot_file.ratings)
-            ? getExpertiseLevel(skill.rating, skill.isot_file.ratings)
-            : ""
-        }</span>` || "Skill Name Not Available";
-
-      const skillDetails = document.createElement("div");
-      skillDetails.className = "d-flex ";
-
-      const experienceDetails = document.createElement("div");
-      experienceDetails.className = "px-3 border-end border-2";
-      experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(
-        skill.rating[0].rating
-      )}`;
-
-      const ratingDetails = document.createElement("div");
-      ratingDetails.className = "ps-3 border-end border-2  px-2";
-      ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
-
-      const deleteIconDiv = document.createElement("div");
-      deleteIconDiv.className = "ps-3";
-      const deleteIcon = document.createElement("i");
-      deleteIcon.className = "fas fa-trash";
-      deleteIcon.setAttribute("data-mdb-tooltip-init", "");
-      deleteIcon.setAttribute("title", "Click to Delete");
-      deleteIconDiv.appendChild(deleteIcon);
-
-      skillDetails.appendChild(experienceDetails);
-      skillDetails.appendChild(ratingDetails);
-      skillDetails.appendChild(deleteIconDiv);
-
-      skillContainer.appendChild(skillName);
-      skillContainer.appendChild(skillDetails);
-      // skillContainer.appendChild(deleteIcon);
-
-      deleteIcon.addEventListener("click", () => {
-        console.log("delete the skill", skill);
-        // delete_skill(skill.id);
-        console.log("refess the connect", skill.index);
-
-        deleteSkillsFromLocalStorage(skill.index);
-        skillContainer.remove();
-
-        // this.createListProfileSkills();
-      });
-
-      // Check if the skill container is the last child
-      if (index < skillsGroup.length - 1) {
-        skillContainer.classList.add("border-bottom", "p-3");
-      } else {
-        skillContainer.classList.add("p-3"); // No border-bottom for the last child
-      }
-
-      accordionBody.appendChild(skillContainer);
-    });
-
-    accordionCollapse.appendChild(accordionBody);
-    accordionItem.appendChild(accordionHeader);
-    accordionItem.appendChild(accordionCollapse);
-
-    accordionContainer.appendChild(accordionItem);
-    accordionIndex++;
-  }
-
-  // Append the generated content to the tabularViewContentView div
-  tabularViewContentDiv.innerHTML = "";
-  tabularViewContentDiv.appendChild(accordionContainer);
-}
 function getExpertiseLevel(ratingValue, ratingLabel) {
   // Assuming the rating category for expertise level is 'Expertise Level'
   const expertiseLevelRating = ratingLabel.find(
@@ -4649,12 +4704,6 @@ function openProfileTab() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  updateProfileData();
-});
-
-function updateProfileData() {
-  appendQuickViewContent();
-  applyRandomColor(buttons);
-  appendTabularViewContent();
-}
+// document.addEventListener("DOMContentLoaded", function () {
+//   updateProfileData();
+// });
