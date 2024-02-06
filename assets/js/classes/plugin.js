@@ -4059,11 +4059,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const deleteIcon = document.createElement("i");
         deleteIcon.className = "fas fa-trash";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
+        deleteIcon.style.color = "#f14749";
         deleteIcon.setAttribute("title", "Click to Delete");
         skillContainer.appendChild(deleteIcon);
 
         const editIcon = document.createElement("i");
         editIcon.className = "fas fa-pen";
+        editIcon.style.color = "#3a76d0";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
         skillContainer.appendChild(editIcon);
@@ -4216,6 +4218,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         actionsIconDiv.className = "ps-3";
         const deleteIcon = document.createElement("i");
         deleteIcon.className = "fas fa-trash me-3";
+        deleteIcon.style.color = "#f14749";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.setAttribute("title", "Click to Delete");
         actionsIconDiv.appendChild(deleteIcon);
@@ -4224,6 +4227,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         editIcon.className = "fas fa-pen";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
+        editIcon.style.color = "#3a76d0";
         actionsIconDiv.appendChild(editIcon);
 
         skillDetails.appendChild(experienceDetails);
