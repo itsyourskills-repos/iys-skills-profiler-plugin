@@ -3487,6 +3487,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
 
           console.log("startValue", startValue);
+          if (startValue == undefined) {
+            startValue = 1;
+          }
+
           connectArray[0] = true;
           let noUiSliderElement = noUiSlider.create(spanSliderInnerDiv, {
             start: [startValue],
@@ -4049,12 +4053,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const ratingButton = document.createElement("button");
         ratingButton.className = "btn btn-rounded shadow-0 random-color-button";
-        ratingButton.innerHTML =
-          skill.rating[0].rating +
-          "/" +
-          skill.isot_file.ratings[0].rating_scale_label.length +
-          " Rating";
-        skillContainer.appendChild(ratingButton);
+        if (skill.rating[0].rating) {
+          ratingButton.innerHTML =
+            skill.rating[0].rating +
+            "/" +
+            skill.isot_file.ratings[0].rating_scale_label.length +
+            " Rating";
+          skillContainer.appendChild(ratingButton);
+        } else {
+          ratingButton.innerHTML = "";
+        }
 
         const deleteIcon = document.createElement("i");
         deleteIcon.className = "fas fa-trash";
@@ -4230,8 +4238,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         editIcon.style.color = "#3a76d0";
         actionsIconDiv.appendChild(editIcon);
 
-        skillDetails.appendChild(experienceDetails);
-        skillDetails.appendChild(ratingDetails);
+        if (skill.rating[0].rating) {
+          skillDetails.appendChild(ratingDetails);
+          skillDetails.appendChild(experienceDetails);
+        }
         skillDetails.appendChild(actionsIconDiv);
 
         skillContainer.appendChild(skillName);

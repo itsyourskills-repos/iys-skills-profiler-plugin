@@ -56,6 +56,50 @@
   <body style="background-color: transparent">
     <span id="iys-functional-areas-plugin"></span>
 
+    <script>
+      let rate_obj = [
+        {
+          comment: "SDFSD",
+          rating: [
+            {
+              isot_rating_id: "ratings/9",
+              rating: 0,
+              comment: "SDFSD",
+            },
+          ],
+          isot_file_id: "4075099",
+          isot_file: {
+            path_addr: "4075099",
+            name: "QSAM",
+            description: null,
+            ratings: [
+              {
+                _id: "ratings/9",
+                rating_category: "Knowledge Level",
+                rating_scale_type: "Four Scale Rating",
+                rating_scale_label: [
+                  "Basic/Learning",
+                  "Familiar/Low Level Knowledge",
+                  "Proficient/High Level Knowledge",
+                  "Expert/In-depth",
+                ],
+              },
+            ],
+            tags: [
+              {
+                _id: "tags/20",
+                title: "Knowledge",
+              },
+            ],
+            display_order: null,
+            child_count: 0,
+          },
+          parentSkillDetail: null,
+        },
+      ];
+      localStorage.setItem("userRatedSkills", JSON.stringify(rate_obj));
+    </script>
+
     <script src="assets/js/classes/plugin.js"></script>
     <script src="assets/js/main.js"></script>
     <script
