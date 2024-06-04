@@ -1713,7 +1713,9 @@ class IysSearchPlugin {
 
     if (isLoginUser && this.searchValue.length > 0) {
       fetch(
-        `https://api.myskillsplus.com/api-search/?q=${this.searchValue.trim()}`,
+        `https://api.myskillsplus.com/api-search/?q=${encodeURIComponent(
+          this.searchValue.trim()
+        )}`,
         {
           method: "GET",
           headers: {
@@ -4626,6 +4628,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           } else {
             this.childrenSkillAPI(skillId);
           }
+          setTimeout(() => {
+            document.getElementById("rateBtn").click();
+          }, 3000);
         })
         .catch((err) => {
           console.error(err);
