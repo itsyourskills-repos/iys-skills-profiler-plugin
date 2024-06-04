@@ -975,7 +975,7 @@ function ResetButton(htmlElement, disabled) {
 // Function to handle API calling for  "Add Skill" button click
 function addSkillToApi(payload) {
   // API endpoint (replace with your actual API endpoint)
-  const apiEndpoint = `https://lambdaapi.iysskillstech.com/v2/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
+  const apiEndpoint = `https://lambdaapi.iysskillstech.com/auth/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
   // Make the API call using the fetch API
   return fetch(apiEndpoint, {
     method: "POST",
@@ -1656,10 +1656,12 @@ class IysSearchPlugin {
     modalContent.appendChild(modalButton);
 
     // Append the modal to the document body
+    console.warn(this.options);
+    console.warn(this.options.pluginDivId);
 
     let pluginDiv = document.getElementById(this.options.pluginDivId);
 
-    pluginDiv.body.appendChild(modalDiv);
+    pluginDiv.appendChild(modalDiv);
 
     function createInputContainer(labelText) {
       const container = document.createElement("div");
@@ -1673,9 +1675,15 @@ class IysSearchPlugin {
     }
   }
 
+  escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+  }
+
   searchHighlight(searched, text) {
     if (searched !== "") {
-      const searchTerms = searched.split(" ");
+      const searchTerms = searched
+        .split(" ")
+        .map((term) => this.escapeRegExp(term));
       const newText = text.replace(
         new RegExp(searchTerms.join("|"), "gi"),
         (match) => `<b>${match}</b>`
@@ -1733,7 +1741,11 @@ class IysSearchPlugin {
           // div.removeChild(loader);
         });
     } else if (this.searchValue.trim().length > 0) {
-      fetch(`${ENDPOINT_URL}?q=${this.searchValue.trim()}&limit=10`)
+      fetch(
+        `${ENDPOINT_URL}?q=${encodeURIComponent(
+          this.searchValue.trim()
+        )}&limit=10`
+      )
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
