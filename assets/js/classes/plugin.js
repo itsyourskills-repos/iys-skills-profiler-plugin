@@ -2,12 +2,23 @@ var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
 const ENDPOINT_URL = "https://lambdaapi.iysskillstech.com/latest/dev-api/";
-const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
-const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
-const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
+const loggedInUserApiEndpoint = `https://uat-api.myskillsplus.com/get-skills/`;
+const loggedInUserAddSkill = `https://uat-api.myskillsplus.com/add-skills/`;
+const deleteSkillApiEndpoint = `https://uat-api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
-  "https://api.myskillsplus.com/api/token/refresh/";
+  "https://uat-api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
+const rootElement = document.getElementById('root');
+// localStorage.setItem('iys', JSON.stringify({
+//   page:"Home",
+//   tap: "search",
+//   profile_view: "quick",
+//   isEdit: true,
+//   isDelete: true
+// }));
+
+const iysplugin=Json.parse(localStorage.getItem('iys'));
+console.log(iysplugin.isEdit);
 
 function fetchData(url, method) {
   return fetch(url, {
@@ -1705,7 +1716,7 @@ class IysSearchPlugin {
 
     if (isLoginUser && this.searchValue.length > 0) {
       fetch(
-        `https://api.myskillsplus.com/api-search/?q=${this.searchValue.trim()}`,
+        `https://uat-api.myskillsplus.com/api-search/?q=${this.searchValue.trim()}`,
         {
           method: "GET",
           headers: {
@@ -1864,8 +1875,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     profileLi.appendChild(profileButton);
 
     // Append li elements to ul element
-    ulElement.appendChild(homeLi);
-    ulElement.appendChild(profileLi);
+    if(iysplugin.tap=="search"){
+      ulElement.appendChild(homeLi);
+    }
+    else if(iysplugin.tap=="profile"){
+        ulElement.appendChild(profileLi);
+    }
+    else if(iysplugin.tap=="all"){
+        ulElement.appendChild(homeLi);
+        ulElement.appendChild(profileLi);
+    }
+    // ulElement.appendChild(homeLi);
+    // ulElement.appendChild(profileLi);
 
     // Append ul element to button container div
     buttonContainerDiv.appendChild(ulElement);
@@ -1886,7 +1907,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Create home tab pane div
     var homeTabDiv = document.createElement("div");
-    homeTabDiv.className = "tab-pane fade show active";
+    homeTabDiv.className = "tab-pane";
     homeTabDiv.id = "home0";
     homeTabDiv.setAttribute("role", "tabpanel");
     homeTabDiv.setAttribute("aria-labelledby", "home-tab0");
@@ -1918,10 +1939,25 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Create profile tab pane div
     var profileTabDiv = document.createElement("div");
-    profileTabDiv.className = "tab-pane fade";
+    profileTabDiv.className = "tab-pane";
     profileTabDiv.id = "profile0";
     profileTabDiv.setAttribute("role", "tabpanel");
     profileTabDiv.setAttribute("aria-labelledby", "profile-tab0");
+
+    //Active nav changes
+    if(iysplugin.tap=="search"){
+      homeTabDiv.className="tab-pane fade show active";
+    }
+    else if(iysplugin.tap=="profile"){
+        profileTabDiv.className = "tab-pane fade show active";
+    }
+    else if (iysplugin.tap=="all"){
+        homeTabDiv.className = "tab-pane fade show active";
+    }
+    else{
+        homeTabDiv.className = "tab-pane fade";
+        profileTabDiv.className = "tab-pane fade show active";
+    }
 
     var containerFluidDiv = document.createElement("div");
     containerFluidDiv.className = "container-fluid px-md-3 pb-md-3";
@@ -1963,9 +1999,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       "fa-table",
       "Tabular View"
     );
-
-    btnGroupDiv.appendChild(quickTabButton);
-    btnGroupDiv.appendChild(tabularTabButton);
+    
+    //profile view show changes
+    if(iysplugin.profile_view=="quick"){
+      btnGroupDiv.appendChild(quickTabButton);
+    }
+    else if(iysplugin.profile_view=="tablular"){
+        btnGroupDiv.appendChild(tabularTabButton);
+    }
+    else if(iysplugin.profile_view=="all"){
+        btnGroupDiv.appendChild(quickTabButton);
+        btnGroupDiv.appendChild(tabularTabButton);
+    }
+    // btnGroupDiv.appendChild(quickTabButton);
+    // btnGroupDiv.appendChild(tabularTabButton);
 
     navPillsDiv.appendChild(btnGroupDiv);
 
@@ -1976,7 +2023,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     tabContentDiv3.id = "viewsTabContent0";
 
     var quickTabContentDiv = document.createElement("div");
-    quickTabContentDiv.className = "tab-pane fade show active";
+    quickTabContentDiv.className = "tab-pane";
     quickTabContentDiv.id = "quick-tab-content";
     quickTabContentDiv.setAttribute("role", "tabpanel");
     quickTabContentDiv.setAttribute("aria-labelledby", "home-tab0");
@@ -1996,7 +2043,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     quickTabContentDiv.appendChild(quickViewContentDiv);
 
     var tabularTabContentDiv = document.createElement("div");
-    tabularTabContentDiv.className = "tab-pane fade";
+    tabularTabContentDiv.className = "tab-pane";
     tabularTabContentDiv.id = "tabular-tab-content";
     tabularTabContentDiv.setAttribute("role", "tabpanel");
     tabularTabContentDiv.setAttribute("aria-labelledby", "profile-tab0");
@@ -2048,6 +2095,21 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     profileTabDiv.appendChild(containerFluidDiv);
 
     tabContentDiv.appendChild(profileTabDiv);
+
+    //Profile view active changes
+    if(iysplugin.profile_view=="quick"){
+      quickTabContentDiv.className="tab-pane fade show active";
+    }
+    else if(iysplugin.profile_view=="tabular"){
+        tabularTabContentDiv.className = "tab-pane fade show active";
+    }
+    else if (iysplugin.profile_view=="all"){
+        quickTabContentDiv.className = "tab-pane fade show active";
+    }
+    else{
+        quickTabContentDiv.className = "tab-pane fade";
+        tabularTabContentDiv.className = "tab-pane fade show active";
+    }
 
     // Create modal div
     var modalDiv = document.createElement("div");
@@ -2658,7 +2720,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   SkillChildrenAPI(skillFileId) {
     let url;
     if (isLoginUser) {
-      url = `https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
+      url = `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
     } else {
       url = `${ENDPOINT_URL}children/?path_addr=${skillFileId}`;
     }
@@ -4064,7 +4126,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       })
       .catch((err) => console.error(err));
   }
-  appendQuickViewContent() {
+  appendQuickViewContent(is_edit,is_delete) {
     const skillsData = getListFromlocalStorage(); // Assuming this  retrieves the skills data
 
     if (!skillsData || skillsData.length === 0) {
@@ -4175,14 +4237,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.style.color = "#f14749";
         deleteIcon.setAttribute("title", "Click to Delete");
-        skillContainer.appendChild(deleteIcon);
+        if(iysplugin.isDelete)
+        {
+          skillContainer.appendChild(deleteIcon);
+        }
 
         const editIcon = document.createElement("i");
         editIcon.className = "fas fa-pen";
         editIcon.style.color = "#3a76d0";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
-        skillContainer.appendChild(editIcon);
+        if(iysplugin.isEdit){
+          skillContainer.appendChild(editIcon);
+        }
 
         editIcon.addEventListener("click", () => {
           console.log("editing things", skill.isot_file);
@@ -4214,7 +4281,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
 
-  appendTabularViewContent() {
+  appendTabularViewContent(is_edit,is_delete) {
     const skillsData = getListFromlocalStorage(); // Assuming this function retrieves the skills data
 
     if (!skillsData || skillsData.length === 0) {
@@ -4383,14 +4450,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         deleteIcon.style.color = "#f14749";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.setAttribute("title", "Click to Delete");
-        actionsIconDiv.appendChild(deleteIcon);
+        if(iysplugin.isDelete){
+          actionsIconDiv.appendChild(deleteIcon);
+        }
 
         const editIcon = document.createElement("i");
         editIcon.className = "fas fa-pen";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
         editIcon.style.color = "#3a76d0";
-        actionsIconDiv.appendChild(editIcon);
+        if(iysplugin.isEdit){
+          actionsIconDiv.appendChild(editIcon);
+        }
 
         skillDetails.appendChild(experienceDetails);
         skillDetails.appendChild(ratingDetails);
@@ -4534,7 +4605,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       let url = "";
       if (isLoginUser) {
-        url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
+        url = `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
         url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
       }
@@ -4577,7 +4648,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       selectedSkillDiv.appendChild(loader);
       let url = "";
       if (isLoginUser) {
-        url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
+        url = `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillId}`;
       } else {
         url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
       }
@@ -4689,7 +4760,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
   updateProfileData() {
-    this.appendQuickViewContent();
+    this.appendQuickViewContent(true,false);
 
     const existingColors = [];
     var buttons = document.getElementsByClassName("random-color-button");
@@ -4703,7 +4774,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       buttons[i].style.background = randomColorWithOpacity;
     }
     applyRandomColor(buttons);
-    this.appendTabularViewContent();
+    this.appendTabularViewContent(false,true);
   }
   getTags(tags) {
     return tags.map((tag) => tag.title).join(", ");
@@ -4712,7 +4783,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   treeSkillAPI(cardBodyDiv, skillId) {
     let url = "";
     if (isLoginUser) {
-      url = `https://api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
+      url = `https://uat-api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
       fetch(url, {
         method: "GET",
         headers: {
