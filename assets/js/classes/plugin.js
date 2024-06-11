@@ -17,7 +17,7 @@ const rootElement = document.getElementById('root');
 //   isDelete: true
 // }));
 
-const iysplugin=Json.parse(localStorage.getItem('iys'));
+const iysplugin=JSON.parse(localStorage.getItem('iys'));
 console.log(iysplugin.isEdit);
 
 function fetchData(url, method) {
