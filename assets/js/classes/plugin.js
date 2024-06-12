@@ -4184,7 +4184,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         //   " Rating";
         // skillContainer.appendChild(ratingButton);
 
-        const imagePathBase = 'assets/img/';
+        const imagePathBase = 'https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/';
 
         if (percentage === 0) {
           const image0 = document.createElement("img");
@@ -4392,7 +4392,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         
         const percentage = ((skill.rating[0].rating - 1) / skill.isot_file.ratings[0].rating_scale_label.length) * 100;
 
-        const imagePathBase = 'assets/img/';
+        const imagePathBase = 'https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/';
 
         const ratingDetails = document.createElement("div");
         ratingDetails.className = "ps-3 border-end border-2  px-2";
