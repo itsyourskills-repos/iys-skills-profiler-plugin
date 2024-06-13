@@ -1868,8 +1868,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var profileIcon = document.createElement("i");
     profileIcon.className = "fa fa-xl fa-user py-2";
     var profileSmall = document.createElement("small");
-    // profileSmall.textContent = "Profile";
-    profileSmall.textContent = iysplugin.mtest;
+    profileSmall.textContent = "Profile";
     profileIconDiv.appendChild(profileIcon);
     profileIconDiv.appendChild(profileSmall);
     profileButton.appendChild(profileIconDiv);
