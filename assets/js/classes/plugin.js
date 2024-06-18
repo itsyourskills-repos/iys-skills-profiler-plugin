@@ -1,5 +1,5 @@
 
-// upadted 1.0
+// upadted 2.0
 var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
