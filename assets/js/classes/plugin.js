@@ -1,3 +1,5 @@
+
+// upadted 1.0
 var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
