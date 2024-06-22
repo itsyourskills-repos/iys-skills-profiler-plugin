@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35">
+  <g id="Ring_Chart4" data-name="Ring Chart4" transform="translate(-696 -1046)">
+    <g id="Group_200" data-name="Group 200">
+      <path id="Path_5363" data-name="Path 5363" d="M0-17.5a17.5,17.5,0,0,1,12.538,5.291A17.5,17.5,0,0,1,17.494.466l-5-.133A12.5,12.5,0,0,0,8.956-8.72,12.5,12.5,0,0,0,0-12.5Z" transform="translate(713.5 1063.5)" fill="#4f46fb"/>
+      <path id="Path_5364" data-name="Path 5364" d="M17.494.466A17.5,17.5,0,0,1-.311,17.5,17.5,17.5,0,0,1-17.5-.155,17.5,17.5,0,0,1,0-17.5v5A12.5,12.5,0,0,0-12.5-.111,12.5,12.5,0,0,0-.222,12.5,12.5,12.5,0,0,0,12.5.333Z" transform="translate(713.5 1063.5)" fill="#e0deff"/>
+    </g>
+    <text id="_25_" data-name="25%" transform="translate(713.5 1066.563)" fill="#4f46fb" font-size="8" font-family="SegoeUI-SemiBold, Segoe UI" font-weight="600"><tspan x="-7" y="0">25%</tspan></text>
+  </g>
+</svg>

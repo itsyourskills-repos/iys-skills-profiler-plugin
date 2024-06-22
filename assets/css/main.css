@@ -225,3 +225,88 @@ div#mySkillPluginSerachId {
     width: 100% !important;
   }
 }
+
+#dropdown-plugin-div::-webkit-scrollbar {
+  width: 10px;
+}
+
+#dropdown-plugin-div::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+#dropdown-plugin-div::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+#dropdown-plugin-div::-webkit-scrollbar-track {
+  background: #fff;
+  border-radius: 10px;
+}
+
+/* #subcategories:title{
+  background-color: #024FAB;
+  border-radius: 5px;
+  color: #F6F7F9;
+  font-size: 12px;
+} */
+#subcategories::after {
+  content: attr(title); /* Add content from title attribute */
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: #024FAB; /* Blue background */
+  color: white; /* White text */
+  padding: 5px 10px; /* Adjust padding as needed */
+  border-radius: 5px; /* Border radius */
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.3s; /* Add transition */
+}
+
+.btn.active {
+  background-color: #EFF2F7;
+  border-top: 5px solid #0050AF;
+  color:#0050AF;
+}
+
+.tooltipskills {
+  position: absolute;
+  background-color: #635BFF;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  border-radius: 5px;
+  font-size: 12px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+.tooltipskills::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 15%;
+  transform: translateY(-50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #635BFF transparent;
+  z-index: -1;
+}
+
+.tooltipskills.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.button-container {
+  position: relative;
+  display: inline-block;
+}
+
+.button-container:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}

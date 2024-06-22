@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 35 35">
+  <g id="Group_204" data-name="Group 204" transform="translate(-518.998 -973.004)">
+    <g id="Group_205" data-name="Group 205">
+      <path id="Path_5351" data-name="Path 5351" d="M0-17.5A17.5,17.5,0,0,1,17.5,0,17.5,17.5,0,0,1,0,17.5v-5A12.5,12.5,0,0,0,12.5,0,12.5,12.5,0,0,0,0-12.5Z" transform="translate(536.498 990.504)" fill="#4f46fb"/>
+      <path id="Path_5352" data-name="Path 5352" d="M0,17.5A17.5,17.5,0,0,1-17.5,0,17.5,17.5,0,0,1,0-17.5v5A12.5,12.5,0,0,0-12.5,0,12.5,12.5,0,0,0,0,12.5Z" transform="translate(536.498 990.504)" fill="#4f46fb"/>
+    </g>
+    <text id="_100_" data-name="100%" transform="translate(536.498 994.004)" fill="#4f46fb" font-size="8" font-family="SegoeUI-SemiBold, Segoe UI" font-weight="600"><tspan x="-10" y="0">100%</tspan></text>
+  </g>
+</svg>
