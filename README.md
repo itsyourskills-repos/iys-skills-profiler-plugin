@@ -33,3 +33,8 @@ To get the localstorage (iys) and add the conditions to hide or show in this plu
 
 	* If the isEdit or isDelete is true to show the edit and delete icon 
 	* If the isEdit or isDelete is false don't show the edit and delete icon
+
+# Plugin UI changes:
+
+1. Plugin UI Changes are updated in the newPlugin.js file
+2. Assets -> Img folder contains the all images 
