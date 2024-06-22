@@ -9,13 +9,12 @@ const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
-const softSkillApiEndpoint = 'https://uat-lambdaapi.iysskillstech.com/staging/dev-api/';
-// const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
-//   tap: "all",
-//   profile_view: "all",
-//   isEdit: true,
-//   isDelete: true
-// }));
+const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
+  tap: "all",
+  profile_view: "all",
+  isEdit: true,
+  isDelete: true
+}));
 
 const iysplugin=JSON.parse(localStorage.getItem("iys"));
 console.log(iysplugin);
@@ -3768,9 +3767,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       let url = "";
       if (parentSkillDetailId) {
-        url = `${softSkillApiEndpoint}details?path_addrs=${skillDetail?.path_addr}&path_addrs=${parentSkillDetailId}`;
+        url = `${ENDPOINT_URL}details?path_addrs=${skillDetail?.path_addr}&path_addrs=${parentSkillDetailId}`;
       } else {
-        url = `${softSkillApiEndpoint}details?path_addrs=${skillDetail?.path_addr}`;
+        url = `${ENDPOINT_URL}details?path_addrs=${skillDetail?.path_addr}`;
       }
 
       fetchData(url, "GET")
@@ -4217,6 +4216,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     } catch (error) {
       console.log("error in destroying slider", error);
     }
+    console.log(skillDetail);
     if (skillDetail?.ratings.length > 0) {
       let ratingOptions = skillDetail?.ratings;
       var arbitraryValuesForSlider = ratingOptions;
@@ -4943,9 +4943,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
     if (skillDetail.rating_type > 0) {
       cardTitleH4.appendChild(rateButton);
-    } else if (
-      skillDetail?.skills?.length > 0 &&
-      skillDetail?.skills[0]?.ratings[0]?.rating_scale_label.length > 0
+    } 
+    else if (
+      skillDetail?.skills?.length > 0
+       && skillDetail?.skills[0]?.ratings[0]?.rating_scale_label.length > 0
     ) {
       cardTitleH4.appendChild(rateButton);
     }
@@ -5889,7 +5890,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
 
     async fetchParentSoftSkills(softSkillAccordian) {
-        const parentSkillApiEndpoint = 'https://uat-lambdaapi.iysskillstech.com/staging/dev-api/soft-skills';
+        const parentSkillApiEndpoint = `${ENDPOINT_URL}soft-skills/`;
 
         try {
             const response = await fetch(parentSkillApiEndpoint);
@@ -5907,7 +5908,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
 
     async fetchParentRoleSkills(softSkillAccordian) {
-        const parentSkillApiEndpoint = 'https://uat-lambdaapi.iysskillstech.com/staging/dev-api/role/';
+        const parentSkillApiEndpoint = `${ENDPOINT_URL}role/`;
 
         try {
             const response = await fetch(parentSkillApiEndpoint);
@@ -6005,7 +6006,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                   // Call changeratingmodelelement function with skill data
                   this.changeSoftSkillRateModelElement(skill);
               } else {
-                  const childSkillApiEndpoint = `https://uat-lambdaapi.iysskillstech.com/staging/dev-api/children/?path_addr=${skill.path_addr}`;
+                  const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
                   const childSkills = await this.fetchSkills(childSkillApiEndpoint);
                   const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr }];
   
@@ -6041,7 +6042,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           knowledgeLink.style.color = "#A7A4DC";
           knowledgeLink.style.marginRight = "5px";
           knowledgeLink.addEventListener('click', async () => {
-              const parentSkillApiEndpoint = 'https://uat-lambdaapi.iysskillstech.com/staging/dev-api/soft-skills';
+              const parentSkillApiEndpoint = `${ENDPOINT_URL}soft-skills/`;
               const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
               this.renderSkills(parentSkills, [], softSkillAccordian);
           });
@@ -6062,7 +6063,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           breadcrumbLink.style.marginRight = "5px";
   
           breadcrumbLink.addEventListener('click', async () => {
-              const childSkillApiEndpoint = `https://uat-lambdaapi.iysskillstech.com/staging/dev-api/children/?path_addr=${breadcrumbItem.path_addr}`;
+              const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
               const skills = await this.fetchSkills(childSkillApiEndpoint);
               const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
               this.renderSkills(skills, newBreadcrumbPath, softSkillAccordian);
