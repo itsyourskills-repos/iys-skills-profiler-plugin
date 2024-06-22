@@ -9,6 +9,7 @@ const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
+
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
 //   tap: "all",
 //   profile_view: "all",
