@@ -8,7 +8,7 @@ const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
-
+const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
 const softSkillApiEndpoint = 'https://uat-lambdaapi.iysskillstech.com/staging/dev-api/';
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
 //   tap: "all",
@@ -1099,7 +1099,7 @@ class IysSearchPlugin {
     input.style.paddingTop = "20px";
     input.style.paddingBottom = "20px";
     input.type = "search";
-    input.style.background = 'transparent url("assets/img/Group 3.svg")';
+    input.style.background = `transparent url("${imagePath}Group 3.svg")`;
     input.style.backgroundRepeat = 'no-repeat';
     input.style.backgroundPositionX = '13px';
     input.style.backgroundPositionY = 'center';
@@ -1841,10 +1841,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     ulElement.id = "myTab0";
 
     // Create home tab
-    var homeTab = createTab("home", "Search", "assets/img/Group 1.svg", "#E8F2FF","#024FAB");
+    var homeTab = createTab("home", "Search", `${imagePath}Group 1.svg`, "#E8F2FF","#024FAB");
 
     // Profile tab
-    var profileTab = createTab("profile", "View Profile", "assets/img/Group 2.svg", "#DEDEDE","#636363");
+    var profileTab = createTab("profile", "View Profile", `${imagePath}Group 2.svg`, "#DEDEDE","#636363");
 
     // Append li elements to ul element
     if(iysplugin.tap=="all" || iysplugin.tap=="search"){
@@ -2006,7 +2006,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     imgBodyDiv.style.flexDirection = "column";
 
     var contentImg = document.createElement("img");
-    contentImg.src = "assets/img/Group 175.svg";
+    contentImg.src = `${imagePath}Group 175.svg`;
     contentImg.style.width = "906px";
     contentImg.style.height = "466px";
 
@@ -2139,13 +2139,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var quickTabButton = createTabButton(
       "quick-tab",
       "#quick-tab-content",
-      "assets/img/Group 28.svg",
+      `${imagePath}Group 28.svg`,
       "Quick View"
     );
     var tabularTabButton = createTabButton(
       "tabular-tab",
       "#tabular-tab-content",
-      "assets/img/Group 29.svg",
+      `${imagePath}Group 29.svg`,
       "Tabular View"
     );
 
@@ -2799,18 +2799,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       if (id == "hard-skills") {
         button.style.backgroundColor="#F4F3FF";
         iconDiv.style.backgroundColor="#635BFF";
-        iconElement.src="assets/img/Group 5.svg";
+        iconElement.src=`${imagePath}Group 5.svg`;
         iconElement.alt="img";
 
       }else if (id == "soft-skills") {
         button.style.backgroundColor="#E8FDFC";
         iconDiv.style.backgroundColor="#14E9E2";
-        iconElement.src="assets/img/Group 7.svg";
+        iconElement.src=`${imagePath}Group 7.svg`;
         iconElement.alt="img";
       }else {
         button.style.backgroundColor="#FFEEF3"
         iconDiv.style.backgroundColor="#FF6692";
-        iconElement.src="assets/img/Group 8.svg";
+        iconElement.src=`${imagePath}Group 8.svg`;
         iconElement.alt="img";
       }
 
@@ -3170,7 +3170,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 //           );
 
 //           const hirarchyRateButtonImg = document.createElement("img")
-//           hirarchyRateButtonImg.src = "assets/img/Group 11.svg";
+//           hirarchyRateButtonImg.src = `${imagePath}Group 11.svg`;
 //           hirarchyRateButtonImg.alt ="Rate icon";
 //           hirarchyRateButtonImg.style.verticalAlign = "middle";
 //           hirarchyRateButtonImg.style.marginRight = "4px"; 
@@ -3901,7 +3901,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
     const modalEl = new mdb.Modal(RateSkillModel);
     RateSkillModelLabel.style.fontSize = "17px";
-    RateSkillModelLabel.innerHTML = `<img src="assets/img/Group 11.svg" style="height:25px; weight:26px; margin-right:10px;"><span style="color: #635BFF; font-weight:600; font-size:16px;">Ratings -</span>
+    RateSkillModelLabel.innerHTML = `<img src="${imagePath}Group 11.svg" style="height:25px; weight:26px; margin-right:10px;"><span style="color: #635BFF; font-weight:600; font-size:16px;">Ratings -</span>
    <span style="color:#1E1E1E; font-weight:600;"> ${titleText} </span>`;
     this.createRatingElement(
       spanElementForStar,
@@ -3999,7 +3999,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
     const modalEl = new mdb.Modal(RateSkillModel);
     RateSkillModelLabel.style.fontSize = "17px";
-    RateSkillModelLabel.innerHTML = `<img src="assets/img/Group 11.svg" style="height:25px; weight:26px; margin-right:10px;"><span style="color: #635BFF; font-weight:600; font-size:16px;">Ratings -</span>
+    RateSkillModelLabel.innerHTML = `<img src="${imagePath}Group 11.svg" style="height:25px; weight:26px; margin-right:10px;"><span style="color: #635BFF; font-weight:600; font-size:16px;">Ratings -</span>
    <span style="color:#1E1E1E; font-weight:600;"> ${titleText} </span>`;
     this.createSoftSkillRatingElement(
       spanElementForStar,
@@ -4566,11 +4566,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             pips: { mode: "steps", format: format, density: 50 },
             connect: "lower",
           });
-          console.log(
-            noUiSliderElement,
-            "noUiSliderElement",
-            spanSliderInnerDiv,
-          );
+        //   console.log(
+        //     noUiSliderElement,
+        //     "noUiSliderElement",
+        //     spanSliderInnerDiv,
+        //   );
 
           spanSliderInnerDiv.classList.add("slider");
         }
@@ -5161,7 +5161,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         //   ratingButton.innerHTML = "";
         // }
 
-        const imagePathBase = 'assets/img/';
+        const imagePathBase = imagePath;
 
         if (percentage === 0) {
           const image0 = document.createElement("img");
@@ -5212,7 +5212,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         //comments is present to show the comment
         if (skill.comment) {
           const commentImage = document.createElement("img");
-          commentImage.src = "assets/img/Group 148.svg";
+          commentImage.src = `${imagePath}Group 148.svg`;
           commentImage.className = "comment-image ms-1";
           commentImage.title=skill.comment;
           commentImage.style.cursor = "pointer";
@@ -5220,7 +5220,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillContainer.appendChild(commentImage);
         }
         const deleteIcon = document.createElement("img");
-        deleteIcon.src = "assets/img/Group 34.svg";
+        deleteIcon.src = `${imagePath}Group 34.svg`;
         deleteIcon.style="height:12px; width: 10px;"
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.style.backgroundColor = "#EEEEEE";
@@ -5231,7 +5231,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         const editIcon = document.createElement("img");
-        editIcon.src = "assets/img/Group 35.svg";
+        editIcon.src = `${imagePath}Group 35.svg`;
         editIcon.style="height:12px; width: 10px;"
         editIcon.style.backgroundColor = "#EEEEEE";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
@@ -5240,7 +5240,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillContainer.appendChild(editIcon);
         }
 
-        console.log(deleteIcon);
         editIcon.addEventListener("click", () => {
           console.log("editing things", skill.isot_file);
 
@@ -5366,7 +5365,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const skillName = document.createElement("div");
         skillName.className = "bg-";
         const commentImageHTML = skill.comment
-          ? `<img src="assets/img/Group 148.svg" class="comment-image ms-1" style="cursor:pointer;">`
+          ? `<img src="${imagePath}Group 148.svg" class="comment-image ms-1" style="cursor:pointer;">`
           : "";
 
         if (skill.isot_file.proxy_skill && skill.isot_file.proxy_skill.name) {
@@ -5394,7 +5393,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const percentage = ((skill.rating[0].rating - 1) / skill.isot_file.ratings[0].rating_scale_label.length) * 100;
 
-        const imagePathBase = 'assets/img/';
+        const imagePathBase = imagePath;
 
         const ratingDetails = document.createElement("div");
         ratingDetails.className = "ps-3  px-2";
@@ -5448,7 +5447,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const actionsIconDiv = document.createElement("div");
         actionsIconDiv.className = "ps-3";
         const deleteIcon = document.createElement("img");
-        deleteIcon.src = "assets/img/Group 34.svg";
+        deleteIcon.src = `${imagePath}Group 34.svg`;
         deleteIcon.style="margin-right:10px !important; height:15px; width: 13px;";
         deleteIcon.style.backgroundColor = "#EEEEEE";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
@@ -5458,7 +5457,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         const editIcon = document.createElement("img");
-        editIcon.src = "assets/img/Group 35.svg";
+        editIcon.src = `${imagePath}Group 35.svg`;
         editIcon.style="height:15px; width: 13px;"
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
@@ -5980,7 +5979,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           const childCountHtml = childCount > 0 ?
               `<div style="display:flex; align-items:center;">
                   <span style="margin-right: 5px;">${skill.name}</span>
-                  <img src="assets/img/hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
+                  <img src="${imagePath}hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
               </div>` :
               `<span>${skill.name}</span>`;
   
@@ -6049,7 +6048,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           breadcrumb.appendChild(knowledgeLink);
   
           const separator = document.createElement("img");
-          separator.src = "assets/img/Group 18.svg";
+          separator.src = `${imagePath}Group 18.svg`;
           separator.style.marginRight = "5px";
           breadcrumb.appendChild(separator);
       }
@@ -6073,7 +6072,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
           if (index < breadcrumbPath.length - 1) {
               const separator = document.createElement("img");
-              separator.src = "assets/img/Group 18.svg";
+              separator.src = `${imagePath}Group 18.svg`;
               separator.style.marginRight = "5px";
               breadcrumb.appendChild(separator);
           }
@@ -6088,7 +6087,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             rateButton.style.backgroundColor = "#E0DEFF";
             rateButton.style.cursor = "pointer";
             var rateButtonStar = document.createElement("img");
-            rateButtonStar.src = "assets/img/Group 11.svg";
+            rateButtonStar.src = `${imagePath}Group 11.svg`;
             rateButtonStar.style = "vertical-align: middle; margin-right: 4px;";
             var rateButtonSpan = document.createElement("span");
             rateButtonSpan.textContent = "Rate";
@@ -6142,7 +6141,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           breadcrumb.appendChild(knowledgeLink);
   
           const separator = document.createElement("img");
-          separator.src = "assets/img/Group 18.svg";
+          separator.src = `${imagePath}Group 18.svg`;
           separator.style.marginRight = "5px";
           breadcrumb.appendChild(separator);
   
@@ -6174,7 +6173,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               rateButton.style.cursor = "pointer";
   
               const rateButtonStar = document.createElement("img");
-              rateButtonStar.src = "assets/img/Group 11.svg";
+              rateButtonStar.src = `${imagePath}Group 11.svg`;
               rateButtonStar.style.verticalAlign = "middle";
               rateButtonStar.style.marginRight = "4px";
   
@@ -6240,7 +6239,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             const childCountHtml = childCount > 0 ?
                 `<div style="display:flex; align-items:center;">
                     <span style="margin-right: 5px;">${skill.name}</span>
-                    <img src="assets/img/hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
+                    <img src="${imagePath}hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
                 </div>` :
                 `<span>${skill.name}</span>`;
     
@@ -6311,7 +6310,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           breadcrumb.appendChild(knowledgeLink);
   
           const separator = document.createElement("img");
-          separator.src = "assets/img/Group 18.svg";
+          separator.src = `${imagePath}Group 18.svg`;
           separator.style.marginRight = "5px";
           breadcrumb.appendChild(separator);
       }
@@ -6338,7 +6337,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
           if (index < breadcrumbPath.length - 1) {
               const separator = document.createElement("img");
-              separator.src = "assets/img/Group 18.svg";
+              separator.src = `${imagePath}Group 18.svg`;
               separator.style.marginRight = "5px";
               breadcrumb.appendChild(separator);
           }
@@ -6358,7 +6357,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           rateButton.style.cursor = "pointer";
   
           const rateButtonStar = document.createElement("img");
-          rateButtonStar.src = "assets/img/Group 11.svg";
+          rateButtonStar.src = `${imagePath}Group 11.svg`;
           rateButtonStar.style.verticalAlign = "middle";
           rateButtonStar.style.marginRight = "4px";
   
@@ -6425,7 +6424,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             const childCountHtml = childCount > 0 ?
                 `<div style="display:flex; align-items:center;">
                     <span style="margin-right: 5px;">${skill.name}</span>
-                    <img src="assets/img/hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
+                    <img src="${imagePath}hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
                   </div>` :
                   `<span>${skill.name}</span>`;
     
