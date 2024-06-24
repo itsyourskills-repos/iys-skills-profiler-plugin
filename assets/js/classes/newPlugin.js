@@ -1704,10 +1704,14 @@ class IysSearchPlugin {
     modalContent.appendChild(modalButton);
 
     // Append the modal to the document body
-
+    console.log(this.options);
     let pluginDiv = document.getElementById(this.options.pluginDivId);
 
-    pluginDiv.body.appendChild(modalDiv);
+    if (pluginDiv) {
+      pluginDiv.appendChild(modalDiv);
+    } else {
+      console.error(`Element with ID ${this.options.pluginDivId} not found.`);
+    }
 
     function createInputContainer(labelText) {
       const container = document.createElement("div");
@@ -4269,7 +4273,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         li.setAttribute("class", "breadcrumb-item active");
         li.setAttribute("aria-current", "page");
          li.textContent = skill.name;
-        li.style="background-color:white; padding-right:16px; padding-left:16px; padding-top:4px; padding-bottom:4px; border-radius:7px; box-shadow:rgba(0,0,0,0.1) 0px 6px 12px;";
       } else {
         li.addEventListener("click", (event) => {
           removeItemsFromSessionStorageAfterIndex(index);
@@ -4285,12 +4288,24 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       ol.appendChild(li);
       if(skill.ratings && skill.ratings.length > 0) {
         console.log(skill);
-        const starIcon = document.createElement("i");
-        starIcon.className = "fas fa-star";
-        starIcon.style.marginLeft = "5px";
-        starIcon.style.cursor = "pointer";
-        starIcon.style.color = "#ccccff";
-        li.appendChild(starIcon);
+        const searchText = searchByName(skill.name);
+        if (searchText.length > 0) {
+          const starIcon = document.createElement("img");
+          starIcon.src = `${imagePath}Group 23.svg`;
+          starIcon.style.marginLeft = "5px";
+          starIcon.style.cursor = "pointer";
+          li.style="background-color:#E0DEFF; padding-right:16px; padding-left:16px; padding-top:4px; padding-bottom:4px; border-radius:7px; box-shadow:rgba(0,0,0,0.1) 0px 2px 8px;";
+          li.appendChild(starIcon);
+        }
+        else{
+          const starIcon = document.createElement("i");
+          starIcon.className = "fas fa-star";
+          starIcon.style.marginLeft = "5px";
+          starIcon.style.cursor = "pointer";
+          starIcon.style.color = "#ccccff";
+          li.style="background-color:white; padding-right:16px; padding-left:16px; padding-top:4px; padding-bottom:4px; border-radius:7px; box-shadow:rgba(0,0,0,0.1) 0px 2px 8px;";
+          li.appendChild(starIcon);
+        }
       } 
       skills=skill;
     });
@@ -5246,8 +5261,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillName.innerHTML = skill.isot_file.name;
         }
         skillName.style="font-size:16px; color:#1E1E1E";
-
-        const percentage = ((skill.rating[0].rating - 1) / skill.isot_file.ratings[0].rating_scale_label.length) * 100;
+        var percentage;
+        if(skill.rating.length==2){
+          percentage = ((skill.rating[1].rating - 1) / skill.isot_file.ratings[1].rating_scale_label.length) * 100;
+        }
+        else{
+          percentage = ((skill.rating[0].rating - 1) / skill.isot_file.ratings[0].rating_scale_label.length) * 100;
+        }
         // const ratingButton = document.createElement("button");
         // ratingButton.className = "btn btn-rounded shadow-0 random-color-button";
         // if (skill.rating[0].rating) {
@@ -5321,7 +5341,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         const deleteIcon = document.createElement("img");
         deleteIcon.src = `${imagePath}Group 34.svg`;
-        deleteIcon.style="height:12px; width: 10px;"
+        deleteIcon.style="height:14px; width: 12px;"
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.style.backgroundColor = "#EEEEEE";
         deleteIcon.setAttribute("title", "Click to Delete");
@@ -5332,7 +5352,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const editIcon = document.createElement("img");
         editIcon.src = `${imagePath}Group 35.svg`;
-        editIcon.style="height:12px; width: 10px;"
+        editIcon.style="height:14px; width: 12px;"
         editIcon.style.backgroundColor = "#EEEEEE";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
@@ -5480,18 +5500,39 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const skillDetails = document.createElement("div");
         skillDetails.className = "d-flex ";
+        skillDetails.style.alignItems = "center";
+        skillDetails.style.justifyContent = "center";
 
         const experienceDetails = document.createElement("div");
         experienceDetails.className = "px-3";
-        experienceDetails.innerHTML = `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${getExperienceLevel(
-          skill.rating[0].rating-1
-        )}`;
+
+        const ratingValue = skill.rating.length === 2 ? skill.rating[1].rating - 1 : skill.rating[0].rating - 1;
+
+        let ratingLabel = '';
+        let showCalendarIcon = false;
+
+        if (skill.rating.length === 2) {
+            ratingLabel = skill.isot_file.ratings[1].rating_scale_label[ratingValue-1];
+            showCalendarIcon = skill.isot_file.ratings[1].rating_category === "Experience Level";
+        } else {
+            ratingLabel = skill.isot_file.ratings[0].rating_scale_label[ratingValue-1];
+            showCalendarIcon = skill.isot_file.ratings[0].rating_category === "Experience Level";
+        }
+
+        experienceDetails.innerHTML = showCalendarIcon 
+            ? `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${ratingLabel}`
+            : `${ratingLabel}`;
 
         // const ratingDetails = document.createElement("div");
         // ratingDetails.className = "ps-3 border-end border-2  px-2";
         // ratingDetails.innerText = `${skill.rating[0].rating}/${skill.isot_file.ratings[0].rating_scale_label.length} Rating`;
-
-        const percentage = ((skill.rating[0].rating - 1) / skill.isot_file.ratings[0].rating_scale_label.length) * 100;
+        var percentage;
+        if(skill.rating.length == 2){
+          percentage = ((skill.rating[1].rating - 1) / skill.isot_file.ratings[1].rating_scale_label.length) * 100;
+        }
+        else{
+          percentage = ((skill.rating[0].rating - 1) / skill.isot_file.ratings[0].rating_scale_label.length) * 100;
+        }
 
         const imagePathBase = imagePath;
 
@@ -5548,7 +5589,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         actionsIconDiv.className = "ps-3";
         const deleteIcon = document.createElement("img");
         deleteIcon.src = `${imagePath}Group 34.svg`;
-        deleteIcon.style="margin-right:10px !important; height:15px; width: 13px;";
+        deleteIcon.style="margin-right:10px !important; height:16px; width: 14px;";
         deleteIcon.style.backgroundColor = "#EEEEEE";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.setAttribute("title", "Click to Delete");
@@ -5558,7 +5599,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const editIcon = document.createElement("img");
         editIcon.src = `${imagePath}Group 35.svg`;
-        editIcon.style="height:15px; width: 13px;"
+        editIcon.style="height:16px; width: 14px;"
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
         editIcon.style.backgroundColor = "#EEEEEE";
@@ -6061,7 +6102,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillButton.style.borderRadius = "10px";
           skillButton.style.margin = "5px";
           skillButton.style.padding = "6px 12px";
-          skillButton.style.background = "#FFFFFF";
+          skillButton.style.backgroundColor = "#FFFFFF";
           skillButton.style.cursor = "pointer";
           skillButton.style.color = "#1E1E1E";
           skillButton.style.fontSize = "16px";
@@ -6075,18 +6116,50 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
           const childCount = skill.child_count || 0;
           const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+          const description = skill.description;
   
-          const childCountHtml = childCount > 0 ?
-              `<div style="display:flex; align-items:center;">
-                  <span style="margin-right: 5px;">${skill.name}</span>
-                  <img src="${imagePath}hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
-              </div>` :
-              `<span>${skill.name}</span>`;
-  
-          skillButton.innerHTML = childCountHtml;
-  
-          // Add star icon if the skill has ratings
+          const buttonContentDiv = document.createElement("div")
+          buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+
+          const skillNameSpan = document.createElement("span");
+          skillNameSpan.textContent = skill.name;
+          buttonContentDiv.appendChild(skillNameSpan);
+
+          if (description) {
+            const descriptionImg = document.createElement("img");
+            descriptionImg.src = `${imagePath}Group 27.svg`;
+            descriptionImg.alt = "description";
+            descriptionImg.title = description;
+            descriptionImg.style.marginLeft = "5px";
+            buttonContentDiv.appendChild(descriptionImg);
+          }
+
+          if (childCount > 0) {
+              const hoverCircleImg = document.createElement("img");
+              hoverCircleImg.src = `${imagePath}hovercircle.png`;
+              hoverCircleImg.alt = "circle";
+              hoverCircleImg.style.width = "22px";
+              hoverCircleImg.style.height = "22px";
+              hoverCircleImg.title = `${childCount} sub categories`;
+              hoverCircleImg.style.marginLeft = "5px";
+              buttonContentDiv.appendChild(hoverCircleImg);
+          }
+
           if (ratingsCount > 0) {
+            const searchText = searchByName(skill.name);
+            if (searchText.length > 0) {
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.style.marginLeft = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.addEventListener('click', (event) => {
+                  event.stopPropagation();
+                  this.changeSoftSkillRateModelElement(skill);
+              });
+              skillButton.style.backgroundColor="#E0DEFF";
+              buttonContentDiv.appendChild(starIcon);
+            }
+            else{
               const starIcon = document.createElement("i");
               starIcon.className = "fas fa-star";
               starIcon.style.marginLeft = "5px";
@@ -6096,9 +6169,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                   event.stopPropagation();
                   this.changeSoftSkillRateModelElement(skill);
               });
-              skillButton.appendChild(starIcon);
+              buttonContentDiv.appendChild(starIcon);
+            }
           }
   
+          skillButton.appendChild(buttonContentDiv);
+
           // Add click event to fetch and display child skills or call changeratingmodelelement
           skillButton.addEventListener('click', async () => {
               if (skill.child_count === 0) {
@@ -6107,7 +6183,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               } else {
                   const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
                   const childSkills = await this.fetchSkills(childSkillApiEndpoint);
-                  const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr }];
+                  const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
   
                   // Render child skills
                   this.renderSkills(childSkills, newBreadcrumbPath, softSkillAccordian);
@@ -6134,9 +6210,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
       if (breadcrumbPath.length > 0) {
           breadcrumb.style.display = "";
-  
           const knowledgeLink = document.createElement("span");
-          knowledgeLink.textContent = "Knowledge";
+          knowledgeLink.textContent = skills[0].tags[0].title;
           knowledgeLink.style.cursor = "pointer";
           knowledgeLink.style.color = "#A7A4DC";
           knowledgeLink.style.marginRight = "5px";
@@ -6177,23 +6252,43 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               breadcrumb.appendChild(separator);
           }
       });
-  
-      const ratingsLength = skills.ratings ? skills.ratings.length : 0;
-        if (breadcrumbPath.length >0 && skills.child_count > 0 && ratingsLength > 0) {
+
+      const currentBreadcrumbItem = breadcrumbPath[breadcrumbPath.length - 1];
+      console.log(currentBreadcrumbItem);
+        if (currentBreadcrumbItem && currentBreadcrumbItem.ratings && currentBreadcrumbItem.ratings.length > 0) {
             var rateButton = document.createElement("button");
             rateButton.className = "ratebutton";
             rateButton.style.marginLeft = "5px";
             rateButton.style = "padding-top:1px; padding-bottom: 1px; border:none; border-radius:5px;";
             rateButton.style.backgroundColor = "#E0DEFF";
             rateButton.style.cursor = "pointer";
-            var rateButtonStar = document.createElement("img");
-            rateButtonStar.src = `${imagePath}Group 11.svg`;
-            rateButtonStar.style = "vertical-align: middle; margin-right: 4px;";
-            var rateButtonSpan = document.createElement("span");
-            rateButtonSpan.textContent = "Rate";
-            rateButtonSpan.style.color = "#4F46FB";
+
+            const rateButtonSpan = document.createElement("span");
+
+            const searchText = searchByName(currentBreadcrumbItem.name);
+            if(searchText.length > 0){
+              rateButton.style.backgroundColor = "#E0DEFF";
+              rateButtonSpan.textContent = "Rated";
+              rateButtonSpan.style.color="#1E1E1E";
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.style.marginRight = "5px";
+              starIcon.style.cursor = "pointer";
+              rateButton.appendChild(starIcon);
+            }
+            else{
+              rateButton.style.backgroundColor = "#EFF4FA";
+              rateButtonSpan.textContent = "Rate";
+              rateButtonSpan.style.color = "#636363";
+              const starIcon = document.createElement("i");
+              starIcon.className = "fas fa-star";
+              starIcon.style.marginRight = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.style.color = "rgb(204, 204, 255)";
+              rateButton.appendChild(starIcon);
+            }
             rateButtonSpan.style.fontSize = "16px";
-            rateButton.appendChild(rateButtonStar);
+            
             rateButton.appendChild(rateButtonSpan);
             rateButton.addEventListener("click", () => {
                 this.changeSoftSkillRateModelElement(skills);
@@ -6219,7 +6314,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
       if (breadcrumbPath.length > 0) {
           breadcrumb.style.display = "";
-  
+          
           const knowledgeLink = document.createElement("span");
           knowledgeLink.textContent = "Related Skills";
           knowledgeLink.style.cursor = "pointer";
@@ -6269,20 +6364,34 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               rateButton.style.paddingBottom = "1px";
               rateButton.style.border = "none";
               rateButton.style.borderRadius = "5px";
-              rateButton.style.backgroundColor = "#E0DEFF";
               rateButton.style.cursor = "pointer";
   
-              const rateButtonStar = document.createElement("img");
-              rateButtonStar.src = `${imagePath}Group 11.svg`;
-              rateButtonStar.style.verticalAlign = "middle";
-              rateButtonStar.style.marginRight = "4px";
-  
               const rateButtonSpan = document.createElement("span");
-              rateButtonSpan.textContent = "Rate";
-              rateButtonSpan.style.color = "#4F46FB";
+
+              const searchText = searchByName(clickedSkill.name);
+              if(searchText.length > 0){
+                rateButton.style.backgroundColor = "#E0DEFF";
+                rateButtonSpan.textContent = "Rated";
+                rateButtonSpan.style.color="#1E1E1E";
+                const starIcon = document.createElement("img");
+                starIcon.src = `${imagePath}Group 23.svg`;
+                starIcon.style.marginRight = "5px";
+                starIcon.style.cursor = "pointer";
+                rateButton.appendChild(starIcon);
+              }
+              else{
+                rateButton.style.backgroundColor = "#EFF4FA";
+                rateButtonSpan.textContent = "Rate";
+                rateButtonSpan.style.color = "#636363";
+                const starIcon = document.createElement("i");
+                starIcon.className = "fas fa-star";
+                starIcon.style.marginRight = "5px";
+                starIcon.style.cursor = "pointer";
+                starIcon.style.color = "rgb(204, 204, 255)";
+                rateButton.appendChild(starIcon);
+              }
               rateButtonSpan.style.fontSize = "16px";
   
-              rateButton.appendChild(rateButtonStar);
               rateButton.appendChild(rateButtonSpan);
               rateButton.addEventListener("click", () => {
                   console.log('Clicked Skill for Rating:', clickedSkill); // Debugging log
@@ -6321,7 +6430,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             skillButton.style.borderRadius = "10px";
             skillButton.style.margin = "5px";
             skillButton.style.padding = "6px 12px";
-            skillButton.style.background = "#FFFFFF";
+            skillButton.style.backgroundColor = "#FFFFFF";
             skillButton.style.cursor = "pointer";
             skillButton.style.color = "#1E1E1E";
             skillButton.style.fontSize = "16px";
@@ -6335,29 +6444,62 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     
             const childCount = skill.child_count || 0;
             const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+            const description = skill.description;
+            const buttonContentDiv = document.createElement("div")
+            buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
-            const childCountHtml = childCount > 0 ?
-                `<div style="display:flex; align-items:center;">
-                    <span style="margin-right: 5px;">${skill.name}</span>
-                    <img src="${imagePath}hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
-                </div>` :
-                `<span>${skill.name}</span>`;
-    
-            skillButton.innerHTML = childCountHtml;
+            const skillNameSpan = document.createElement("span");
+            skillNameSpan.textContent = skill.name;
+            buttonContentDiv.appendChild(skillNameSpan);
 
-            if (ratingsCount > 0 && childCount==0) {
-              const starIcon = document.createElement("i");
-              starIcon.className = "fas fa-star";
-              starIcon.style.marginLeft = "5px";
-              starIcon.style.cursor = "pointer";
-              starIcon.style.color = "#ccccff";
-              starIcon.addEventListener('click', (event) => {
-                  event.stopPropagation();
-                  this.changeRateModelElement(skill);
-              });
-              skillButton.appendChild(starIcon);
+            if (description) {
+              const descriptionImg = document.createElement("img");
+              descriptionImg.src = `${imagePath}Group 27.svg`;
+              descriptionImg.alt = "description";
+              descriptionImg.title = description;
+              descriptionImg.style.marginLeft = "5px";
+              buttonContentDiv.appendChild(descriptionImg);
             }
-    
+
+            if (childCount > 0) {
+                const hoverCircleImg = document.createElement("img");
+                hoverCircleImg.src = `${imagePath}hovercircle.png`;
+                hoverCircleImg.alt = "circle";
+                hoverCircleImg.style.width = "22px";
+                hoverCircleImg.style.height = "22px";
+                hoverCircleImg.title = `${childCount} sub categories`;
+                hoverCircleImg.style.marginLeft = "5px";
+                buttonContentDiv.appendChild(hoverCircleImg);
+            }
+
+            if (ratingsCount > 0) {
+              const searchText = searchByName(skill.name);
+              if (searchText.length > 0) {
+                const starIcon = document.createElement("img");
+                starIcon.src = `${imagePath}Group 23.svg`;
+                starIcon.style.marginLeft = "5px";
+                starIcon.style.cursor = "pointer";
+                starIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.changeRateModelElement(skill);
+                });
+                buttonContentDiv.appendChild(starIcon);
+                skillButton.style.backgroundColor="#E0DEFF";
+              }
+              else{
+                const starIcon = document.createElement("i");
+                starIcon.className = "fas fa-star";
+                starIcon.style.marginLeft = "5px";
+                starIcon.style.cursor = "pointer";
+                starIcon.style.color = "#ccccff";
+                starIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.changeRateModelElement(skill);
+                });
+                buttonContentDiv.appendChild(starIcon);
+              }
+            }
+            skillButton.appendChild(buttonContentDiv);
             // Add click event to fetch and display child skills or call changeSoftSkillRateModelElement
             skillButton.addEventListener('click', async () => {
                 if (skill.child_count === 0) {
@@ -6394,7 +6536,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
       if (breadcrumbPath.length > 0) {
           breadcrumb.style.display = "";
-  
+
           const knowledgeLink = document.createElement("span");
           knowledgeLink.textContent = "Hard Skills";
           knowledgeLink.style.cursor = "pointer";
@@ -6442,7 +6584,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               breadcrumb.appendChild(separator);
           }
       });
-  
+
       // Add rating button if the current breadcrumb item has ratings
       const currentBreadcrumbItem = breadcrumbPath[breadcrumbPath.length - 1];
       if (currentBreadcrumbItem && currentBreadcrumbItem.ratings && currentBreadcrumbItem.ratings.length > 0) {
@@ -6456,17 +6598,33 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           rateButton.style.backgroundColor = "#E0DEFF";
           rateButton.style.cursor = "pointer";
   
-          const rateButtonStar = document.createElement("img");
-          rateButtonStar.src = `${imagePath}Group 11.svg`;
-          rateButtonStar.style.verticalAlign = "middle";
-          rateButtonStar.style.marginRight = "4px";
-  
           const rateButtonSpan = document.createElement("span");
-          rateButtonSpan.textContent = "Rate";
-          rateButtonSpan.style.color = "#4F46FB";
+
+          const searchText = searchByName(currentBreadcrumbItem.name);
+
+          if(searchText.length > 0){
+            rateButton.style.backgroundColor = "#E0DEFF";
+            rateButtonSpan.textContent = "Rated";
+            rateButtonSpan.style.color="#1E1E1E";
+            const starIcon = document.createElement("img");
+            starIcon.src = `${imagePath}Group 23.svg`;
+            starIcon.style.marginRight = "5px";
+            starIcon.style.cursor = "pointer";
+            rateButton.appendChild(starIcon);
+          }
+          else{
+            rateButton.style.backgroundColor = "#EFF4FA";
+            rateButtonSpan.textContent = "Rate";
+            rateButtonSpan.style.color = "#636363";
+            const starIcon = document.createElement("i");
+            starIcon.className = "fas fa-star";
+            starIcon.style.marginRight = "5px";
+            starIcon.style.cursor = "pointer";
+            starIcon.style.color = "rgb(204, 204, 255)";
+            rateButton.appendChild(starIcon);
+          }
           rateButtonSpan.style.fontSize = "16px";
-  
-          rateButton.appendChild(rateButtonStar);
+          
           rateButton.appendChild(rateButtonSpan);
   
           rateButton.addEventListener("click", () => {
@@ -6520,28 +6678,64 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     
             const childCount = skill.child_count || 0;
             const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+            const description = skill.description;
 
-            const childCountHtml = childCount > 0 ?
-                `<div style="display:flex; align-items:center;">
-                    <span style="margin-right: 5px;">${skill.name}</span>
-                    <img src="${imagePath}hovercircle.png" alt="circle" style="width:20px; height:20px;" title="${childCount} sub categories">
-                  </div>` :
-                  `<span>${skill.name}</span>`;
-    
-            skillButton.innerHTML = childCountHtml;
-    
-            if (ratingsCount > 0 && childCount==0) {
-              const starIcon = document.createElement("i");
-              starIcon.className = "fas fa-star";
-              starIcon.style.marginLeft = "5px";
-              starIcon.style.cursor = "pointer";
-              starIcon.style.color = "#ccccff";
-              starIcon.addEventListener('click', (event) => {
-                  event.stopPropagation();
-                  this.changeRateModelElement(skill);
-              });
-              skillButton.appendChild(starIcon);
+            const buttonContentDiv = document.createElement("div")
+            buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+
+            const skillNameSpan = document.createElement("span");
+            skillNameSpan.textContent = skill.name;
+            buttonContentDiv.appendChild(skillNameSpan);
+
+            if (description) {
+              const descriptionImg = document.createElement("img");
+              descriptionImg.src = `${imagePath}Group 27.svg`;
+              descriptionImg.alt = "description";
+              descriptionImg.title = description;
+              descriptionImg.style.marginLeft = "5px";
+              buttonContentDiv.appendChild(descriptionImg);
             }
+
+            if (childCount > 0) {
+                const hoverCircleImg = document.createElement("img");
+                hoverCircleImg.src = `${imagePath}hovercircle.png`;
+                hoverCircleImg.alt = "circle";
+                hoverCircleImg.style.width = "22px";
+                hoverCircleImg.style.height = "22px";
+                hoverCircleImg.title = `${childCount} sub categories`;
+                hoverCircleImg.style.marginLeft = "5px";
+                buttonContentDiv.appendChild(hoverCircleImg);
+            }
+
+            if (ratingsCount > 0) {
+              const searchText = searchByName(skill.name);
+              if (searchText.length > 0) {
+                const starIcon = document.createElement("img");
+                starIcon.src = `${imagePath}Group 23.svg`;
+                starIcon.style.marginLeft = "5px";
+                starIcon.style.cursor = "pointer";
+                starIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.changeRateModelElement(skill);
+                });
+                buttonContentDiv.appendChild(starIcon);
+                skillButton.style.backgroundColor="#E0DEFF";
+              }
+              else{
+                const starIcon = document.createElement("i");
+                starIcon.className = "fas fa-star";
+                starIcon.style.marginLeft = "5px";
+                starIcon.style.cursor = "pointer";
+                starIcon.style.color = "#ccccff";
+                starIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.changeRateModelElement(skill);
+                });
+                buttonContentDiv.appendChild(starIcon);
+              }
+            }
+
+            skillButton.appendChild(buttonContentDiv);
 
             skillButton.addEventListener('click', async () => {
                 if (skill.child_count === 0) {
@@ -6559,8 +6753,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
         softSkillAccordian.appendChild(skillsContainer);
     }
-  
-    
+
 }
 
 /**
