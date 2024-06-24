@@ -46,7 +46,7 @@ function fetchData(url, method) {
 
 
 
-async function getListFromLoggedInUser(loaderIdentifier) {
+async function getListFromLoggedInUser(loaderIdentifier) { 
   const getElementByClass = document.querySelector(".elementCountLabel");
   const previousContent = getElementByClass.innerHTML;
   const loader = document.createElement("div");
