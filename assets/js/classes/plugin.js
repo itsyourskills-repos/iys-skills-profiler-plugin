@@ -44,6 +44,109 @@ function fetchData(url, method) {
     });
 }
 
+
+
+async function getListFromLoggedInUser(loaderIdentifier) {
+  const getElementByClass = document.querySelector(".elementCountLabel");
+  const previousContent = getElementByClass.innerHTML;
+  const loader = document.createElement("div");
+  if (loaderIdentifier !== "notLoadded") {
+    // Create and append the loader
+    loader.className = "loader";
+    loader.style.margin = "20px auto";
+    getElementByClass.appendChild(loader);
+  }
+  if (getAccessToken) {
+    try {
+      let response = [];
+      response = await fetch(loggedInUserApiEndpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAccessToken.access}`,
+        },
+      });
+      if (!response.ok && response.status === 401) {
+        //throw new Error(`HTTP error! Status: ${response.status}`);
+        const refreshtoken = JSON.parse(
+          localStorage.getItem("tokenData")
+        )?.refresh;
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+          refresh: refreshtoken,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        try {
+          fetch(getaccessYokenEndpoint, requestOptions)
+            .then((response) => response.text())
+            .then(async (result) => {
+              localStorage.setItem(
+                "tokenData",
+                JSON.stringify({
+                  refresh: refreshtoken,
+                  access: JSON.parse(result)?.access,
+                })
+              );
+              const Retreyresponse = await fetch(loggedInUserApiEndpoint, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${JSON.parse(result)?.access}`,
+                },
+              });
+              const data = await Retreyresponse.json();
+              if (loaderIdentifier !== "notLoadded") {
+                getElementByClass.removeChild(loader);
+                getElementByClass.innerHTML = previousContent;
+              }
+              localStorage.setItem(
+                "logginUserRatedSkills",
+                JSON.stringify(data.data)
+              );
+              createSelectedSkillsCount();
+              return data;
+            })
+            .catch((error) => console.log("error", error));
+        } catch (error) {
+          console.log("Error occurred:", error);
+        }
+      } else {
+        const data = await response.json();
+        if (loaderIdentifier !== "notLoadded") {
+          getElementByClass.removeChild(loader);
+          getElementByClass.innerHTML = previousContent;
+        }
+        localStorage.setItem(
+          "logginUserRatedSkills",
+          JSON.stringify(data.data)
+        );
+        createSelectedSkillsCount();
+        return data;
+      }
+    } catch (error) {
+      if (loaderIdentifier !== "notLoadded") {
+        getElementByClass.removeChild(loader);
+        getElementByClass.innerHTML = previousContent;
+      }
+      console.error("Error occurred:", error);
+      return { error: error.message };
+    }
+  } else {
+    if (loaderIdentifier !== "notLoadded") {
+      getElementByClass.removeChild(loader);
+      getElementByClass.innerHTML = previousContent;
+    }
+    return [];
+  }
+}
+
+
+
 function groupByTagsName(data) {
   const groupedData = {};
 
