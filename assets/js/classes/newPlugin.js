@@ -6154,7 +6154,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               starIcon.style.cursor = "pointer";
               starIcon.addEventListener('click', (event) => {
                   event.stopPropagation();
-                  this.changeRateModelElement(skill);
+                  this.changeSoftSkillRateModelElement(skill);
               });
               skillButton.style.backgroundColor="#E0DEFF";
               buttonContentDiv.appendChild(starIcon);
@@ -6167,7 +6167,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               starIcon.style.color = "#ccccff";
               starIcon.addEventListener('click', (event) => {
                   event.stopPropagation();
-                  this.changeRateModelElement(skill);
+                  this.changeSoftSkillRateModelElement(skill);
               });
               buttonContentDiv.appendChild(starIcon);
             }
