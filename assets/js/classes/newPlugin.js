@@ -1213,9 +1213,9 @@ class IysSearchPlugin {
     clearIcon.id = "plugin-search-id-close-button";
     clearIcon.innerHTML = "&times;";
     clearIcon.style.position = "absolute";
-    clearIcon.style.right = "10px";
-    clearIcon.style.top = "50%";
-    clearIcon.style.transform = "translateY(-50%)";
+    clearIcon.style.right = "130px";
+    clearIcon.style.top = "20%";
+    // clearIcon.style.transform = "translateY(-20%)";
     clearIcon.style.cursor = "pointer";
     clearIcon.style.color = "rgb(255 0 0)";
     clearIcon.style.fontSize = "25px";
