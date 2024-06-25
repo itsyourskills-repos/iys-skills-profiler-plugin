@@ -16,8 +16,15 @@ const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-prof
 //   isDelete: true
 // }));
 
-const iysplugin=JSON.parse(localStorage.getItem("iys"));
+var iysplugin=JSON.parse(localStorage.getItem("iys"));
 console.log(iysplugin);
+if (iysplugin == null) {
+  iysplugin = {}; 
+  iysplugin.tap = "all";
+  iysplugin.profile_view = "all";
+  iysplugin.isEdit = true;
+  iysplugin.isDelete = true;
+}
 
 function fetchData(url, method) {
   return fetch(url, {
