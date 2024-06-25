@@ -1183,6 +1183,7 @@ class IysSearchPlugin {
     this.searchInputBox = input;
     input.id = "plugin-search-id";
     input.classList.add("form-control");
+    input.autocomplete="off";
     input.setAttribute("aria-label", "Sizing example input");
     input.setAttribute(
       "placeholder",
@@ -2642,6 +2643,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var tabPaneDiv = document.createElement("div");
     tabPaneDiv.className = "tab-pane fade";
     tabPaneDiv.id = "profile0";
+    tabPaneDiv.style.display="none";
     tabPaneDiv.setAttribute("role", "tabpanel");
     tabPaneDiv.setAttribute("aria-labelledby", "profile-tab0");
 
@@ -4146,7 +4148,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
                             this.processRelatedSkills(
                                 this.cardBodyDiv,
-                                validRelatedSkills,
+                                // validRelatedSkills,
+                                response,
                                 "Related Skills",
                                 skillId,
                                 false // Pass false to indicate that this is not the initial load
@@ -4161,8 +4164,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             CardBody.style.backgroundColor = "white";
             CardBody.style.padding = "30px";
             CardBody.classList.add("card-body-accordion");
-            CardBody.style.display = "flex";
-            CardBody.style.flexWrap = "wrap";
+            // CardBody.style.display = "flex";
+            // CardBody.style.flexWrap = "wrap";
             CardBody.style.borderRadius="10px";
             CardBody.style.marginBottom="15px";
             CardBody.style.boxShadow = "0 6px 12px rgba(0, 0, 0, 0.2)";
@@ -6326,9 +6329,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                   const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
                   
                   // Filter out skills with child_count equal to 1
-                  const validParentSkills = parentSkills.filter(skill => skill.child_count !== 1);
+                  // const validParentSkills = parentSkills.filter(skill => skill.child_count !== 1);
           
-                  this.renderRelatedHardSkills(validParentSkills, [], softSkillAccordian, skillId);
+                  this.renderRelatedHardSkills(parentSkills, [], softSkillAccordian, skillId);
               } catch (error) {
                   console.error(error);
               }
@@ -6460,8 +6463,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               descriptionImg.style.marginLeft = "5px";
               buttonContentDiv.appendChild(descriptionImg);
             }
-
-            if (childCount > 0) {
+            if (childCount > 1) {
                 const hoverCircleImg = document.createElement("img");
                 hoverCircleImg.src = `${imagePath}hovercircle.png`;
                 hoverCircleImg.alt = "circle";
@@ -6502,14 +6504,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             skillButton.appendChild(buttonContentDiv);
             // Add click event to fetch and display child skills or call changeSoftSkillRateModelElement
             skillButton.addEventListener('click', async () => {
-                if (skill.child_count === 0) {
+                if (skill.child_count === 1 || skill.child_count === 0) {
                     console.log("zeroskill-data", skill);
                     this.changeRateModelElement(skill);
                 } else {
                     const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
                     const childSkills = await this.fetchSkills(childSkillApiEndpoint);
                     const validParentSkills = childSkills.filter(skill => skill.name !== "Related Skills");
-                    console.log(skill, "childrenincludeskill");
+                    console.log(validParentSkills);
                     const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
                     console.log(newBreadcrumbPath, "breadcrumb");
                     this.renderRelatedHardSkills(validParentSkills, newBreadcrumbPath, softSkillAccordian, skillId);
