@@ -1,6 +1,7 @@
 var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
+  console.log("LoginUser",isLoginUser);
 const ENDPOINT_URL = "https://lambdaapi.iysskillstech.com/latest/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
@@ -5310,7 +5311,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const skillIdElement = document.getElementById(
       parentIdOfHirarchy !== "" ? parentIdOfHirarchy : skillId
     );
-    const selectedSkillDiv = document.querySelector(".breadcrumb-nav");
+    const selectedSkillDiv = document.querySelector(".card-title");
     console.log(
       skillId,
       identifier,
