@@ -14,7 +14,9 @@ const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-prof
 //   tap: "all",
 //   profile_view: "all",
 //   isEdit: true,
-//   isDelete: true
+//   isDelete: true,
+//   doughnt:true,
+//   experience:true,
 // }));
 
 var iysplugin=JSON.parse(localStorage.getItem("iys"));
@@ -25,6 +27,8 @@ if (iysplugin == null) {
   iysplugin.profile_view = "all";
   iysplugin.isEdit = true;
   iysplugin.isDelete = true;
+  iysplugin.doughnt=true;
+  iysplugin.experience=true;
 }
 
 function fetchData(url, method) {
@@ -4851,7 +4855,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image0.style.height = '30px';
           image0.style.margin = 'auto';
           image0.style.display = 'block';
-          skillContainer.appendChild(image0);
+          if(iysplugin.doughnt){
+            skillContainer.appendChild(image0);
+          }
         }
         if (percentage === 25) {
           const image25 = document.createElement("img");
@@ -4860,7 +4866,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image25.style.height = '30px';
           image25.style.margin = 'auto';
           image25.style.display = 'block';
-          skillContainer.appendChild(image25);
+          if(iysplugin.doughnt){
+            skillContainer.appendChild(image25);
+          }
         }
         if (percentage === 50) {
             const image50 = document.createElement("img");
@@ -4869,7 +4877,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image50.style.height = '30px';
             image50.style.margin = 'auto';
             image50.style.display = 'block';
-            skillContainer.appendChild(image50);
+            if(iysplugin.doughnt){
+              skillContainer.appendChild(image50);
+            }
         }
         if (percentage === 75) {
             const image75 = document.createElement("img");
@@ -4878,7 +4888,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image75.style.height = '30px';
             image75.style.margin = 'auto';
             image75.style.display = 'block';
-            skillContainer.appendChild(image75);
+            if(iysplugin.doughnt){
+              skillContainer.appendChild(image75);
+            }
         }
         if (percentage === 100) {
             const image100 = document.createElement("img");
@@ -4887,7 +4899,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image100.style.height = '30px';
             image100.style.margin = 'auto';
             image100.style.display = 'block';
-            skillContainer.appendChild(image100);
+            if(iysplugin.doughnt){
+              skillContainer.appendChild(image100);
+            }
         }
         skillContainer.appendChild(skillName);
         //comments is present to show the comment
@@ -5169,8 +5183,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         if (skill.rating[0].rating) {
-          skillDetails.appendChild(experienceDetails);
-          skillDetails.appendChild(ratingDetails);
+          if(iysplugin.experience){
+            skillDetails.appendChild(experienceDetails);
+          }
+          if(iysplugin.doughnt){
+            skillDetails.appendChild(ratingDetails);
+          }
         }
         skillDetails.appendChild(actionsIconDiv);
 
