@@ -1,6 +1,7 @@
 var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
+//
 const ENDPOINT_URL = "https://lambdaapi.iysskillstech.com/staging/dev-api/";
 const loggedInUserApiEndpoint = `https://uat-api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://uat-api.myskillsplus.com/add-skills/`;
