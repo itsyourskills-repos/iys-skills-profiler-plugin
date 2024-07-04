@@ -784,6 +784,8 @@ function addTolocalStorage(userRatedSkill) {
 function getListFromlocalStorage() {
   if (localStorage.getItem("userRatedSkills")) {
     return JSON.parse(localStorage.getItem("userRatedSkills"));
+  } else if (localStorage.getItem("logginUserRatedSkills")) {
+    return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
   } else {
     return [];
   }
@@ -2114,16 +2116,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var imgBodyDiv = document.createElement("div");
     imgBodyDiv.className = "img-body";
     imgBodyDiv.style.display = "flex";
-    imgBodyDiv.style.marginTop = "20px";
-    imgBodyDiv.style.marginRight = "60px";
+    imgBodyDiv.style.padding = "20px";
+    // imgBodyDiv.style.marginRight = "60px";
     imgBodyDiv.style.alignItems = "center";
     imgBodyDiv.style.justifyContent = "center";
     imgBodyDiv.style.flexDirection = "column";
 
     var contentImg = document.createElement("img");
     contentImg.src = `${imagePath}Group 175.svg`;
-    contentImg.style.width = "906px";
-    contentImg.style.height = "466px";
+    contentImg.style.maxWidth = "906px";
+    contentImg.style.width="100%";
+    contentImg.style.height="auto";
+    // contentImg.style.height = "466px";
 
     var contentText1 = document.createElement("span");
     contentText1.textContent = "EXPERIENCE THE RICHNESS OF SKILLS TAXONOMY HERE";
