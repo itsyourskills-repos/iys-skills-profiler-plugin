@@ -137,27 +137,57 @@ function findObjectByIsotFileId(array, isotFileId) {
 
 function checkElementExist(skillDetail) {
   console.log(skillDetail, "skillDetail");
-  let userRatedSkills = JSON.parse(
-    localStorage.getItem("userRatedSkills", "[]")
-  );
-  const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
-  // checking it atlest have parent id
-  if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
-    let foundObject = userRatedSkills.find((skill) =>
-      skill.isot_file_id.endsWith(lastTwoId)
-    );
-    if (foundObject) {
-      return foundObject;
+    if (localStorage.getItem("logginUserRatedSkills")) {
+        let userRatedSkills = JSON.parse(
+            localStorage.getItem("logginUserRatedSkills", "[]"),
+        );
+
+        const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
+
+        console.log("lastTwoId", lastTwoId);
+        console.log("userRatedSkills", userRatedSkills);
+
+        // checking it atlest have parent id
+        if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
+            let foundObject = userRatedSkills.find((skill) =>
+                skill.isot_path_addr.endsWith(lastTwoId),
+            );
+            if (foundObject) {
+                return foundObject;
+            }
+        }
+        let foundObject = userRatedSkills?.find((skill) =>
+            skill.isot_path_addr.endsWith(skillDetail.path_addr),
+        );
+        if (foundObject) {
+            return foundObject;
+        } else {
+            return null;
+        }
     }
-  }
-  let foundObject = userRatedSkills?.find((skill) =>
-    skill.isot_file_id.endsWith(skillDetail.path_addr)
-  );
-  if (foundObject) {
-    return foundObject;
-  } else {
-    return null;
-  }
+    else{
+        let userRatedSkills = JSON.parse(
+            localStorage.getItem("userRatedSkills", "[]")
+          );
+          const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
+          // checking it atlest have parent id
+          if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
+            let foundObject = userRatedSkills.find((skill) =>
+              skill.isot_file_id.endsWith(lastTwoId)
+            );
+            if (foundObject) {
+              return foundObject;
+            }
+          }
+          let foundObject = userRatedSkills?.find((skill) =>
+            skill.isot_file_id.endsWith(skillDetail.path_addr)
+          );
+          if (foundObject) {
+            return foundObject;
+          } else {
+            return null;
+          }
+    }
 }
 
 // check selected parentId is exist in the whole local storage data
@@ -737,22 +767,32 @@ function isValidEmail(email) {
 
 function transformDataFromLocalStorage(originalData) {
   const transformedData = { skills: [] };
-  const ratingsMap = new Map();
   originalData?.forEach((skill) => {
-    const { isot_file_id, rating, comment } = skill;
-    const { _id: isot_rating_id } = skill.isot_file.ratings[0];
+      const { isot_file_id, rating } = skill;
+      // console.error(skill, "skill", isot_path_addr, rating);
 
-    if (!ratingsMap.has(isot_file_id)) {
-      ratingsMap.set(isot_file_id, []);
-    }
-
-    ratingsMap.get(isot_file_id).push({ isot_rating_id, rating, comment });
+      if (!isot_file_id) {
+      return;
+      } else {
+      transformedData.skills.push({
+          path_addr: isot_file_id,
+          ratings: rating ? rating : [],
+      });
+      }
   });
 
-  for (const [path_addr, ratings] of ratingsMap) {
-    transformedData.skills.push({ path_addr, ratings });
-  }
+  //   if (!ratingsMap.has(isot_file_id)) {
+  //     ratingsMap.set(isot_file_id, []);
+  //   }
 
+  //   ratingsMap.get(isot_file_id).push({ isot_rating_id, rating, comment });
+  // });
+
+  // for (const [path_addr, ratings] of ratingsMap) {
+  //   transformedData.skills.push({ path_addr, ratings });
+  // }
+
+  console.warn("transformedData", transformedData);
   return transformedData;
 }
 
@@ -1961,7 +2001,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var homeTab = createTab("home", "Search", `${imagePath}Group 1.svg`, "#E8F2FF","#024FAB");
 
     // Profile tab
-    var profileTab = createTab("profile", "View Profile", `${imagePath}Group 2.svg`, "#DEDEDE","#636363");
+    var profileTab = createTab("profile", "View Profile", `${imagePath}Group 2.svg`, "#E8F2FF","#024FAB");
 
     // Append li elements to ul element
     if(iysplugin.tap=="all" || iysplugin.tap=="search"){
@@ -4100,7 +4140,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     [],
                     otherSkillsCardBody,
                     skillId,
-                    otherSkills
+                    otherSkills,
+                    otherSkills[0].tags[0].title
                 );
 
                 // Append the CardBody for other skills to the htmlElement
@@ -4147,7 +4188,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                                 [],
                                 twoTagsCardBody,
                                 skill.path_addr,
-                                childSkills
+                                childSkills,
+                                skill.name
                             );
                         }
                     }
@@ -4978,7 +5020,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         if (percentage === 0) {
           const image0 = document.createElement("img");
-          image0.src = imagePathBase + '0rate.svg';
+          image0.src = imagePathBase + '0rate.png';
           image0.style.width = '30px';
           image0.style.height = '30px';
           image0.style.margin = 'auto';
@@ -4989,7 +5031,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 25) {
           const image25 = document.createElement("img");
-          image25.src = imagePathBase + '25rate.svg';
+          image25.src = imagePathBase + '25.png';
           image25.style.width = '30px';
           image25.style.height = '30px';
           image25.style.margin = 'auto';
@@ -5000,7 +5042,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 50) {
             const image50 = document.createElement("img");
-            image50.src = imagePathBase + '50rate.svg';
+            image50.src = imagePathBase + '50.png';
             image50.style.width = '30px';
             image50.style.height = '30px';
             image50.style.margin = 'auto';
@@ -5011,7 +5053,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 75) {
             const image75 = document.createElement("img");
-            image75.src = imagePathBase + '75rate.svg';
+            image75.src = imagePathBase + '75.png';
             image75.style.width = '30px';
             image75.style.height = '30px';
             image75.style.margin = 'auto';
@@ -5022,7 +5064,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 100) {
             const image100 = document.createElement("img");
-            image100.src = imagePathBase + '100rate.svg';
+            image100.src = imagePathBase + '100.png';
             image100.style.width = '30px';
             image100.style.height = '30px';
             image100.style.margin = 'auto';
@@ -5059,6 +5101,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         editIcon.style.backgroundColor = "#EEEEEE";
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
+        editIcon.setAttribute("id",skill.isot_file.path_addr);
+
         if(iysplugin.isEdit){
           skillContainer.appendChild(editIcon);
         }
@@ -5244,7 +5288,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         if (percentage === 0) {
           const image0 = document.createElement("img");
-          image0.src = imagePathBase + '0rate.svg';
+          image0.src = imagePathBase + '0rate.png';
           image0.style.width = '40px';
           image0.style.height = '40px';
           image0.style.margin = 'auto';
@@ -5253,7 +5297,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 25) {
           const image25 = document.createElement("img");
-          image25.src = imagePathBase + '25rate.svg';
+          image25.src = imagePathBase + '25.png';
           image25.style.width = '40px';
           image25.style.height = '40px';
           image25.style.margin = 'auto';
@@ -5262,7 +5306,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 50) {
             const image50 = document.createElement("img");
-            image50.src = imagePathBase + '50rate.svg';
+            image50.src = imagePathBase + '50.png';
             image50.style.width = '40px';
             image50.style.height = '40px';
             image50.style.margin = 'auto';
@@ -5271,7 +5315,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 75) {
             const image75 = document.createElement("img");
-            image75.src = imagePathBase + '75rate.svg';
+            image75.src = imagePathBase + '75.png';
             image75.style.width = '40px';
             image75.style.height = '40px';
             image75.style.margin = 'auto';
@@ -5280,7 +5324,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         if (percentage === 100) {
             const image100 = document.createElement("img");
-            image100.src = imagePathBase + '100rate.svg';
+            image100.src = imagePathBase + '100.png';
             image100.style.width = '40px';
             image100.style.height = '40px';
             image100.style.margin = 'auto';
@@ -5305,6 +5349,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         editIcon.style="height:16px; width: 14px;"
         editIcon.setAttribute("data-mdb-tooltip-init", "");
         editIcon.setAttribute("title", "Click to edit");
+        editIcon.setAttribute("id",skill.isot_file.path_addr);
         editIcon.style.backgroundColor = "#EEEEEE";
         if(iysplugin.isEdit){
           actionsIconDiv.appendChild(editIcon);
@@ -5443,13 +5488,54 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   deleteSkillsFromLocalStorage(index) {
-    let userRatedSkills = JSON.parse(
-      localStorage.getItem("userRatedSkills", "[]")
-    );
-    // delete the skills by index
-    userRatedSkills.splice(index, 1);
-    localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
-    this.updateProfileData();
+    if(!isLoginUser){
+        let userRatedSkills = JSON.parse(
+            localStorage.getItem("userRatedSkills", "[]")
+          );
+          // delete the skills by index
+          userRatedSkills.splice(index, 1);
+          localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
+          this.updateProfileData();
+    }
+    else{
+        let userRatedSkills = getListFromlocalStorage();
+        // delete the skills by index
+        if (localStorage.getItem("logginUserRatedSkills")) {
+            let removedElement = userRatedSkills.splice(index, 1);
+            console.log("removedElement", removedElement);
+
+            let url = `${deleteSkillApiEndpoint}${removedElement[0].id}/`;
+            console.warn("url", url);
+
+            fetch(url, {
+                method: "DELETE",
+                headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getAccessToken?.access}`,
+                },
+            })
+            .then((response) => {
+            if (response.status === 429) {
+                // Redirect to /limit-exceeded/ page
+                window.location.href = "/limit-exceeded/";
+            } else {
+                return response.json();
+            }
+            })
+            .then(async (response) => {
+            console.log("response", response);
+            localStorage.setItem(
+                "logginUserRatedSkills",
+                JSON.stringify(userRatedSkills),
+            );
+            this.updateProfileData();
+            });
+        } else {
+            userRatedSkills.splice(index, 1);
+            localStorage.setItem("userRatedSkills", JSON.stringify(userRatedSkills));
+        }
+        this.updateProfileData();
+    }
   }
 
   childrenSkillAPI(skillId, identifier, parentIdOfHirarchy = "") {
@@ -6252,7 +6338,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         softSkillAccordian.appendChild(skillsContainer);
     }
   
-    renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills) {
+    renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName) {
       console.log(skillId);
       const hardSkillId = skillId;
       if (!softSkillAccordian) {
@@ -6269,7 +6355,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           breadcrumb.style.display = "";
 
           const knowledgeLink = document.createElement("span");
-          knowledgeLink.textContent = parentskills[0].tags[0].title;
+          knowledgeLink.textContent = skillName;
           knowledgeLink.style.cursor = "pointer";
           knowledgeLink.style.color = "#A7A4DC";
           knowledgeLink.style.marginRight = "5px";
@@ -6278,7 +6364,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
               const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
               const filterSkills = parentSkills.filter(item => item.name !== "Related Skills");
-              this.renderHardSkills(parentskills, [], softSkillAccordian, skillId, parentskills);
+              this.renderHardSkills(parentskills, [], softSkillAccordian, skillId, parentskills,skillName);
           });
           breadcrumb.appendChild(knowledgeLink);
   
@@ -6370,7 +6456,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       softSkillAccordian.appendChild(breadcrumb);
     }
   
-    renderHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills = []) {
+    renderHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills = [],skillName) {
         console.log(skillId, "childrenskillid");
         if (!softSkillAccordian) {
             console.error('softSkillAccordian element is not defined.');
@@ -6380,7 +6466,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         softSkillAccordian.innerHTML = '';
     
         // Render breadcrumb
-        this.renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills);
+        this.renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
     
         // Create buttons for each skill
         const skillsContainer = document.createElement("div");
@@ -6483,7 +6569,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
                     const childSkills = await this.fetchSkills(childSkillApiEndpoint);
                     const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
-                    this.renderHardSkills(childSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills);
+                    this.renderHardSkills(childSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
                 }
             });
     
