@@ -6389,7 +6389,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               console.log(childrenSkills, "childrenSkills");
           
               const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
-              this.renderHardSkills(childrenSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills);
+              this.renderHardSkills(childrenSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
           });
   
           breadcrumb.appendChild(breadcrumbLink);
