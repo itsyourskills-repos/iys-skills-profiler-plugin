@@ -1189,7 +1189,6 @@ function delete_skill(skill_id, deleteIconIdentifier) {
     toastr.success(`Remove selected skill`);
     displaySelctedSkills();
     createSelectedSkillsCount();
-
     // // TODO: delete skill from local storage FOR NOT login user
     // console.log("delete_skill",skill_id)
     // let skill_list = JSON.parse(localStorage.getItem("skill_list"));
@@ -1446,19 +1445,23 @@ class IysSearchPlugin {
           // remove local storages
           // clearlocalStorage();
         });
-        const addMorePlusIcon =
-          searchResultsList[i]?.skills[0]?.child_count > 1
-            ? '<i class="fa fa-plus"></i>'
-            : "";
+        // const addMorePlusIcon =
+        //   searchResultsList[i]?.skills[0]?.child_count > 1
+        //     ? '<i class="fa fa-plus"></i>'
+        //     : "";
         const a = document.createElement("a");
         a.classList.add("dropdown-item");
         a.style.wordWwrap = "break-word";
         a.style.whiteSpace = "pre-wrap";
         a.href = "#";
-        a.innerHTML =
-          addMorePlusIcon +
-          " " +
-          this.searchHighlight(
+        // a.innerHTML =
+        //   addMorePlusIcon +
+        //   " " +
+        //   this.searchHighlight(
+        //     this.searchValue,
+        //     this.getSkillName(searchResultsList[i])
+        //   );
+        a.innerHTML = this.searchHighlight(
             this.searchValue,
             this.getSkillName(searchResultsList[i])
           );
@@ -3967,7 +3970,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
                             this.processRelatedSkills(
                                 this.cardBodyDiv,
-                                // validRelatedSkills,
+                                validRelatedSkills,
                                 response,
                                 "Related Skills",
                                 skillId,
@@ -4006,204 +4009,177 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
   
-  // createSelectSkillsChildBox(htmlElement, skillList, identifier, skillId, isInitialLoad = true) {
-  //   console.log("HardskillId", skillId);
-  //   const CardBody = document.createElement("div");
-  
-  //   if (skillList.length > 0) {
-  //     if (isInitialLoad && skillList[0].name === "Related Skills" && skillList[0].path_addr) {
-  //       const url = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillList[0].path_addr}`;
-        
-  //       fetchData(url, "GET")
-  //         .then((response) => {
-  //           if (response !== undefined) {
-  //             console.log("get-recommendations", response);
-  
-  //             // Filter out skills with child_count equal to 1
-  //             const validRelatedSkills = response.filter(skill => skill.child_count !== 1);
-  
-  //             if (validRelatedSkills.length > 0) {
-  //               const h5 = document.createElement("div");
-  //               h5.setAttribute("class", "card-title text-start");
-  //               h5.style.margin = "30px 0px";
-  //               h5.textContent = "Related Skills";
-  
-  //               this.cardBodyDiv.appendChild(h5);
-  
-  //               this.createSelectSkillsChildBox(
-  //                 this.cardBodyDiv,
-  //                 validRelatedSkills,
-  //                 "Related Skills",
-  //                 skillId,
-  //                 false // Pass false to indicate that this is not the initial load
-  //               );
-  //             }
-  //           }
-  //         })
-  //         .catch((error) => {
-  //           console.error(error);
-  //         });
-  //     } else {
-  //       CardBody.style.backgroundColor = "white";
-  //       CardBody.style.padding = "30px";
-  //       CardBody.classList.add("card-body-accordion");
-  //       CardBody.style.display="flex";
-  //       CardBody.style.flexWrap="wrap";
-  //       CardBody.style.borderRadius="10px";
-  //       CardBody.style.marginBottom="15px";
-  //       CardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-  
-  //       this.renderHardSkills(
-  //         skillList,
-  //         [],
-  //         CardBody,
-  //         skillId,
-  //       );
-  
-  //       // Create the three buttons in the card-body using a parent div
-  //       // const cardBodyButtonDiv = document.createElement("div");
-  //       // const getdata = sortRatingByLocalStorage();
-        
-  //       // if (!identifier) {
-  //       //   const button = document.createElement("button");
-  //       //   const resetChangesButton = ResetButton(
-  //       //     button,
-  //       //     getdata?.length > 0 ? false : true
-  //       //   );
-  //       //   cardBodyButtonDiv.appendChild(resetChangesButton);
-  //       // }
-  
-  //       // // Append buttons to the card body
-  //       // CardBody.appendChild(cardBodyButtonDiv);
-  //     }
-  //   } else {
-  //     CardBody.innerHTML = "";
-  //   }
-  
-  //   htmlElement.appendChild(CardBody);
-  // }
-
-  async createSelectSkillsChildBox(htmlElement, skillList, identifier, skillId, isInitialLoad = true) {
+  async createSelectSkillsChildBox(skillName,htmlElement, skillList, identifier, skillId, isInitialLoad = true) {
     console.log("HardskillId", skillId);
+    console.log("skillList", skillName);
+    console.log(skillList);
 
-    if (skillList.length > 0) {
-        if (isInitialLoad && skillList[0].name === "Related Skills" && skillList[0].path_addr) {
-            const url = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillList[0].path_addr}`;
-
-            try {
-                const response = await fetchData(url, "GET");
-                if (response !== undefined) {
-                    console.log("get-recommendations", response);
-
-                    // Filter out skills with child_count equal to 1
-                    const validRelatedSkills = response.filter(skill => skill.child_count !== 1);
-
-                    if (validRelatedSkills.length > 0) {
-                        const h5 = document.createElement("div");
-                        h5.setAttribute("class", "card-title text-start");
-                        h5.style.margin = "30px 0px";
-                        h5.textContent = "Related Skills";
-
-                        this.cardBodyDiv.appendChild(h5);
-
-                        await this.createSelectSkillsChildBox(
-                            this.cardBodyDiv,
-                            validRelatedSkills,
-                            "Related Skills",
-                            skillId,
-                            false // Pass false to indicate that this is not the initial load
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        } else {
-            const skillsWithTwoTags = skillList.filter(skill => skill.tags.length === 2);
-            const otherSkills = skillList.filter(skill => skill.tags.length !== 2);
-            console.log(skillsWithTwoTags);
-
-            // Create a separate CardBody for other skills
-            if (otherSkills.length > 0) {
-                const otherSkillsCardBody = document.createElement("div");
-                otherSkillsCardBody.style.backgroundColor = "white";
-                otherSkillsCardBody.style.padding = "30px";
-                otherSkillsCardBody.classList.add("card-body-accordion");
-                // otherSkillsCardBody.style.display = "flex";
-                // otherSkillsCardBody.style.flexWrap = "wrap";
-                otherSkillsCardBody.style.borderRadius = "10px";
-                otherSkillsCardBody.style.marginBottom = "15px";
-                otherSkillsCardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-
-                this.renderHardSkills(
-                    otherSkills,
-                    [],
-                    otherSkillsCardBody,
-                    skillId,
-                    otherSkills,
-                    otherSkills[0].tags[0].title
-                );
-
-                // Append the CardBody for other skills to the htmlElement
-                htmlElement.appendChild(otherSkillsCardBody);
-            }
-
-            // Group skills with two tags by their secondary tag
-            const groupedBySecondaryTag = {};
-            skillsWithTwoTags.forEach(skill => {
-                const secondaryTag = skill.tags.find(tag => tag.title !== "Skills Category").title;
-                if (!groupedBySecondaryTag[secondaryTag]) {
-                    groupedBySecondaryTag[secondaryTag] = [];
-                }
-                groupedBySecondaryTag[secondaryTag].push(skill);
-            });
-
-            // Create a separate CardBody for each group of skills with two tags
-            for (const [secondaryTag, skills] of Object.entries(groupedBySecondaryTag)) {
-                console.log(skills);
-                const twoTagsCardBody = document.createElement("div");
-                twoTagsCardBody.style.backgroundColor = "white";
-                twoTagsCardBody.style.padding = "30px";
-                twoTagsCardBody.classList.add("card-body-accordion");
-                // twoTagsCardBody.style.display = "flex";
-                // twoTagsCardBody.style.flexWrap = "wrap";
-                twoTagsCardBody.style.borderRadius = "10px";
-                twoTagsCardBody.style.marginBottom = "15px";
-                twoTagsCardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-
-                // Fetch and render child skills for each skill in this group
-                for (const skill of skills) {
-                    const h5 = document.createElement("div");
-                    h5.setAttribute("class", "card-title text-start");
-                    h5.style.margin = "30px 10px";
-                    h5.style.marginBottom = "12px";
-                    h5.textContent = skill.name;
-                    htmlElement.appendChild(h5);
-                    if (skill.child_count > 0) {
-                        const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
-                        const childSkills = await fetchData(childSkillApiEndpoint, "GET");
-                        if (childSkills && childSkills.length > 0) {
-                            this.renderHardSkills(
-                                childSkills,
-                                [],
-                                twoTagsCardBody,
-                                skill.path_addr,
-                                childSkills,
-                                skill.name
-                            );
-                        }
-                    }
-                }
-
-                // Append the CardBody for skills with two tags to the htmlElement
-                htmlElement.appendChild(twoTagsCardBody);
-            }
-
+    // Filter the skillList to handle "Related Skills"
+    const updatedSkillList = [];
+    for (const skill of skillList) {
+      if (skill.name === "Related Skills") {
+        const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+        try {
+          const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
+          if (relatedSkills.length > 0) {
+            skill.child_count = relatedSkills.length; 
+            updatedSkillList.push(skill);
+          }
+        } catch (error) {
+          console.error(`Error fetching related skills for ${skill.name}:`, error);
         }
-    } else {
-        htmlElement.innerHTML = "";
+      } else {
+        updatedSkillList.push(skill);
+      }
     }
+
+    const CardBody = document.createElement("div");
+
+    if (updatedSkillList.length > 0) {
+      console.log(updatedSkillList);
+      CardBody.style.backgroundColor = "white";
+      CardBody.style.padding = "30px";
+      CardBody.classList.add("card-body-accordion");
+      CardBody.style.borderRadius = "10px";
+      CardBody.style.marginBottom = "15px";
+      CardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+      
+      this.renderHardSkills(
+        updatedSkillList,
+        [],
+        CardBody,
+        skillId,
+        updatedSkillList,
+        skillName
+      );
+    } else {
+      CardBody.innerHTML = "";
+    }
+
+    htmlElement.appendChild(CardBody);
   }
+
+  // async createSelectSkillsChildBox(htmlElement, skillList, identifier, skillId, isInitialLoad = true) {
+  //   console.log("HardskillId", skillId);
+
+  //   if (skillList.length > 0) {
+  //       if (isInitialLoad && skillList[0].name === "Related Skills" && skillList[0].path_addr) {
+  //           const url = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillList[0].path_addr}`;
+
+  //           try {
+  //               const response = await fetchData(url, "GET");
+  //               if (response !== undefined) {
+  //                   console.log("get-recommendations", response);
+
+  //                   // Filter out skills with child_count equal to 1
+  //                   const validRelatedSkills = response.filter(skill => skill.child_count !== 1);
+
+  //                   if (validRelatedSkills.length > 0) {
+  //                       const h5 = document.createElement("div");
+  //                       h5.setAttribute("class", "card-title text-start");
+  //                       h5.style.margin = "30px 0px";
+  //                       h5.textContent = "Related Skills";
+
+  //                       this.cardBodyDiv.appendChild(h5);
+
+  //                       await this.createSelectSkillsChildBox(
+  //                           this.cardBodyDiv,
+  //                           validRelatedSkills,
+  //                           "Related Skills",
+  //                           skillId,
+  //                           false // Pass false to indicate that this is not the initial load
+  //                       );
+  //                   }
+  //               }
+  //           } catch (error) {
+  //               console.error(error);
+  //           }
+  //       } else {
+  //           const skillsWithTwoTags = skillList.filter(skill => skill.tags.length === 2);
+  //           const otherSkills = skillList.filter(skill => skill.tags.length !== 2);
+  //           console.log(skillsWithTwoTags);
+
+  //           // Create a separate CardBody for other skills
+  //           if (otherSkills.length > 0) {
+  //               const otherSkillsCardBody = document.createElement("div");
+  //               otherSkillsCardBody.style.backgroundColor = "white";
+  //               otherSkillsCardBody.style.padding = "30px";
+  //               otherSkillsCardBody.classList.add("card-body-accordion");
+  //               // otherSkillsCardBody.style.display = "flex";
+  //               // otherSkillsCardBody.style.flexWrap = "wrap";
+  //               otherSkillsCardBody.style.borderRadius = "10px";
+  //               otherSkillsCardBody.style.marginBottom = "15px";
+  //               otherSkillsCardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+
+  //               this.renderHardSkills(
+  //                   otherSkills,
+  //                   [],
+  //                   otherSkillsCardBody,
+  //                   skillId,
+  //                   otherSkills,
+  //                   otherSkills[0].tags[0].title
+  //               );
+
+  //               // Append the CardBody for other skills to the htmlElement
+  //               htmlElement.appendChild(otherSkillsCardBody);
+  //           }
+
+  //           // Group skills with two tags by their secondary tag
+  //           const groupedBySecondaryTag = {};
+  //           skillsWithTwoTags.forEach(skill => {
+  //               const secondaryTag = skill.tags.find(tag => tag.title !== "Skills Category").title;
+  //               if (!groupedBySecondaryTag[secondaryTag]) {
+  //                   groupedBySecondaryTag[secondaryTag] = [];
+  //               }
+  //               groupedBySecondaryTag[secondaryTag].push(skill);
+  //           });
+
+  //           // Create a separate CardBody for each group of skills with two tags
+  //           for (const [secondaryTag, skills] of Object.entries(groupedBySecondaryTag)) {
+  //               console.log(skills);
+  //               const twoTagsCardBody = document.createElement("div");
+  //               twoTagsCardBody.style.backgroundColor = "white";
+  //               twoTagsCardBody.style.padding = "30px";
+  //               twoTagsCardBody.classList.add("card-body-accordion");
+  //               // twoTagsCardBody.style.display = "flex";
+  //               // twoTagsCardBody.style.flexWrap = "wrap";
+  //               twoTagsCardBody.style.borderRadius = "10px";
+  //               twoTagsCardBody.style.marginBottom = "15px";
+  //               twoTagsCardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+
+  //               // Fetch and render child skills for each skill in this group
+  //               for (const skill of skills) {
+  //                   const h5 = document.createElement("div");
+  //                   h5.setAttribute("class", "card-title text-start");
+  //                   h5.style.margin = "30px 10px";
+  //                   h5.style.marginBottom = "12px";
+  //                   h5.textContent = skill.name;
+  //                   htmlElement.appendChild(h5);
+  //                   if (skill.child_count > 0) {
+  //                       const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
+  //                       const childSkills = await fetchData(childSkillApiEndpoint, "GET");
+  //                       if (childSkills && childSkills.length > 0) {
+  //                           this.renderHardSkills(
+  //                               childSkills,
+  //                               [],
+  //                               twoTagsCardBody,
+  //                               skill.path_addr,
+  //                               childSkills,
+  //                               skill.name
+  //                           );
+  //                       }
+  //                   }
+  //               }
+
+  //               // Append the CardBody for skills with two tags to the htmlElement
+  //               htmlElement.appendChild(twoTagsCardBody);
+  //           }
+
+  //       }
+  //   } else {
+  //       htmlElement.innerHTML = "";
+  //   }
+  // }
 
   createSkillPath(htmlElement, skillList) {
     const ol = document.createElement("ol");
@@ -4728,13 +4704,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const skillButton = document.createElement("button");
     skillButton.className = "softskillbutton";
     skillButton.setAttribute("id","softskillbutton");
-    skillButton.style.border = "1px solid rgb(230, 230, 230)";
+    skillButton.style.border = "1px solid #4f4f4f";
     skillButton.style.borderRadius = "10px";
     skillButton.style.margin = "5px";
     skillButton.style.padding = "8px 12px";
     skillButton.style.backgroundColor = "#FFFFFF";
     skillButton.style.cursor = "pointer";
-    skillButton.style.color = "#1E1E1E";
+    skillButton.style.color = "#4f4f4f";
+    skillButton.style.fontWeight="500";
     skillButton.style.fontSize = "16px";
     skillButton.setAttribute("data-mdb-tooltip-init", "");
     const buttonContentDiv = document.createElement("div")
@@ -4804,12 +4781,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (skillDetail?.skills?.length > 0) {
       skillDetail.skills.forEach((skill) => {
         // clearsessionStorage();
-        this.treeSkillAPI(cardBodyDiv, skill.path_addr);
+        this.treeSkillAPI(skillDetail.skills[0].name,cardBodyDiv, skill.path_addr);
         // this.createSkillPath(cardBodyDiv, getListFromsessionStorage());
       });
     } else {
         console.log("entered parent skill");
-      this.childrenSkillAPI(skillDetail.path_addr, identifier);
+      this.childrenSkillAPI(skillDetail.skills[0].name,skillDetail.path_addr, identifier);
     }
     cardDiv.appendChild(cardBodyDiv);
     this.selectedASkillBox.appendChild(cardDiv);
@@ -5538,143 +5515,250 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
 
-  childrenSkillAPI(skillId, identifier, parentIdOfHirarchy = "") {
-    // Get the element with the class ".card-body"
-    const skillIdElement = document.getElementById(
-      parentIdOfHirarchy !== "" ? parentIdOfHirarchy : skillId
-    );
+  // childrenSkillAPI(skillId, identifier, parentIdOfHirarchy = "") {
+  //   // Get the element with the class ".card-body"
+  //   const skillIdElement = document.getElementById(
+  //     parentIdOfHirarchy !== "" ? parentIdOfHirarchy : skillId
+  //   );
+  //   const selectedSkillDiv = document.querySelector(".card-title");
+  //   console.log(
+  //     skillId,
+  //     identifier,
+  //     "skillIdElement",
+  //     skillIdElement,
+  //     parentIdOfHirarchy
+  //   );
+  //   const loader = document.createElement("div");
+  //   loader.className = "loader";
+  //   loader.style.margin = "100px auto";
+
+  //   // Check if the element exists
+  //   if (skillIdElement) {
+  //     const previousContent = skillIdElement.innerHTML;
+  //     // Create and append the loader
+  //     skillIdElement.appendChild(loader);
+
+  //     let url = "";
+  //     if (isLoginUser) {
+  //       url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
+  //     } else {
+  //       url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
+  //     }
+
+  //     fetch(url, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${getAccessToken?.access}`,
+  //       },
+  //     })
+  //       .then((response) => {
+  //         if (response.status === 429) {
+  //           // Redirect to /limit-exceeded/ page
+  //           window.location.href = "/limit-exceeded/";
+  //         } else {
+  //           return response.json();
+  //         }
+  //       })
+  //       .then((response) => {
+
+  //         skillIdElement.removeChild(loader);
+  //         skillIdElement.innerHTML = previousContent;
+
+  //           const relatedSkills = response.filter(item => item.name === "Related Skills");
+  //           console.log(relatedSkills,"relatedskills");
+  //           const childrenSkills = response.filter(item => item.name !== "Related Skills");
+  //           console.log(childrenSkills,"childrenSkills");
+
+  //           if (relatedSkills.length > 0) {
+  //             const relatedSkillId = relatedSkills[0].path_addr;
+  //               this.processRelatedSkills(
+  //                   this.cardBodyDiv,
+  //                   relatedSkills,
+  //                   identifier,
+  //                   relatedSkillId
+  //               );
+  //           }
+
+  //           if (childrenSkills.length > 0) {
+  //               this.createSelectSkillsChildBox(
+  //                   this.cardBodyDiv,
+  //                   childrenSkills,
+  //                   identifier,
+  //                   skillId
+  //               );
+  //           }
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //         skillIdElement.removeChild(loader);
+  //         skillIdElement.innerHTML = previousContent;
+  //       })
+  //       .finally((err) => {});
+  //   } else {
+  //     const previousContent = selectedSkillDiv.innerHTML;
+  //     // Create and append the loader
+  //     selectedSkillDiv.appendChild(loader);
+  //     let url = "";
+  //     if (isLoginUser) {
+  //       url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
+  //     } else {
+  //       url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
+  //     }
+
+  //     fetch(url, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${getAccessToken?.access}`,
+  //       },
+  //     })
+  //       .then((response) => {
+  //         if (response.status === 429) {
+  //           // Redirect to /limit-exceeded/ page
+  //           window.location.href = "/limit-exceeded/";
+  //         } else {
+  //           return response.json();
+  //         }
+  //       })
+  //       .then((response) => {
+  //           selectedSkillDiv.removeChild(loader);
+  //           selectedSkillDiv.innerHTML = previousContent;
+
+  //           const relatedSkills = response.filter(item => item.name === "Related Skills");
+  //           console.log(relatedSkills,"relatedskills");
+  //           const childrenSkills = response.filter(item => item.name !== "Related Skills");
+  //           console.log(childrenSkills,"childrenSkills");
+
+  //           if (relatedSkills.length > 0) {
+  //               const relatedSkillId = relatedSkills[0].path_addr;
+  //               console.log(relatedSkillId,"relatedskillId");
+  //               this.processRelatedSkills(
+  //                   this.cardBodyDiv,
+  //                   relatedSkills,
+  //                   identifier,
+  //                   relatedSkillId,
+  //               );
+  //           }
+
+  //           if (childrenSkills.length > 0) {
+  //               this.createSelectSkillsChildBox(
+  //                   this.cardBodyDiv,
+  //                   childrenSkills,
+  //                   identifier,
+  //                   skillId
+  //               );
+  //           }
+  //       })
+  //       .catch((err) => {
+  //           selectedSkillDiv.removeChild(loader);
+  //           selectedSkillDiv.innerHTML = previousContent;
+  //           console.error(err);
+  //       });
+  //   }
+  // }
+
+  childrenSkillAPI(skillName,skillId, identifier, parentIdOfHirarchy = "") {
+    const skillIdElement = document.getElementById(parentIdOfHirarchy !== "" ? parentIdOfHirarchy : skillId);
     const selectedSkillDiv = document.querySelector(".card-title");
-    console.log(
-      skillId,
-      identifier,
-      "skillIdElement",
-      skillIdElement,
-      parentIdOfHirarchy
-    );
+
     const loader = document.createElement("div");
     loader.className = "loader";
     loader.style.margin = "100px auto";
 
-    // Check if the element exists
     if (skillIdElement) {
-      const previousContent = skillIdElement.innerHTML;
-      // Create and append the loader
-      skillIdElement.appendChild(loader);
+        const previousContent = skillIdElement.innerHTML;
+        // skillIdElement.appendChild(loader);
 
-      let url = "";
-      if (isLoginUser) {
-        url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
-      } else {
-        url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
-      }
+        let url = isLoginUser ? `https://api.myskillsplus.com/api-child/?path_addr=${skillId}` : `${ENDPOINT_URL}children/?path_addr=${skillId}`;
 
-      fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getAccessToken?.access}`,
-        },
-      })
-        .then((response) => {
-          if (response.status === 429) {
-            // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
-          } else {
-            return response.json();
-          }
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getAccessToken?.access}`,
+            },
         })
         .then((response) => {
-
-          skillIdElement.removeChild(loader);
+            if (response.status === 429) {
+                window.location.href = "/limit-exceeded/";
+            } else {
+                return response.json();
+            }
+        })
+        .then((response) => {
+          // skillIdElement.removeChild(loader);
           skillIdElement.innerHTML = previousContent;
 
-            const relatedSkills = response.filter(item => item.name === "Related Skills");
-            console.log(relatedSkills,"relatedskills");
-            const childrenSkills = response.filter(item => item.name !== "Related Skills");
-            console.log(childrenSkills,"childrenSkills");
+          const skillsWithTwoTags = response.filter(skill => skill.tags.length === 2);
+          const otherSkills = response.filter(skill => skill.tags.length !== 2);
+          console.log(otherSkills);
+          console.log(skillsWithTwoTags);
 
-            if (relatedSkills.length > 0) {
-              const relatedSkillId = relatedSkills[0].path_addr;
-                this.processRelatedSkills(
-                    this.cardBodyDiv,
-                    relatedSkills,
-                    identifier,
-                    relatedSkillId
-                );
-            }
+          if (otherSkills.length > 0 || skillsWithTwoTags.length > 0) {
+            this.createSelectSkillsChildBox(skillName,this.cardBodyDiv, otherSkills, identifier, skillId);
 
-            if (childrenSkills.length > 0) {
-                this.createSelectSkillsChildBox(
-                    this.cardBodyDiv,
-                    childrenSkills,
-                    identifier,
-                    skillId
-                );
+            if (skillsWithTwoTags.length > 0) {
+              this.createSelectSkillsChildBox(
+                  skillName,
+                  this.cardBodyDiv,
+                  skillsWithTwoTags,
+                  identifier,
+                  skillId,
+              );
             }
+          }
         })
         .catch((err) => {
-          console.error(err);
-          skillIdElement.removeChild(loader);
-          skillIdElement.innerHTML = previousContent;
-        })
-        .finally((err) => {});
+            console.error(err);
+            skillIdElement.removeChild(loader);
+            skillIdElement.innerHTML = previousContent;
+        });
     } else {
-      const previousContent = selectedSkillDiv.innerHTML;
-      // Create and append the loader
-      selectedSkillDiv.appendChild(loader);
-      let url = "";
-      if (isLoginUser) {
-        url = `https://api.myskillsplus.com/api-child/?path_addr=${skillId}`;
-      } else {
-        url = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
-      }
+        const previousContent = selectedSkillDiv.innerHTML;
+        // selectedSkillDiv.appendChild(loader);
+        
+        let url = isLoginUser ? `https://api.myskillsplus.com/api-child/?path_addr=${skillId}` : `${ENDPOINT_URL}children/?path_addr=${skillId}`;
 
-      fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getAccessToken?.access}`,
-        },
-      })
-        .then((response) => {
-          if (response.status === 429) {
-            // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
-          } else {
-            return response.json();
-          }
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getAccessToken?.access}`,
+            },
         })
         .then((response) => {
-            selectedSkillDiv.removeChild(loader);
+            if (response.status === 429) {
+                window.location.href = "/limit-exceeded/";
+            } else {
+                return response.json();
+            }
+        })
+        .then((response) => {
+            // selectedSkillDiv.removeChild(loader);
             selectedSkillDiv.innerHTML = previousContent;
 
-            const relatedSkills = response.filter(item => item.name === "Related Skills");
-            console.log(relatedSkills,"relatedskills");
-            const childrenSkills = response.filter(item => item.name !== "Related Skills");
-            console.log(childrenSkills,"childrenSkills");
+            const skillsWithTwoTags = response.filter(skill => skill.tags.length === 2);
+            const otherSkills = response.filter(skill => skill.tags.length !== 2);
+            console.log(otherSkills);
+            console.log(skillsWithTwoTags);
 
-            if (relatedSkills.length > 0) {
-                const relatedSkillId = relatedSkills[0].path_addr;
-                console.log(relatedSkillId,"relatedskillId");
-                this.processRelatedSkills(
-                    this.cardBodyDiv,
-                    relatedSkills,
-                    identifier,
-                    relatedSkillId,
-                );
-            }
-
-            if (childrenSkills.length > 0) {
+            if (otherSkills.length > 0 || skillsWithTwoTags.length > 0) {
+              this.createSelectSkillsChildBox(skillName,this.cardBodyDiv, otherSkills, identifier, skillId);
+  
+              if (skillsWithTwoTags.length > 0) {
                 this.createSelectSkillsChildBox(
+                    skillName,
                     this.cardBodyDiv,
-                    childrenSkills,
+                    skillsWithTwoTags,
                     identifier,
-                    skillId
+                    skillId,
                 );
+              }
             }
         })
         .catch((err) => {
-            selectedSkillDiv.removeChild(loader);
+            // selectedSkillDiv.removeChild(loader);
             selectedSkillDiv.innerHTML = previousContent;
             console.error(err);
         });
@@ -5703,7 +5787,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     return tags.map((tag) => tag.title).join(", ");
   }
 
-  treeSkillAPI(cardBodyDiv, skillId) {
+  treeSkillAPI(skillName,cardBodyDiv, skillId) {
     let url = "";
     if (isLoginUser) {
       url = `https://api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
@@ -5730,7 +5814,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               response.siblings
             );
           } else {
-            this.childrenSkillAPI(skillId);
+            this.childrenSkillAPI(skillName,skillId);
           }
           // setTimeout(() => {
           //   document.getElementById(skillId).click();
@@ -5758,7 +5842,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               response.siblings
             );
           } else {
-            this.childrenSkillAPI(skillId);
+            this.childrenSkillAPI(skillName,skillId);
           }
         })
         .catch((err) => {
@@ -5782,644 +5866,301 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     roleDetail.css("display", "none");
   }
 
-    async handleRoleClick() {
-        console.log("role clicked");
-        var imgBodyDiv = $(".img-body");
-        var cardBodyDetail = $(".card-body");
-        var softSkillDescription=$(".softSkillDescription");
-        var softSkillDetail = $(".softskillaccordian");
-        var roleDetail = $(".roleaccordian");
+  async handleRoleClick() {
+      console.log("role clicked");
+      var imgBodyDiv = $(".img-body");
+      var cardBodyDetail = $(".card-body");
+      var softSkillDescription=$(".softSkillDescription");
+      var softSkillDetail = $(".softskillaccordian");
+      var roleDetail = $(".roleaccordian");
 
-        imgBodyDiv.css("display", "none");
-        cardBodyDetail.css("display", "none");
-        softSkillDescription.css("display", "none");
-        softSkillDetail.css("display", "none");
-        roleDetail.css("display", "");
+      imgBodyDiv.css("display", "none");
+      cardBodyDetail.css("display", "none");
+      softSkillDescription.css("display", "none");
+      softSkillDetail.css("display", "none");
+      roleDetail.css("display", "");
 
-        var roleaccordian = document.getElementById('roleaccordian');
-        if (roleaccordian) {
-            await this.fetchParentRoleSkills(roleaccordian);
-        } else {
-            console.error('Element with ID "roleaccordian" not found.');
-        }
-    }
-
-    async handleSoftSkillsClick() {
-        console.log("soft-skill clicked");
-        var imgBodyDiv = $(".img-body");
-        var cardBodyDetail = $(".card-body");
-        var softSkillDescription=$(".softSkillDescription");
-        var softSkillDetail = $(".softskillaccordian");
-        var roleDetail = $(".roleaccordian");
-
-        imgBodyDiv.css("display", "none");
-        cardBodyDetail.css("display", "none");
-        softSkillDescription.css("display","");
-        softSkillDetail.css("display", "");
-        roleDetail.css("display", "none");
-
-        var softskillaccordian = document.getElementById('softskillaccordian');
-
-        if (softskillaccordian) {
-            // if (softskillaccordian.children.length === 0) {
-            await this.fetchParentSoftSkills(softskillaccordian);
-            // }
-        } else {
-            console.error('Element with ID "softskillaccordian" not found.');
-        }
-    }
-
-    async fetchParentSoftSkills(softSkillAccordian) {
-        const parentSkillApiEndpoint = `${ENDPOINT_URL}soft-skills/`;
-
-        try {
-            const response = await fetch(parentSkillApiEndpoint);
-            if (!response.ok) {
-                throw new Error('Failed to fetch parent soft skills');
-            }
-            const parentSkills = await response.json();
-
-            // Render parent skill buttons
-            this.renderSkills(parentSkills, [], softSkillAccordian);
-
-        } catch (error) {
-            console.error('Error fetching parent soft skills:', error);
-        }
-    }
-
-    async fetchParentRoleSkills(softSkillAccordian) {
-        const parentSkillApiEndpoint = `${ENDPOINT_URL}role/`;
-
-        try {
-            const response = await fetch(parentSkillApiEndpoint);
-            if (!response.ok) {
-                throw new Error('Failed to fetch parent soft skills');
-            }
-            const parentSkills = await response.json();
-
-            // Render parent skill buttons
-            this.renderSkills(parentSkills, [], softSkillAccordian);
-
-        } catch (error) {
-            console.error('Error fetching parent soft skills:', error);
-        }
-    }
-
-    async fetchSkills(apiEndpoint) {
-        try {
-            const response = await fetch(apiEndpoint);
-            if (!response.ok) {
-                throw new Error('Failed to fetch skills');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching skills:', error);
-        }
-    }
-
-    renderSkills(skills, breadcrumbPath, softSkillAccordian) {
-      if (!softSkillAccordian) {
-          console.error('softSkillAccordian element is not defined.');
-          return;
+      var roleaccordian = document.getElementById('roleaccordian');
+      if (roleaccordian) {
+          await this.fetchParentRoleSkills(roleaccordian);
+      } else {
+          console.error('Element with ID "roleaccordian" not found.');
       }
-  
-      // Clear existing content in softSkillAccordian before appending new content
-      softSkillAccordian.innerHTML = '';
-  
-      // Render breadcrumb
-      this.renderBreadcrumb(skills, breadcrumbPath, softSkillAccordian);
-  
-      // Create buttons for each skill
-      const skillsContainer = document.createElement("div");
-      skillsContainer.classList.add("softskillparentaccordian");
-      skillsContainer.setAttribute("id", "softskillparentaccordian");
-      skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
-  
-      skills.forEach(skill => {
-          const skillButton = document.createElement("button");
-          skillButton.className = "softskillbutton";
-          skillButton.setAttribute("id","softskillbutton");
-          skillButton.style.border = "1px solid rgb(230, 230, 230)";
-          skillButton.style.borderRadius = "10px";
-          skillButton.style.margin = "5px";
-          skillButton.style.padding = "6px 12px";
-          skillButton.style.backgroundColor = "#FFFFFF";
-          skillButton.style.cursor = "pointer";
-          skillButton.style.color = "#1E1E1E";
-          skillButton.style.fontSize = "16px";
-          skillButton.setAttribute("data-mdb-tooltip-init", "");
-  
-          const childCount = skill.child_count || 0;
-          const ratingsCount = skill.ratings ? skill.ratings.length : 0;
-          const description = skill.description;
-  
-          const buttonContentDiv = document.createElement("div")
-          buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+  }
 
-          const skillNameSpan = document.createElement("span");
-          skillNameSpan.textContent = skill.name;
-          if (skill.proxy_skill) {
-            manageTooltip(skillNameSpan,skill.proxy_skill.name);
+  async handleSoftSkillsClick() {
+      console.log("soft-skill clicked");
+      var imgBodyDiv = $(".img-body");
+      var cardBodyDetail = $(".card-body");
+      var softSkillDescription=$(".softSkillDescription");
+      var softSkillDetail = $(".softskillaccordian");
+      var roleDetail = $(".roleaccordian");
+
+      imgBodyDiv.css("display", "none");
+      cardBodyDetail.css("display", "none");
+      softSkillDescription.css("display","");
+      softSkillDetail.css("display", "");
+      roleDetail.css("display", "none");
+
+      var softskillaccordian = document.getElementById('softskillaccordian');
+
+      if (softskillaccordian) {
+          // if (softskillaccordian.children.length === 0) {
+          await this.fetchParentSoftSkills(softskillaccordian);
+          // }
+      } else {
+          console.error('Element with ID "softskillaccordian" not found.');
+      }
+  }
+
+  async fetchParentSoftSkills(softSkillAccordian) {
+      const parentSkillApiEndpoint = `${ENDPOINT_URL}soft-skills/`;
+
+      try {
+          const response = await fetch(parentSkillApiEndpoint);
+          if (!response.ok) {
+              throw new Error('Failed to fetch parent soft skills');
           }
-          else if (skill.name.length > 30) {
-            skillNameSpan.classList.add("truncate");
-            manageTooltip(skillNameSpan,skill.name);
+          const parentSkills = await response.json();
+
+          // Render parent skill buttons
+          this.renderSkills(parentSkills, [], softSkillAccordian);
+
+      } catch (error) {
+          console.error('Error fetching parent soft skills:', error);
+      }
+  }
+
+  async fetchParentRoleSkills(softSkillAccordian) {
+      const parentSkillApiEndpoint = `${ENDPOINT_URL}role/`;
+
+      try {
+          const response = await fetch(parentSkillApiEndpoint);
+          if (!response.ok) {
+              throw new Error('Failed to fetch parent soft skills');
           }
+          const parentSkills = await response.json();
 
-          if (description) {
-            const descriptionImg = document.createElement("img");
-            descriptionImg.src = `${imagePath}Group 27.svg`;
-            descriptionImg.alt = "description";
-            // descriptionImg.title = description;
-            descriptionImg.style.marginRight = "10px";
-            descriptionImg.style.width = "18px";
-            descriptionImg.style.height = "18px";
-            buttonContentDiv.appendChild(descriptionImg);
-            manageTooltip(descriptionImg,description);
+          // Render parent skill buttons
+          this.renderSkills(parentSkills, [], softSkillAccordian);
+
+      } catch (error) {
+          console.error('Error fetching parent soft skills:', error);
+      }
+  }
+
+  async fetchSkills(apiEndpoint) {
+      try {
+          const response = await fetch(apiEndpoint);
+          if (!response.ok) {
+              throw new Error('Failed to fetch skills');
           }
+          return await response.json();
+      } catch (error) {
+          console.error('Error fetching skills:', error);
+      }
+  }
 
-          buttonContentDiv.appendChild(skillNameSpan);
-
-          if (childCount > 0) {
-              const hoverCircleImg = document.createElement("img");
-              hoverCircleImg.src = `${imagePath}hovercircle.png`;
-              hoverCircleImg.alt = "circle";
-              hoverCircleImg.style.width = "22px";
-              hoverCircleImg.style.height = "22px";
-              var tooltip =`${childCount} sub categories` ;
-              // hoverCircleImg.title = `${childCount} sub categories`;
-              hoverCircleImg.style.marginLeft = "10px";
-              buttonContentDiv.appendChild(hoverCircleImg);
-              manageTooltip(hoverCircleImg,tooltip);
-          }
-
-          if (ratingsCount > 0) {
-            const searchText = searchByName(skill.name);
-            if (searchText.length > 0) {
-              const starIcon = document.createElement("img");
-              starIcon.src = `${imagePath}Group 23.svg`;
-              starIcon.style.marginLeft = "5px";
-              starIcon.style.cursor = "pointer";
-              starIcon.addEventListener('click', (event) => {
-                  event.stopPropagation();
-                  this.changeRateModelElement(skill);
-              });
-              skillButton.style.backgroundColor="#E0DEFF";
-              buttonContentDiv.appendChild(starIcon);
-            }
-            else{
-              const starIcon = document.createElement("i");
-              starIcon.setAttribute("id",skill.path_addr)
-              starIcon.className = "fas fa-star";
-              starIcon.style.marginLeft = "5px";
-              starIcon.style.cursor = "pointer";
-              starIcon.style.color = "#ccccff";
-              starIcon.addEventListener('click', (event) => {
-                  event.stopPropagation();
-                  this.changeRateModelElement(skill);
-              });
-              buttonContentDiv.appendChild(starIcon);
-            }
-          }
-  
-          skillButton.appendChild(buttonContentDiv);
-
-          // Add click event to fetch and display child skills or call changeratingmodelelement
-          skillButton.addEventListener('click', async () => {
-              if (skill.child_count === 0) {
-                  // Call changeratingmodelelement function with skill data
-                  this.changeRateModelElement(skill);
-              } else {
-                  const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
-                  const childSkills = await this.fetchSkills(childSkillApiEndpoint);
-                  const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
-  
-                  // Render child skills
-                  this.renderSkills(childSkills, newBreadcrumbPath, softSkillAccordian);
-              }
-          });
-  
-          skillsContainer.appendChild(skillButton);
-      });
-  
-      // Append skills container to accordion
-      softSkillAccordian.appendChild(skillsContainer);
+  renderSkills(skills, breadcrumbPath, softSkillAccordian) {
+    if (!softSkillAccordian) {
+        console.error('softSkillAccordian element is not defined.');
+        return;
     }
-    
-    renderBreadcrumb(skills, breadcrumbPath, softSkillAccordian) {
-      if (!softSkillAccordian) {
-          console.error('softSkillAccordian element is not defined.');
-          return;
-      }
-  
-      // Create breadcrumb element
-      const breadcrumb = document.createElement("div");
-      breadcrumb.classList.add("breadcrumb");
-      breadcrumb.style = "margin:15px; padding:10px; background-color:white; display:none; border-radius:5px;";
-  
-      if (breadcrumbPath.length > 0) {
-          breadcrumb.style.display = "";
-          const knowledgeLink = document.createElement("span");
-          knowledgeLink.textContent = skills[0].tags[0].title;
-          knowledgeLink.style.cursor = "pointer";
-          knowledgeLink.style.color = "#A7A4DC";
-          knowledgeLink.style.marginRight = "5px";
-          knowledgeLink.addEventListener('click', async () => {
-              const parentSkillApiEndpoint = `${ENDPOINT_URL}soft-skills/`;
-              const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
-              this.renderSkills(parentSkills, [], softSkillAccordian);
-          });
-          breadcrumb.appendChild(knowledgeLink);
-  
-          const separator = document.createElement("img");
-          separator.src = `${imagePath}Group 18.svg`;
-          separator.style.marginRight = "5px";
-          breadcrumb.appendChild(separator);
-      }
-  
-      // Create clickable breadcrumb items
-      breadcrumbPath.forEach((breadcrumbItem, index) => {
-          const breadcrumbLink = document.createElement("span");
-          breadcrumbLink.textContent = breadcrumbItem.name;
-          breadcrumbLink.style.cursor = "pointer";
-          breadcrumbLink.style.color = index === breadcrumbPath.length - 1 ? "#4F46FB" : "#A7A4DC";
-          breadcrumbLink.style.marginRight = "5px";
-  
-          breadcrumbLink.addEventListener('click', async () => {
-              const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
-              const skills = await this.fetchSkills(childSkillApiEndpoint);
-              const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
-              this.renderSkills(skills, newBreadcrumbPath, softSkillAccordian);
-          });
-  
-          breadcrumb.appendChild(breadcrumbLink);
-  
-          if (index < breadcrumbPath.length - 1) {
-              const separator = document.createElement("img");
-              separator.src = `${imagePath}Group 18.svg`;
-              separator.style.marginRight = "5px";
-              breadcrumb.appendChild(separator);
-          }
-      });
 
-      const currentBreadcrumbItem = breadcrumbPath[breadcrumbPath.length - 1];
-      console.log(currentBreadcrumbItem);
-        if (currentBreadcrumbItem && currentBreadcrumbItem.ratings && currentBreadcrumbItem.ratings.length > 0) {
-            var rateButton = document.createElement("button");
-            rateButton.className = "ratebutton";
-            rateButton.setAttribute("id",skills.path_addr);
-            rateButton.style.marginLeft = "5px";
-            rateButton.style = "padding-top:1px; padding-bottom: 1px; border:none; border-radius:5px;";
-            rateButton.style.backgroundColor = "#E0DEFF";
-            rateButton.style.cursor = "pointer";
+    // Clear existing content in softSkillAccordian before appending new content
+    softSkillAccordian.innerHTML = '';
 
-            const rateButtonSpan = document.createElement("span");
+    // Render breadcrumb
+    this.renderBreadcrumb(skills, breadcrumbPath, softSkillAccordian);
 
-            const searchText = searchByName(currentBreadcrumbItem.name);
-            if(searchText.length > 0){
-              rateButton.style.backgroundColor = "#E0DEFF";
-              rateButtonSpan.textContent = "Rated";
-              rateButtonSpan.style.color="#1E1E1E";
-              const starIcon = document.createElement("img");
-              starIcon.src = `${imagePath}Group 23.svg`;
-              starIcon.style.marginRight = "5px";
-              starIcon.style.cursor = "pointer";
-              rateButton.appendChild(starIcon);
-            }
-            else{
-              rateButton.style.backgroundColor = "#EFF4FA";
-              rateButtonSpan.textContent = "Rate";
-              rateButtonSpan.style.color = "#636363";
-              const starIcon = document.createElement("i");
-              starIcon.className = "fas fa-star";
-              starIcon.style.marginRight = "5px";
-              starIcon.style.cursor = "pointer";
-              starIcon.style.color = "rgb(204, 204, 255)";
-              rateButton.appendChild(starIcon);
-            }
-            rateButtonSpan.style.fontSize = "16px";
-            
-            rateButton.appendChild(rateButtonSpan);
-            rateButton.addEventListener("click", () => {
-                this.changeRateModelElement(skills);
+    // Create buttons for each skill
+    const skillsContainer = document.createElement("div");
+    skillsContainer.classList.add("softskillparentaccordian");
+    skillsContainer.setAttribute("id", "softskillparentaccordian");
+    skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
+
+    skills.forEach(skill => {
+        const skillButton = document.createElement("button");
+        skillButton.className = "softskillbutton";
+        skillButton.setAttribute("id","softskillbutton");
+        skillButton.style.border = "1px solid #4f4f4f";
+        skillButton.style.borderRadius = "10px";
+        skillButton.style.margin = "5px";
+        skillButton.style.padding = "6px 12px";
+        skillButton.style.backgroundColor = "#FFFFFF";
+        skillButton.style.cursor = "pointer";
+        skillButton.style.color = "#4f4f4f";
+        skillButton.style.fontWeight="500";
+        skillButton.style.fontSize = "16px";
+        skillButton.setAttribute("data-mdb-tooltip-init", "");
+
+        const childCount = skill.child_count || 0;
+        const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+        const description = skill.description;
+
+        const buttonContentDiv = document.createElement("div")
+        buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+
+        const skillNameSpan = document.createElement("span");
+        skillNameSpan.textContent = skill.name;
+        if (skill.proxy_skill) {
+          manageTooltip(skillNameSpan,skill.proxy_skill.name);
+        }
+        else if (skill.name.length > 30) {
+          skillNameSpan.classList.add("truncate");
+          manageTooltip(skillNameSpan,skill.name);
+        }
+
+        if (description) {
+          const descriptionImg = document.createElement("img");
+          descriptionImg.src = `${imagePath}Group 27.svg`;
+          descriptionImg.alt = "description";
+          // descriptionImg.title = description;
+          descriptionImg.style.marginRight = "10px";
+          descriptionImg.style.width = "18px";
+          descriptionImg.style.height = "18px";
+          buttonContentDiv.appendChild(descriptionImg);
+          manageTooltip(descriptionImg,description);
+        }
+
+        buttonContentDiv.appendChild(skillNameSpan);
+
+        if (childCount > 0) {
+            const hoverCircleImg = document.createElement("img");
+            hoverCircleImg.src = `${imagePath}hovercircle.png`;
+            hoverCircleImg.alt = "circle";
+            hoverCircleImg.style.width = "22px";
+            hoverCircleImg.style.height = "22px";
+            var tooltip =`${childCount} sub categories` ;
+            // hoverCircleImg.title = `${childCount} sub categories`;
+            hoverCircleImg.style.marginLeft = "10px";
+            buttonContentDiv.appendChild(hoverCircleImg);
+            manageTooltip(hoverCircleImg,tooltip);
+        }
+
+        if (ratingsCount > 0) {
+          const searchText = searchByName(skill.name);
+          if (searchText.length > 0) {
+            const starIcon = document.createElement("img");
+            starIcon.src = `${imagePath}Group 23.svg`;
+            starIcon.style.marginLeft = "5px";
+            starIcon.style.cursor = "pointer";
+            starIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.changeRateModelElement(skill);
             });
-  
-          breadcrumb.appendChild(rateButton);
-        } 
-  
-      // Append breadcrumb to accordion
-      softSkillAccordian.appendChild(breadcrumb);
-    }
-  
-    renderRelatedHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId) {
-      if (!softSkillAccordian) {
-          console.error('softSkillAccordian element is not defined.');
-          return;
-      }
-  
-      // Create breadcrumb element
-      const breadcrumb = document.createElement("div");
-      breadcrumb.classList.add("breadcrumb");
-      breadcrumb.style = "margin:15px; padding:10px; background-color:white; display:none; border-radius:5px;";
-  
-      if (breadcrumbPath.length > 0) {
-          breadcrumb.style.display = "";
-          
-          const knowledgeLink = document.createElement("span");
-          knowledgeLink.textContent = "Related Skills";
-          knowledgeLink.style.cursor = "pointer";
-          knowledgeLink.style.color = "#A7A4DC";
-          knowledgeLink.style.marginRight = "5px";
-          knowledgeLink.addEventListener('click', async () => {
-              const parentSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillId}`;
-              try {
-                  const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
-                  
-                  // Filter out skills with child_count equal to 1
-                  // const validParentSkills = parentSkills.filter(skill => skill.child_count !== 1);
-          
-                  this.renderRelatedHardSkills(parentSkills, [], softSkillAccordian, skillId);
-              } catch (error) {
-                  console.error(error);
-              }
-          });
-          breadcrumb.appendChild(knowledgeLink);
-  
-          const separator = document.createElement("img");
-          separator.src = `${imagePath}Group 18.svg`;
-          separator.style.marginRight = "5px";
-          breadcrumb.appendChild(separator);
-  
-          const clickedSkill = breadcrumbPath[breadcrumbPath.length - 1];
-          const clickedSkillName = clickedSkill.name;
-          const clickedSkillPath = clickedSkill.path_addr;
-  
-          const clickedSkillLink = document.createElement("span");
-          clickedSkillLink.textContent = clickedSkillName;
-          clickedSkillLink.style.color = "#4F46FB";
-          clickedSkillLink.style.marginRight = "5px";
-          breadcrumb.appendChild(clickedSkillLink);
-  
-          // Log skills and breadcrumbPath for debugging
-          console.log('Skills:', skills);
-          console.log('Breadcrumb Path:', breadcrumbPath);
-          console.log('Clicked Skill Path:', clickedSkillPath);
-  
-          // Check if the clicked skill has ratings
-          if (clickedSkill.ratings && clickedSkill.ratings.length > 0) {
-              const rateButton = document.createElement("button");
-              rateButton.className = "ratebutton";
-              rateButton.setAttribute("id",clickedSkillPath);
-              rateButton.style.marginLeft = "5px";
-              rateButton.style.paddingTop = "1px";
-              rateButton.style.paddingBottom = "1px";
-              rateButton.style.border = "none";
-              rateButton.style.borderRadius = "5px";
-              rateButton.style.cursor = "pointer";
-  
-              const rateButtonSpan = document.createElement("span");
-
-              const searchText = searchByName(clickedSkill.name);
-              if(searchText.length > 0){
-                rateButton.style.backgroundColor = "#E0DEFF";
-                rateButtonSpan.textContent = "Rated";
-                rateButtonSpan.style.color="#1E1E1E";
-                const starIcon = document.createElement("img");
-                starIcon.src = `${imagePath}Group 23.svg`;
-                starIcon.style.marginRight = "5px";
-                starIcon.style.cursor = "pointer";
-                rateButton.appendChild(starIcon);
-              }
-              else{
-                rateButton.style.backgroundColor = "#EFF4FA";
-                rateButtonSpan.textContent = "Rate";
-                rateButtonSpan.style.color = "#636363";
-                const starIcon = document.createElement("i");
-                starIcon.className = "fas fa-star";
-                starIcon.style.marginRight = "5px";
-                starIcon.style.cursor = "pointer";
-                starIcon.style.color = "rgb(204, 204, 255)";
-                rateButton.appendChild(starIcon);
-              }
-              rateButtonSpan.style.fontSize = "16px";
-  
-              rateButton.appendChild(rateButtonSpan);
-              rateButton.addEventListener("click", () => {
-                  console.log('Clicked Skill for Rating:', clickedSkill); // Debugging log
-                  this.changeRateModelElement(clickedSkill);
-              });
-  
-              breadcrumb.appendChild(rateButton);
+            skillButton.style.backgroundColor="#E0DEFF";
+            buttonContentDiv.appendChild(starIcon);
           }
-      }
-  
-      // Append breadcrumb to accordion
-      softSkillAccordian.appendChild(breadcrumb);
-    }
-  
-    renderRelatedHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId) {
-
-        console.log(skillId, "relatedskillid");
-        if (!softSkillAccordian) {
-            console.error('softSkillAccordian element is not defined.');
-            return;
-        }
-        softSkillAccordian.innerHTML = '';
-    
-        this.renderRelatedHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId);
-    
-        const skillsContainer = document.createElement("div");
-        skillsContainer.classList.add("softskillparentaccordian");
-        skillsContainer.setAttribute("id", "softskillparentaccordian");
-        skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
-        skillsContainer.style.textAlign = "left";
-    
-        skills.forEach(skill => {
-            const skillButton = document.createElement("button");
-            skillButton.className = "softskillbutton";
-            skillButton.style.border = "2px solid rgb(230, 230, 230)";
-            skillButton.style.borderRadius = "10px";
-            skillButton.style.margin = "5px";
-            skillButton.style.padding = "6px 12px";
-            skillButton.style.backgroundColor = "#FFFFFF";
-            skillButton.style.cursor = "pointer";
-            skillButton.style.color = "#1E1E1E";
-            skillButton.style.fontSize = "16px";
-            skillButton.setAttribute("data-mdb-tooltip-init", "");
-    
-            const childCount = skill.child_count || 0;
-            const ratingsCount = skill.ratings ? skill.ratings.length : 0;
-            const description = skill.description;
-            const buttonContentDiv = document.createElement("div")
-            buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
-
-            const skillNameSpan = document.createElement("span");
-            skillNameSpan.textContent = skill.name;
-            if (skill.proxy_skill) {
-              manageTooltip(skillNameSpan,skill.proxy_skill.name);
-            }
-            else if (skill.name.length > 30) {
-              skillNameSpan.classList.add("truncate");
-              manageTooltip(skillNameSpan,skill.name);
-            }
-
-            if (description) {
-              const descriptionImg = document.createElement("img");
-              descriptionImg.src = `${imagePath}Group 27.svg`;
-              descriptionImg.alt = "description";
-              // descriptionImg.title = description;
-              descriptionImg.style.marginRight = "10px";
-              buttonContentDiv.appendChild(descriptionImg);
-              manageTooltip(descriptionImg,description);
-            }
-
-            buttonContentDiv.appendChild(skillNameSpan);
-
-            if (childCount > 1) {
-                const hoverCircleImg = document.createElement("img");
-                hoverCircleImg.src = `${imagePath}hovercircle.png`;
-                hoverCircleImg.alt = "circle";
-                hoverCircleImg.style.width = "22px";
-                hoverCircleImg.style.height = "22px";
-                var tooltip = `${childCount} sub categories`;
-                // hoverCircleImg.title = `${childCount} sub categories`;
-                hoverCircleImg.style.marginLeft = "10px";
-                buttonContentDiv.appendChild(hoverCircleImg);
-                manageTooltip(hoverCircleImg,tooltip);
-            }
-
-            if (ratingsCount > 0) {
-              const searchText = searchByName(skill.name);
-              if (searchText.length > 0) {
-                const starIcon = document.createElement("img");
-                starIcon.src = `${imagePath}Group 23.svg`;
-                starIcon.style.marginLeft = "5px";
-                starIcon.style.cursor = "pointer";
-                starIcon.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    this.changeRateModelElement(skill);
-                });
-                buttonContentDiv.appendChild(starIcon);
-                skillButton.style.backgroundColor="#E0DEFF";
-              }
-              else{
-                const starIcon = document.createElement("i");
-                starIcon.className = "fas fa-star";
-                starIcon.setAttribute("id",skill.path_addr)
-                starIcon.style.marginLeft = "5px";
-                starIcon.style.cursor = "pointer";
-                starIcon.style.color = "#ccccff";
-                starIcon.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    this.changeRateModelElement(skill);
-                });
-                buttonContentDiv.appendChild(starIcon);
-              }
-            }
-            skillButton.appendChild(buttonContentDiv);
-            // Add click event to fetch and display child skills or call changeRateModelElement
-            skillButton.addEventListener('click', async () => {
-                if (skill.child_count === 1 || skill.child_count === 0) {
-                    console.log("zeroskill-data", skill);
-                    this.changeRateModelElement(skill);
-                } else {
-                    const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
-                    const childSkills = await this.fetchSkills(childSkillApiEndpoint);
-                    const validParentSkills = childSkills.filter(skill => skill.name !== "Related Skills");
-                    console.log(validParentSkills);
-                    const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
-                    console.log(newBreadcrumbPath, "breadcrumb");
-                    this.renderRelatedHardSkills(validParentSkills, newBreadcrumbPath, softSkillAccordian, skillId);
-                }
+          else{
+            const starIcon = document.createElement("i");
+            starIcon.setAttribute("id",skill.path_addr)
+            starIcon.className = "fas fa-star";
+            starIcon.style.marginLeft = "5px";
+            starIcon.style.cursor = "pointer";
+            starIcon.style.color = "#ccccff";
+            starIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.changeRateModelElement(skill);
             });
+            buttonContentDiv.appendChild(starIcon);
+          }
+        }
 
-            skillsContainer.appendChild(skillButton);
+        skillButton.appendChild(buttonContentDiv);
+
+        // Add click event to fetch and display child skills or call changeratingmodelelement
+        skillButton.addEventListener('click', async () => {
+            if (skill.child_count === 0) {
+                // Call changeratingmodelelement function with skill data
+                this.changeRateModelElement(skill);
+            } else {
+                const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
+                const childSkills = await this.fetchSkills(childSkillApiEndpoint);
+                const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
+
+                // Render child skills
+                this.renderSkills(childSkills, newBreadcrumbPath, softSkillAccordian);
+            }
         });
-        softSkillAccordian.appendChild(skillsContainer);
+
+        skillsContainer.appendChild(skillButton);
+    });
+
+    // Append skills container to accordion
+    softSkillAccordian.appendChild(skillsContainer);
+  }
+  
+  renderBreadcrumb(skills, breadcrumbPath, softSkillAccordian) {
+    if (!softSkillAccordian) {
+        console.error('softSkillAccordian element is not defined.');
+        return;
     }
-  
-    renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName) {
-      console.log(skillId);
-      const hardSkillId = skillId;
-      if (!softSkillAccordian) {
-          console.error('softSkillAccordian element is not defined.');
-          return;
-      }
-  
-      // Create breadcrumb element
-      const breadcrumb = document.createElement("div");
-      breadcrumb.classList.add("breadcrumb");
-      breadcrumb.style = "margin:15px; padding:10px; background-color:white; display:none; border-radius:5px;";
-  
-      if (breadcrumbPath.length > 0) {
-          breadcrumb.style.display = "";
 
-          const knowledgeLink = document.createElement("span");
-          knowledgeLink.textContent = skillName;
-          knowledgeLink.style.cursor = "pointer";
-          knowledgeLink.style.color = "#A7A4DC";
-          knowledgeLink.style.marginRight = "5px";
-          knowledgeLink.addEventListener('click', async () => {
-              console.log(skillId); // Ensure skillId is logged correctly
-              const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
-              const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
-              const filterSkills = parentSkills.filter(item => item.name !== "Related Skills");
-              this.renderHardSkills(parentskills, [], softSkillAccordian, skillId, parentskills,skillName);
-          });
-          breadcrumb.appendChild(knowledgeLink);
-  
-          const separator = document.createElement("img");
-          separator.src = `${imagePath}Group 18.svg`;
-          separator.style.marginRight = "5px";
-          breadcrumb.appendChild(separator);
-      }
-  
-      // Create clickable breadcrumb items
-      breadcrumbPath.forEach((breadcrumbItem, index) => {
-          const breadcrumbLink = document.createElement("span");
-          breadcrumbLink.textContent = breadcrumbItem.name;
-          // breadcrumbLink.style.cursor = "pointer";
-          breadcrumbLink.style.color = index === breadcrumbPath.length - 1 ? "#4F46FB" : "#A7A4DC";
-          breadcrumbLink.style.marginRight = "5px";
-  
-          breadcrumbLink.addEventListener('click', async () => {
-              const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
-              const skills = await this.fetchSkills(childSkillApiEndpoint);
-              const childrenSkills = skills.filter(item => item.name !== "Related Skills");
-              console.log(childrenSkills, "childrenSkills");
-          
-              const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
-              this.renderHardSkills(childrenSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills);
-          });
-  
-          breadcrumb.appendChild(breadcrumbLink);
-  
-          if (index < breadcrumbPath.length - 1) {
-              const separator = document.createElement("img");
-              separator.src = `${imagePath}Group 18.svg`;
-              separator.style.marginRight = "5px";
-              breadcrumb.appendChild(separator);
-          }
-      });
+    // Create breadcrumb element
+    const breadcrumb = document.createElement("div");
+    breadcrumb.classList.add("breadcrumb");
+    breadcrumb.style = "margin:15px; padding:10px; background-color:white; display:none; border-radius:5px;";
 
-      // Add rating button if the current breadcrumb item has ratings
-      const currentBreadcrumbItem = breadcrumbPath[breadcrumbPath.length - 1];
+    if (breadcrumbPath.length > 0) {
+        breadcrumb.style.display = "";
+        const knowledgeLink = document.createElement("span");
+        knowledgeLink.textContent = skills[0].tags[0].title;
+        knowledgeLink.style.cursor = "pointer";
+        knowledgeLink.style.color = "#A7A4DC";
+        knowledgeLink.style.marginRight = "5px";
+        knowledgeLink.addEventListener('click', async () => {
+            const parentSkillApiEndpoint = `${ENDPOINT_URL}soft-skills/`;
+            const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
+            this.renderSkills(parentSkills, [], softSkillAccordian);
+        });
+        breadcrumb.appendChild(knowledgeLink);
+
+        const separator = document.createElement("img");
+        separator.src = `${imagePath}Group 18.svg`;
+        separator.style.marginRight = "5px";
+        breadcrumb.appendChild(separator);
+    }
+
+    // Create clickable breadcrumb items
+    breadcrumbPath.forEach((breadcrumbItem, index) => {
+        const breadcrumbLink = document.createElement("span");
+        breadcrumbLink.textContent = breadcrumbItem.name;
+        breadcrumbLink.style.cursor = "pointer";
+        breadcrumbLink.style.color = index === breadcrumbPath.length - 1 ? "#4F46FB" : "#A7A4DC";
+        breadcrumbLink.style.marginRight = "5px";
+
+        breadcrumbLink.addEventListener('click', async () => {
+            const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
+            const skills = await this.fetchSkills(childSkillApiEndpoint);
+            const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
+            this.renderSkills(skills, newBreadcrumbPath, softSkillAccordian);
+        });
+
+        breadcrumb.appendChild(breadcrumbLink);
+
+        if (index < breadcrumbPath.length - 1) {
+            const separator = document.createElement("img");
+            separator.src = `${imagePath}Group 18.svg`;
+            separator.style.marginRight = "5px";
+            breadcrumb.appendChild(separator);
+        }
+    });
+
+    const currentBreadcrumbItem = breadcrumbPath[breadcrumbPath.length - 1];
+    console.log(currentBreadcrumbItem);
       if (currentBreadcrumbItem && currentBreadcrumbItem.ratings && currentBreadcrumbItem.ratings.length > 0) {
-          const rateButton = document.createElement("button");
+          var rateButton = document.createElement("button");
           rateButton.className = "ratebutton";
-          rateButton.setAttribute("id",currentBreadcrumbItem.path_addr);
+          rateButton.setAttribute("id",skills.path_addr);
           rateButton.style.marginLeft = "5px";
-          rateButton.style.paddingTop = "1px";
-          rateButton.style.paddingBottom = "1px";
-          rateButton.style.border = "none";
-          rateButton.style.borderRadius = "5px";
+          rateButton.style = "padding-top:1px; padding-bottom: 1px; border:none; border-radius:5px;";
           rateButton.style.backgroundColor = "#E0DEFF";
           rateButton.style.cursor = "pointer";
-  
+
           const rateButtonSpan = document.createElement("span");
 
           const searchText = searchByName(currentBreadcrumbItem.name);
-
           if(searchText.length > 0){
             rateButton.style.backgroundColor = "#E0DEFF";
             rateButtonSpan.textContent = "Rated";
@@ -6444,95 +6185,585 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           rateButtonSpan.style.fontSize = "16px";
           
           rateButton.appendChild(rateButtonSpan);
-  
           rateButton.addEventListener("click", () => {
-              this.changeRateModelElement(currentBreadcrumbItem);
+              this.changeRateModelElement(skills);
           });
-  
-          breadcrumb.appendChild(rateButton);
-      }
-  
-      // Append breadcrumb to accordion
-      softSkillAccordian.appendChild(breadcrumb);
+
+        breadcrumb.appendChild(rateButton);
+      } 
+
+    // Append breadcrumb to accordion
+    softSkillAccordian.appendChild(breadcrumb);
+  }
+
+  renderRelatedHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId) {
+    if (!softSkillAccordian) {
+        console.error('softSkillAccordian element is not defined.');
+        return;
     }
-  
-    renderHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills = [],skillName) {
-        console.log(skillId, "childrenskillid");
-        if (!softSkillAccordian) {
-            console.error('softSkillAccordian element is not defined.');
-            return;
+
+    // Create breadcrumb element
+    const breadcrumb = document.createElement("div");
+    breadcrumb.classList.add("breadcrumb");
+    breadcrumb.style = "margin:15px; padding:10px; background-color:white; display:none; border-radius:5px;";
+
+    if (breadcrumbPath.length > 0) {
+        breadcrumb.style.display = "";
+        
+        const knowledgeLink = document.createElement("span");
+        knowledgeLink.textContent = "Related Skills";
+        knowledgeLink.style.cursor = "pointer";
+        knowledgeLink.style.color = "#A7A4DC";
+        knowledgeLink.style.marginRight = "5px";
+        knowledgeLink.addEventListener('click', async () => {
+            const parentSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillId}`;
+            try {
+                const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
+                
+                // Filter out skills with child_count equal to 1
+                // const validParentSkills = parentSkills.filter(skill => skill.child_count !== 1);
+        
+                this.renderRelatedHardSkills(parentSkills, [], softSkillAccordian, skillId);
+            } catch (error) {
+                console.error(error);
+            }
+        });
+        breadcrumb.appendChild(knowledgeLink);
+
+        const separator = document.createElement("img");
+        separator.src = `${imagePath}Group 18.svg`;
+        separator.style.marginRight = "5px";
+        breadcrumb.appendChild(separator);
+
+        const clickedSkill = breadcrumbPath[breadcrumbPath.length - 1];
+        const clickedSkillName = clickedSkill.name;
+        const clickedSkillPath = clickedSkill.path_addr;
+
+        const clickedSkillLink = document.createElement("span");
+        clickedSkillLink.textContent = clickedSkillName;
+        clickedSkillLink.style.color = "#4F46FB";
+        clickedSkillLink.style.marginRight = "5px";
+        breadcrumb.appendChild(clickedSkillLink);
+
+        // Log skills and breadcrumbPath for debugging
+        console.log('Skills:', skills);
+        console.log('Breadcrumb Path:', breadcrumbPath);
+        console.log('Clicked Skill Path:', clickedSkillPath);
+
+        // Check if the clicked skill has ratings
+        if (clickedSkill.ratings && clickedSkill.ratings.length > 0) {
+            const rateButton = document.createElement("button");
+            rateButton.className = "ratebutton";
+            rateButton.setAttribute("id",clickedSkillPath);
+            rateButton.style.marginLeft = "5px";
+            rateButton.style.paddingTop = "1px";
+            rateButton.style.paddingBottom = "1px";
+            rateButton.style.border = "none";
+            rateButton.style.borderRadius = "5px";
+            rateButton.style.cursor = "pointer";
+
+            const rateButtonSpan = document.createElement("span");
+
+            const searchText = searchByName(clickedSkill.name);
+            if(searchText.length > 0){
+              rateButton.style.backgroundColor = "#E0DEFF";
+              rateButtonSpan.textContent = "Rated";
+              rateButtonSpan.style.color="#1E1E1E";
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.style.marginRight = "5px";
+              starIcon.style.cursor = "pointer";
+              rateButton.appendChild(starIcon);
+            }
+            else{
+              rateButton.style.backgroundColor = "#EFF4FA";
+              rateButtonSpan.textContent = "Rate";
+              rateButtonSpan.style.color = "#636363";
+              const starIcon = document.createElement("i");
+              starIcon.className = "fas fa-star";
+              starIcon.style.marginRight = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.style.color = "rgb(204, 204, 255)";
+              rateButton.appendChild(starIcon);
+            }
+            rateButtonSpan.style.fontSize = "16px";
+
+            rateButton.appendChild(rateButtonSpan);
+            rateButton.addEventListener("click", () => {
+                console.log('Clicked Skill for Rating:', clickedSkill); // Debugging log
+                this.changeRateModelElement(clickedSkill);
+            });
+
+            breadcrumb.appendChild(rateButton);
         }
-        // Clear existing content in softSkillAccordian before appending new content
-        softSkillAccordian.innerHTML = '';
-    
-        // Render breadcrumb
-        this.renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
-    
-        // Create buttons for each skill
-        const skillsContainer = document.createElement("div");
-        skillsContainer.classList.add("softskillparentaccordian");
-        skillsContainer.setAttribute("id", "softskillparentaccordian");
-        skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
-        skillsContainer.style.textAlign = "left";
-    
-        skills.forEach(skill => {
-            const skillButton = document.createElement("button");
-            skillButton.className = "softskillbutton";
-            skillButton.style.border = "2px solid rgb(230, 230, 230)";
-            skillButton.style.borderRadius = "10px";
-            skillButton.style.margin = "5px";
-            skillButton.style.padding = "6px 12px";
-            skillButton.style.background = "#FFFFFF";
-            skillButton.style.cursor = "pointer";
-            skillButton.style.color = "#1E1E1E";
-            skillButton.style.fontSize = "16px";
-            skillButton.setAttribute("data-mdb-tooltip-init", "");
-    
-            const childCount = skill.child_count || 0;
-            const ratingsCount = skill.ratings ? skill.ratings.length : 0;
-            const description = skill.description;
+    }
 
-            const buttonContentDiv = document.createElement("div")
-            buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+    // Append breadcrumb to accordion
+    softSkillAccordian.appendChild(breadcrumb);
+  }
 
-            const skillNameSpan = document.createElement("span");
-            skillNameSpan.textContent = skill.name;
-            if (skill.proxy_skill) {
-              manageTooltip(skillNameSpan,skill.proxy_skill.name);
+  renderRelatedHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId) {
+
+      console.log(skillId, "relatedskillid");
+      if (!softSkillAccordian) {
+          console.error('softSkillAccordian element is not defined.');
+          return;
+      }
+      softSkillAccordian.innerHTML = '';
+  
+      this.renderRelatedHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId);
+  
+      const skillsContainer = document.createElement("div");
+      skillsContainer.classList.add("softskillparentaccordian");
+      skillsContainer.setAttribute("id", "softskillparentaccordian");
+      skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
+      skillsContainer.style.textAlign = "left";
+  
+      skills.forEach(skill => {
+          const skillButton = document.createElement("button");
+          skillButton.className = "softskillbutton";
+          skillButton.style.border = "1px solid #4f4f4f";
+          skillButton.style.borderRadius = "10px";
+          skillButton.style.margin = "5px";
+          skillButton.style.padding = "6px 12px";
+          skillButton.style.backgroundColor = "#FFFFFF";
+          skillButton.style.cursor = "pointer";
+          skillButton.style.color = "#4f4f4f";
+          skillButton.style.fontWeight="500";
+          skillButton.style.fontSize = "16px";
+          skillButton.setAttribute("data-mdb-tooltip-init", "");
+  
+          const childCount = skill.child_count || 0;
+          const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+          const description = skill.description;
+          const buttonContentDiv = document.createElement("div")
+          buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+
+          const skillNameSpan = document.createElement("span");
+          skillNameSpan.textContent = skill.name;
+          if (skill.proxy_skill) {
+            manageTooltip(skillNameSpan,skill.proxy_skill.name);
+          }
+          else if (skill.name.length > 30) {
+            skillNameSpan.classList.add("truncate");
+            manageTooltip(skillNameSpan,skill.name);
+          }
+
+          if (description) {
+            const descriptionImg = document.createElement("img");
+            descriptionImg.src = `${imagePath}Group 27.svg`;
+            descriptionImg.alt = "description";
+            // descriptionImg.title = description;
+            descriptionImg.style.marginRight = "10px";
+            buttonContentDiv.appendChild(descriptionImg);
+            manageTooltip(descriptionImg,description);
+          }
+
+          buttonContentDiv.appendChild(skillNameSpan);
+
+          if (childCount > 1) {
+              const hoverCircleImg = document.createElement("img");
+              hoverCircleImg.src = `${imagePath}hovercircle.png`;
+              hoverCircleImg.alt = "circle";
+              hoverCircleImg.style.width = "22px";
+              hoverCircleImg.style.height = "22px";
+              var tooltip = `${childCount} sub categories`;
+              // hoverCircleImg.title = `${childCount} sub categories`;
+              hoverCircleImg.style.marginLeft = "10px";
+              buttonContentDiv.appendChild(hoverCircleImg);
+              manageTooltip(hoverCircleImg,tooltip);
+          }
+
+          if (ratingsCount > 0) {
+            const searchText = searchByName(skill.name);
+            if (searchText.length > 0) {
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.style.marginLeft = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.addEventListener('click', (event) => {
+                  event.stopPropagation();
+                  this.changeRateModelElement(skill);
+              });
+              buttonContentDiv.appendChild(starIcon);
+              skillButton.style.backgroundColor="#E0DEFF";
             }
-            else if (skill.name.length > 30) {
-              skillNameSpan.classList.add("truncate");
-              manageTooltip(skillNameSpan,skill.name);
+            else{
+              const starIcon = document.createElement("i");
+              starIcon.className = "fas fa-star";
+              starIcon.setAttribute("id",skill.path_addr)
+              starIcon.style.marginLeft = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.style.color = "#ccccff";
+              starIcon.addEventListener('click', (event) => {
+                  event.stopPropagation();
+                  this.changeRateModelElement(skill);
+              });
+              buttonContentDiv.appendChild(starIcon);
             }
+          }
+          skillButton.appendChild(buttonContentDiv);
+          // Add click event to fetch and display child skills or call changeRateModelElement
+          skillButton.addEventListener('click', async () => {
+              if (skill.child_count === 1 || skill.child_count === 0) {
+                  console.log("zeroskill-data", skill);
+                  this.changeRateModelElement(skill);
+              } else {
+                  const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
+                  const childSkills = await this.fetchSkills(childSkillApiEndpoint);
+                  const validParentSkills = childSkills.filter(skill => skill.name !== "Related Skills");
+                  console.log(validParentSkills);
+                  const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
+                  console.log(newBreadcrumbPath, "breadcrumb");
+                  this.renderRelatedHardSkills(validParentSkills, newBreadcrumbPath, softSkillAccordian, skillId);
+              }
+          });
 
-            if (description) {
-              const descriptionImg = document.createElement("img");
-              descriptionImg.src = `${imagePath}Group 27.svg`;
-              descriptionImg.alt = "description";
-              // descriptionImg.title = description;
-              descriptionImg.style.marginRight = "10px";
-              buttonContentDiv.appendChild(descriptionImg);
-              manageTooltip(descriptionImg,description);
+          skillsContainer.appendChild(skillButton);
+      });
+      softSkillAccordian.appendChild(skillsContainer);
+  }
+
+  renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName) {
+    console.log(skillId);
+    const hardSkillId = skillId;
+    if (!softSkillAccordian) {
+        console.error('softSkillAccordian element is not defined.');
+        return;
+    }
+
+    // Create breadcrumb element
+    const breadcrumb = document.createElement("div");
+    breadcrumb.classList.add("breadcrumb");
+    breadcrumb.style = "margin:15px; padding:10px; background-color:white; display:none; border-radius:5px;";
+
+    if (breadcrumbPath.length > 0) {
+        breadcrumb.style.display = "";
+
+        const knowledgeLink = document.createElement("span");
+        knowledgeLink.textContent = skillName;
+        knowledgeLink.style.cursor = "pointer";
+        knowledgeLink.style.color = "#A7A4DC";
+        knowledgeLink.style.marginRight = "5px";
+        knowledgeLink.addEventListener('click', async () => {
+            console.log(skillId); // Ensure skillId is logged correctly
+            const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
+            const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
+            const filterSkills = parentSkills.filter(item => item.name !== "Related Skills");
+            this.renderHardSkills(parentskills, [], softSkillAccordian, skillId, parentskills,skillName);
+        });
+        breadcrumb.appendChild(knowledgeLink);
+
+        const separator = document.createElement("img");
+        separator.src = `${imagePath}Group 18.svg`;
+        separator.style.marginRight = "5px";
+        breadcrumb.appendChild(separator);
+    }
+
+    // Create clickable breadcrumb items
+    breadcrumbPath.forEach((breadcrumbItem, index) => {
+        const breadcrumbLink = document.createElement("span");
+        breadcrumbLink.textContent = breadcrumbItem.name;
+        // breadcrumbLink.style.cursor = "pointer";
+        breadcrumbLink.style.color = index === breadcrumbPath.length - 1 ? "#4F46FB" : "#A7A4DC";
+        breadcrumbLink.style.marginRight = "5px";
+
+        breadcrumbLink.addEventListener('click', async () => {
+            if(breadcrumbItem.name=="Related Skills"){
+                const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${breadcrumbItem.path_addr}`;
+                const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
+                relatedSkills.forEach(skill => {
+                  if (skill.child_count === 1 && skill.ratings.length >0) {
+                    skill.child_count = 0;
+                  }
+                });
+                const validRelatedSkills = relatedSkills.filter(relatedSkill => relatedSkill.child_count !== 1);
+                const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
+                this.renderHardSkills(validRelatedSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
             }
-
-            buttonContentDiv.appendChild(skillNameSpan);
-
-            if (childCount > 0) {
-                const hoverCircleImg = document.createElement("img");
-                hoverCircleImg.src = `${imagePath}hovercircle.png`;
-                hoverCircleImg.alt = "circle";
-                hoverCircleImg.style.width = "22px";
-                hoverCircleImg.style.height = "22px";
-                var tooltip = `${childCount} sub categories`;
-                // hoverCircleImg.title = `${childCount} sub categories`;
-                hoverCircleImg.style.marginLeft = "10px";
-                buttonContentDiv.appendChild(hoverCircleImg);
-                manageTooltip(hoverCircleImg,tooltip);
+            else{
+              const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
+              const skills = await this.fetchSkills(childSkillApiEndpoint);
+              const childrenSkills = skills.filter(item => item.name !== "Related Skills");
+              console.log(childrenSkills, "childrenSkills");
+          
+              const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
+              this.renderHardSkills(childrenSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
             }
+        });
 
-            if (ratingsCount > 0) {
-              const searchText = searchByName(skill.name);
-              if (searchText.length > 0) {
+        breadcrumb.appendChild(breadcrumbLink);
+
+        if (index < breadcrumbPath.length - 1) {
+            const separator = document.createElement("img");
+            separator.src = `${imagePath}Group 18.svg`;
+            separator.style.marginRight = "5px";
+            breadcrumb.appendChild(separator);
+        }
+    });
+
+    // Add rating button if the current breadcrumb item has ratings
+    const currentBreadcrumbItem = breadcrumbPath[breadcrumbPath.length - 1];
+    if (currentBreadcrumbItem && currentBreadcrumbItem.ratings && currentBreadcrumbItem.ratings.length > 0) {
+        const rateButton = document.createElement("button");
+        rateButton.className = "ratebutton";
+        rateButton.setAttribute("id",currentBreadcrumbItem.path_addr);
+        rateButton.style.marginLeft = "5px";
+        rateButton.style.paddingTop = "1px";
+        rateButton.style.paddingBottom = "1px";
+        rateButton.style.border = "none";
+        rateButton.style.borderRadius = "5px";
+        rateButton.style.backgroundColor = "#E0DEFF";
+        rateButton.style.cursor = "pointer";
+
+        const rateButtonSpan = document.createElement("span");
+
+        const searchText = searchByName(currentBreadcrumbItem.name);
+
+        if(searchText.length > 0){
+          rateButton.style.backgroundColor = "#E0DEFF";
+          rateButtonSpan.textContent = "Rated";
+          rateButtonSpan.style.color="#1E1E1E";
+          const starIcon = document.createElement("img");
+          starIcon.src = `${imagePath}Group 23.svg`;
+          starIcon.style.marginRight = "5px";
+          starIcon.style.cursor = "pointer";
+          rateButton.appendChild(starIcon);
+        }
+        else{
+          rateButton.style.backgroundColor = "#EFF4FA";
+          rateButtonSpan.textContent = "Rate";
+          rateButtonSpan.style.color = "#636363";
+          const starIcon = document.createElement("i");
+          starIcon.className = "fas fa-star";
+          starIcon.style.marginRight = "5px";
+          starIcon.style.cursor = "pointer";
+          starIcon.style.color = "rgb(204, 204, 255)";
+          rateButton.appendChild(starIcon);
+        }
+        rateButtonSpan.style.fontSize = "16px";
+        
+        rateButton.appendChild(rateButtonSpan);
+
+        rateButton.addEventListener("click", () => {
+            this.changeRateModelElement(currentBreadcrumbItem);
+        });
+
+        breadcrumb.appendChild(rateButton);
+    }
+
+    // Append breadcrumb to accordion
+    softSkillAccordian.appendChild(breadcrumb);
+  }
+
+  // renderHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills = [],skillName) {
+  //     console.log(skillId, "childrenskillid");
+  //     if (!softSkillAccordian) {
+  //         console.error('softSkillAccordian element is not defined.');
+  //         return;
+  //     }
+  //     // Clear existing content in softSkillAccordian before appending new content
+  //     softSkillAccordian.innerHTML = '';
+  
+  //     // Render breadcrumb
+  //     this.renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
+  
+  //     // Create buttons for each skill
+  //     const skillsContainer = document.createElement("div");
+  //     skillsContainer.classList.add("softskillparentaccordian");
+  //     skillsContainer.setAttribute("id", "softskillparentaccordian");
+  //     skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
+  //     skillsContainer.style.textAlign = "left";
+  
+  //     skills.forEach(skill => {
+  //         const skillButton = document.createElement("button");
+  //         skillButton.className = "softskillbutton";
+  //         skillButton.style.border = "2px solid rgb(230, 230, 230)";
+  //         skillButton.style.borderRadius = "10px";
+  //         skillButton.style.margin = "5px";
+  //         skillButton.style.padding = "6px 12px";
+  //         skillButton.style.background = "#FFFFFF";
+  //         skillButton.style.cursor = "pointer";
+  //         skillButton.style.color = "#1E1E1E";
+  //         skillButton.style.fontSize = "16px";
+  //         skillButton.setAttribute("data-mdb-tooltip-init", "");
+  
+  //         const childCount = skill.child_count || 0;
+  //         const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+  //         const description = skill.description;
+
+  //         const buttonContentDiv = document.createElement("div")
+  //         buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
+
+  //         const skillNameSpan = document.createElement("span");
+  //         skillNameSpan.textContent = skill.name;
+  //         if (skill.proxy_skill) {
+  //           manageTooltip(skillNameSpan,skill.proxy_skill.name);
+  //         }
+  //         else if (skill.name.length > 30) {
+  //           skillNameSpan.classList.add("truncate");
+  //           manageTooltip(skillNameSpan,skill.name);
+  //         }
+
+  //         if (description) {
+  //           const descriptionImg = document.createElement("img");
+  //           descriptionImg.src = `${imagePath}Group 27.svg`;
+  //           descriptionImg.alt = "description";
+  //           // descriptionImg.title = description;
+  //           descriptionImg.style.marginRight = "10px";
+  //           buttonContentDiv.appendChild(descriptionImg);
+  //           manageTooltip(descriptionImg,description);
+  //         }
+
+  //         buttonContentDiv.appendChild(skillNameSpan);
+
+  //         if (childCount > 0) {
+  //             const hoverCircleImg = document.createElement("img");
+  //             hoverCircleImg.src = `${imagePath}hovercircle.png`;
+  //             hoverCircleImg.alt = "circle";
+  //             hoverCircleImg.style.width = "22px";
+  //             hoverCircleImg.style.height = "22px";
+  //             var tooltip = `${childCount} sub categories`;
+  //             // hoverCircleImg.title = `${childCount} sub categories`;
+  //             hoverCircleImg.style.marginLeft = "10px";
+  //             buttonContentDiv.appendChild(hoverCircleImg);
+  //             manageTooltip(hoverCircleImg,tooltip);
+  //         }
+
+  //         if (ratingsCount > 0) {
+  //           const searchText = searchByName(skill.name);
+  //           if (searchText.length > 0) {
+  //             const starIcon = document.createElement("img");
+  //             starIcon.src = `${imagePath}Group 23.svg`;
+  //             starIcon.style.marginLeft = "5px";
+  //             starIcon.style.cursor = "pointer";
+  //             starIcon.addEventListener('click', (event) => {
+  //                 event.stopPropagation();
+  //                 this.changeRateModelElement(skill);
+  //             });
+  //             buttonContentDiv.appendChild(starIcon);
+  //             skillButton.style.backgroundColor="#E0DEFF";
+  //           }
+  //           else{
+  //             const starIcon = document.createElement("i");
+  //             starIcon.className = "fas fa-star";
+  //             starIcon.setAttribute("id",skill.path_addr)
+  //             starIcon.style.marginLeft = "5px";
+  //             starIcon.style.cursor = "pointer";
+  //             starIcon.style.color = "#ccccff";
+  //             starIcon.addEventListener('click', (event) => {
+  //                 event.stopPropagation();
+  //                 this.changeRateModelElement(skill);
+  //             });
+  //             buttonContentDiv.appendChild(starIcon);
+  //           }
+  //         }
+
+  //         skillButton.appendChild(buttonContentDiv);
+
+  //         skillButton.addEventListener('click', async () => {
+  //             if (skill.child_count === 0 && skill.ratings.length > 0) {
+  //                 console.log("zeroskill-data", skill);
+  //                 this.changeRateModelElement(skill);
+  //             }else if (skill.name === "Related Skills") {
+  //                 const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+  //                 const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
+  //                 if (relatedSkills.length > 0) {
+  //                   // Filter out skills with child_count equal to 1
+  //                   const validRelatedSkills = relatedSkills.filter(relatedSkill => relatedSkill.child_count !== 1);
+  //                   const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
+  //                   this.renderHardSkills(validRelatedSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills, skillName);
+  //                 }
+  //             }
+  //             else {
+  //               const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
+  //               const childSkills = await this.fetchSkills(childSkillApiEndpoint);
+  //               const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
+  //               this.renderHardSkills(childSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
+  //             }
+  //         });
+  
+  //         skillsContainer.appendChild(skillButton);
+  //     });
+  //     softSkillAccordian.appendChild(skillsContainer);
+  // }
+
+  renderHardSkills(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills = [], skillName) {
+    console.log(skills);
+    console.log(skillId, "childrenskillid");
+    if (!softSkillAccordian) {
+        console.error('softSkillAccordian element is not defined.');
+        return;
+    }
+    // Clear existing content in softSkillAccordian before appending new content
+    softSkillAccordian.innerHTML = '';
+
+    // Render breadcrumb
+    this.renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills, skillName);
+
+    // Create buttons for each skill
+    const skillsContainer = document.createElement("div");
+    skillsContainer.classList.add("softskillparentaccordian");
+    skillsContainer.setAttribute("id", "softskillparentaccordian");
+    skillsContainer.setAttribute("data-mdb-target", "#soft-parent-skills");
+    skillsContainer.style.textAlign = "left";
+
+    skills.forEach(skill => {
+      // if(skill.child_count >0 || skill.ratings.length >0){
+        const skillButton = document.createElement("button");
+        skillButton.className = "softskillbutton";
+        skillButton.style.border = "1px solid #4f4f4f";
+        skillButton.style.borderRadius = "10px";
+        skillButton.style.margin = "5px";
+        skillButton.style.padding = "6px 12px";
+        skillButton.style.background = "#FFFFFF";
+        skillButton.style.cursor = "pointer";
+        skillButton.style.color = "#4f4f4f";
+        skillButton.style.fontWeight="500";
+        skillButton.style.fontSize = "16px";
+        skillButton.setAttribute("data-mdb-tooltip-init", "");
+
+        const childCount = skill.child_count || 0;
+        const ratingsCount = skill.ratings ? skill.ratings.length : 0;
+        const description = skill.description;
+
+        const buttonContentDiv = document.createElement("div");
+        buttonContentDiv.style = "display:flex; align-items:center; justify-content:center;";
+
+        const skillNameSpan = document.createElement("span");
+        skillNameSpan.textContent = skill.name;
+        if (skill.proxy_skill) {
+            manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        } else if (skill.name.length > 30) {
+            skillNameSpan.classList.add("truncate");
+            manageTooltip(skillNameSpan, skill.name);
+        }
+
+        if (description) {
+            const descriptionImg = document.createElement("img");
+            descriptionImg.src = `${imagePath}Group 27.svg`;
+            descriptionImg.alt = "description";
+            descriptionImg.style.marginRight = "10px";
+            buttonContentDiv.appendChild(descriptionImg);
+            manageTooltip(descriptionImg, description);
+        }
+
+        buttonContentDiv.appendChild(skillNameSpan);
+        if (childCount > 0) {
+            const hoverCircleImg = document.createElement("img");
+            hoverCircleImg.src = `${imagePath}hovercircle.png`;
+            hoverCircleImg.alt = "circle";
+            hoverCircleImg.style.width = "22px";
+            hoverCircleImg.style.height = "22px";
+            const tooltip = `${childCount} sub categories`;
+            hoverCircleImg.style.marginLeft = "10px";
+            buttonContentDiv.appendChild(hoverCircleImg);
+            manageTooltip(hoverCircleImg, tooltip);
+        }
+
+        if (ratingsCount > 0) {
+            const searchText = searchByName(skill.name);
+            if (searchText.length > 0) {
                 const starIcon = document.createElement("img");
                 starIcon.src = `${imagePath}Group 23.svg`;
                 starIcon.style.marginLeft = "5px";
@@ -6542,12 +6773,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     this.changeRateModelElement(skill);
                 });
                 buttonContentDiv.appendChild(starIcon);
-                skillButton.style.backgroundColor="#E0DEFF";
-              }
-              else{
+                skillButton.style.backgroundColor = "#E0DEFF";
+            } else {
                 const starIcon = document.createElement("i");
                 starIcon.className = "fas fa-star";
-                starIcon.setAttribute("id",skill.path_addr)
+                starIcon.setAttribute("id", skill.path_addr);
                 starIcon.style.marginLeft = "5px";
                 starIcon.style.cursor = "pointer";
                 starIcon.style.color = "#ccccff";
@@ -6556,27 +6786,45 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     this.changeRateModelElement(skill);
                 });
                 buttonContentDiv.appendChild(starIcon);
-              }
             }
+        }
 
-            skillButton.appendChild(buttonContentDiv);
+        skillButton.appendChild(buttonContentDiv);
 
-            skillButton.addEventListener('click', async () => {
-                if (skill.child_count === 0) {
-                    console.log("zeroskill-data", skill);
-                    this.changeRateModelElement(skill);
-                } else {
+        skillButton.addEventListener('click', async () => {
+            if (skill.child_count === 0 && skill.ratings.length > 0) {
+                console.log("zeroskill-data", skill);
+                this.changeRateModelElement(skill);
+            } else if (skill.name === "Related Skills") {
+                const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+                const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
+                relatedSkills.forEach(skill => {
+                  if (skill.child_count === 1 && skill.ratings.length >0) {
+                    skill.child_count = 0;
+                  }
+                });
+                if (relatedSkills.length > 0) {
+                    // Filter out skills with child_count equal to 1
+                    const validRelatedSkills = relatedSkills.filter(relatedSkill => relatedSkill.child_count !== 1);
+                    const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
+                    this.renderHardSkills(validRelatedSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills, skillName);
+                }
+            } else {
+                if (skill.child_count > 0 && skill.name !== "Related Skills") {
                     const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
                     const childSkills = await this.fetchSkills(childSkillApiEndpoint);
+                    const validChildSkills = childSkills.filter(skill => skill.name !== "Related Skills");
                     const newBreadcrumbPath = [...breadcrumbPath, { name: skill.name, path_addr: skill.path_addr, ratings: skill.ratings }];
-                    this.renderHardSkills(childSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
+                    this.renderHardSkills(validChildSkills, newBreadcrumbPath, softSkillAccordian, skillId, parentskills, skillName);
                 }
-            });
-    
-            skillsContainer.appendChild(skillButton);
+            }
         });
-        softSkillAccordian.appendChild(skillsContainer);
-    }
+
+        skillsContainer.appendChild(skillButton);
+      // }
+    });
+    softSkillAccordian.appendChild(skillsContainer);
+  }
 
 }
 
