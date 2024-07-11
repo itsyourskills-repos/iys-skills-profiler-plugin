@@ -330,3 +330,7 @@ div#mySkillPluginSerachId {
   padding: 6px 8px !important;
   color: #fff;
 }
+.active-skill-button {
+  background-color: rgb(216, 247, 245) !important;
+  border: 1px solid rgb(120, 248, 240) !important;
+}
