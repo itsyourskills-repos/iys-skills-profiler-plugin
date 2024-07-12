@@ -1783,9 +1783,13 @@ class IysSearchPlugin {
     }
   }
 
+  escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  }
+
   searchHighlight(searched, text) {
     if (searched !== "") {
-      const searchTerms = searched.split(" ");
+      const searchTerms = searched.split(" ").map(term => this.escapeRegExp(term));
       const newText = text.replace(
         new RegExp(searchTerms.join("|"), "gi"),
         (match) => `<b>${match}</b>`
@@ -1812,10 +1816,10 @@ class IysSearchPlugin {
 
     div.innerHTML = ""; // Clear previous content
     div.appendChild(loader);
-
+    const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
     if (isLoginUser && this.searchValue.length > 0) {
       fetch(
-        `https://api.myskillsplus.com/api-search/?q=${this.searchValue.trim()}`,
+        `https://api.myskillsplus.com/api-search/?q=${encodedSearchValue}`,
         {
           method: "GET",
           headers: {
@@ -1843,7 +1847,7 @@ class IysSearchPlugin {
           // div.removeChild(loader);
         });
     } else if (this.searchValue.trim().length > 0) {
-      fetch(`${ENDPOINT_URL}?q=${this.searchValue.trim()}&limit=10`)
+      fetch(`${ENDPOINT_URL}?q=${encodedSearchValue}&limit=10`)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
