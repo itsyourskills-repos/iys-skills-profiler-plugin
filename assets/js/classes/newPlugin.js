@@ -2944,7 +2944,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     function createSkillTabButton(id, dataTarget, iconClass, labelText,tooltipText) {
       var buttonContainer = document.createElement("div");
-      buttonContainer.className = "button-container";
+      buttonContainer.className = "button-container responsive-button-container";
       // buttonContainer.style.position = "relative";
       var button = document.createElement("button");
       // button.setAttribute("data-mdb-tab-init", "");
@@ -2953,7 +2953,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       button.style.borderRadius="10px";
       button.style.display="flex";
       button.style.alignItems="center";
-      button.className = id+" btn nav-link";
+      button.className = id+" btn nav-link responsive-button";
       button.style.paddingTop="2.5rem";
       button.style.paddingBottom="2.5rem";
       button.style.paddingLeft="1.5rem";
@@ -2977,6 +2977,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       iconElement.style.padding="4px"
       iconElement.style.height="37px";
       iconElement.style.width="30px";
+      iconElement.className = "responsive-icon-element";
 
       if (id == "hard-skills") {
         button.style.backgroundColor="#F4F3FF";
@@ -4347,51 +4348,104 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const options = sliderObj.rating_scale_label;
         spanSliderInnerDiv.id = `spanElementForStar-${sliderObj._id}`;
         if (options.length === 2) {
-          // Creating radio buttons
-          options.forEach((option, index) => {
-            let checkboxContainer = document.createElement("div");
-            checkboxContainer.className = "checkbox-container";
-            checkboxContainer.style.display = "flex";
-            checkboxContainer.style.alignItems = "center";
-            checkboxContainer.style.marginRight = "10px";
-            let checkboxInput = document.createElement("input");
-            checkboxInput.type = "checkbox";
-            checkboxInput.style = "width:1.1rem;height:1.1rem;";
-            checkboxInput.name = `${sliderObj._id}`;
-            checkboxInput.value = index + 1;
-            checkboxInput.id = `rating-${sliderObj._id}-${index + 1}`;
-            checkboxInput.className = "checkbox-input";
-            let checkboxLabel = document.createElement("label");
-            checkboxLabel.htmlFor = `${sliderObj._id}`;
-            checkboxLabel.textContent = option;
-            checkboxLabel.className = "checkbox-label";
-            checkboxLabel.style.marginLeft = "5px";
-            checkboxContainer.appendChild(checkboxInput);
-            checkboxContainer.appendChild(checkboxLabel);
-            spanSliderInnerDiv.appendChild(checkboxContainer);
-        
-            if (objExist) {
-                // check if the rating already exists
-                objExist.rating.forEach((obj) => {
-                    if (obj.isot_rating_id === sliderObj._id) {
-                        if (obj.rating === index + 1) {
-                            checkboxInput.checked = true;
-                        }
-                    }
-                });
-            }
-            //To select the one checkbox at the time
-            checkboxInput.addEventListener("change", () => {
-              if (checkboxInput.checked) {
-                  const checkboxes = document.getElementsByName(`${sliderObj._id}`);
-                  checkboxes.forEach((checkbox) => {
-                      if (checkbox !== checkboxInput) {
-                          checkbox.checked = false;
+          if(ratingOptions.length==1 && sliderObj.rating_scale_type === "Two Choice Rating"){
+            options.forEach((option, index) => {
+              if (option === "Yes") { // Only create checkbox for "Yes"
+                  let checkboxContainer = document.createElement("div");
+                  checkboxContainer.className = "checkbox-container";
+                  checkboxContainer.style.display = "flex";
+                  checkboxContainer.style.alignItems = "center";
+                  checkboxContainer.style.marginRight = "10px";
+                  
+                  let checkboxInput = document.createElement("input");
+                  checkboxInput.type = "checkbox";
+                  checkboxInput.style.width = "1.1rem";
+                  checkboxInput.style.height = "1.1rem";
+                  checkboxInput.name = `${sliderObj._id}`;
+                  checkboxInput.value = index + 1;
+                  checkboxInput.id = `rating-${sliderObj._id}-${index + 1}`;
+                  checkboxInput.className = "checkbox-input";
+                  
+                  let checkboxLabel = document.createElement("label");
+                  checkboxLabel.htmlFor = checkboxInput.id;
+                  checkboxLabel.textContent = option;
+                  checkboxLabel.className = "checkbox-label";
+                  checkboxLabel.style.marginLeft = "5px";
+                  
+                  // Append checkbox and label to container
+                  checkboxContainer.appendChild(checkboxInput);
+                  checkboxContainer.appendChild(checkboxLabel);
+                  spanSliderInnerDiv.appendChild(checkboxContainer);
+                  
+                  // Check if rating exists and mark checkbox as checked if necessary
+                  if (objExist) {
+                      objExist.rating.forEach((obj) => {
+                          if (obj.isot_rating_id === sliderObj._id && obj.rating === index + 1) {
+                              checkboxInput.checked = true;
+                          }
+                      });
+                  }
+                  
+                  // Add event listener to ensure only one checkbox is checked at a time
+                  checkboxInput.addEventListener("change", () => {
+                      if (checkboxInput.checked) {
+                          const checkboxes = document.getElementsByName(`${sliderObj._id}`);
+                          checkboxes.forEach((checkbox) => {
+                              if (checkbox !== checkboxInput) {
+                                  checkbox.checked = false;
+                              }
+                          });
                       }
                   });
               }
             });
-          });        
+          }
+          else{
+            options.forEach((option, index) => {
+              let checkboxContainer = document.createElement("div");
+              checkboxContainer.className = "checkbox-container";
+              checkboxContainer.style.display = "flex";
+              checkboxContainer.style.alignItems = "center";
+              checkboxContainer.style.marginRight = "10px";
+              let checkboxInput = document.createElement("input");
+              checkboxInput.type = "checkbox";
+              checkboxInput.style = "width:1.1rem;height:1.1rem;";
+              checkboxInput.name = `${sliderObj._id}`;
+              checkboxInput.value = index + 1;
+              checkboxInput.id = `rating-${sliderObj._id}-${index + 1}`;
+              checkboxInput.className = "checkbox-input";
+              let checkboxLabel = document.createElement("label");
+              checkboxLabel.htmlFor = `${sliderObj._id}`;
+              checkboxLabel.textContent = option;
+              checkboxLabel.className = "checkbox-label";
+              checkboxLabel.style.marginLeft = "5px";
+              checkboxContainer.appendChild(checkboxInput);
+              checkboxContainer.appendChild(checkboxLabel);
+              spanSliderInnerDiv.appendChild(checkboxContainer);
+          
+              if (objExist) {
+                  // check if the rating already exists
+                  objExist.rating.forEach((obj) => {
+                      if (obj.isot_rating_id === sliderObj._id) {
+                          if (obj.rating === index + 1) {
+                              checkboxInput.checked = true;
+                          }
+                      }
+                  });
+              }
+              //To select the one checkbox at the time
+              checkboxInput.addEventListener("change", () => {
+                if (checkboxInput.checked) {
+                    const checkboxes = document.getElementsByName(`${sliderObj._id}`);
+                    checkboxes.forEach((checkbox) => {
+                        if (checkbox !== checkboxInput) {
+                            checkbox.checked = false;
+                        }
+                    });
+                }
+              });
+            });   
+          }
         } else {
           // Creating a slider
           if (!options.includes("Not Rated")) {
@@ -4459,7 +4513,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         ".noUi-connect { background-color: #007DFC; }";
       document.head.appendChild(sliderStyleConnect);
       const sliderHandleConnects = htmlElement.querySelector(".noUi-connects");
-      sliderHandleConnects.style.borderRadius = "10px";
+      if (sliderHandleConnects) {
+          sliderHandleConnects.style.borderRadius = "10px";
+      }
       // slider hright
       var nouiHorizontalSliderHeight = document.createElement("style");
       nouiHorizontalSliderHeight.innerHTML =
@@ -4479,11 +4535,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         ".noUi-horizontal .noUi-handle { height: 22px !important; width: 22px; border-radius: 50%; background-color: #007DFC;border :5px solid white;box-shadow:none;}";
       document.head.appendChild(sliderStyleHorizontalAndHandle);
       const sliderHandle = htmlElement.querySelector(".noUi-handle-lower");
-      sliderHandle.style.background = "#007DFC";
-      sliderHandle.style.border = "5px solid white";
-      sliderHandle.style.borderRadius = "50%";
-      sliderHandle.style.content = "none";
-      var nouiHorizontalSliderHeight = document.createElement("style");
+      if (sliderHandle) {
+        sliderHandle.style.background = "#007DFC";
+        sliderHandle.style.border = "5px solid white";
+        sliderHandle.style.borderRadius = "50%";
+        sliderHandle.style.content = "none";
+        var nouiHorizontalSliderHeight = document.createElement("style");
+      }
 
       // Rest of your code...
     }
@@ -5078,7 +5136,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image0.style.height = '30px';
           image0.style.margin = 'auto';
           image0.style.display = 'block';
-          if(iysplugin.doughnt){
+          if(iysplugin.doughnt && tagsString != "Certifications"){
             skillContainer.appendChild(image0);
           }
         }
@@ -5089,7 +5147,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image25.style.height = '30px';
           image25.style.margin = 'auto';
           image25.style.display = 'block';
-          if(iysplugin.doughnt){
+          if(iysplugin.doughnt && tagsString != "Certifications"){
             skillContainer.appendChild(image25);
           }
         }
@@ -5100,7 +5158,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image50.style.height = '30px';
             image50.style.margin = 'auto';
             image50.style.display = 'block';
-            if(iysplugin.doughnt){
+            if(iysplugin.doughnt && tagsString != "Certifications"){
               skillContainer.appendChild(image50);
             }
         }
@@ -5111,7 +5169,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image75.style.height = '30px';
             image75.style.margin = 'auto';
             image75.style.display = 'block';
-            if(iysplugin.doughnt){
+            if(iysplugin.doughnt && tagsString != "Certifications"){
               skillContainer.appendChild(image75);
             }
         }
@@ -5122,7 +5180,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image100.style.height = '30px';
             image100.style.margin = 'auto';
             image100.style.display = 'block';
-            if(iysplugin.doughnt){
+            if(iysplugin.doughnt && tagsString != "Certifications"){
               skillContainer.appendChild(image100);
             }
         }
@@ -5409,10 +5467,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         if (skill.rating[0].rating) {
-          if(iysplugin.experience){
+          if(iysplugin.experience && tagsString!="Certifications"){
             skillDetails.appendChild(experienceDetails);
           }
-          if(iysplugin.doughnt){
+          if(iysplugin.doughnt && tagsString!="Certifications"){
             skillDetails.appendChild(ratingDetails);
           }
         }

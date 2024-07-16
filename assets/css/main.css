@@ -334,3 +334,49 @@ div#mySkillPluginSerachId {
   background-color: rgb(216, 247, 245) !important;
   border: 1px solid rgb(120, 248, 240) !important;
 }
+
+button.responsive-button {
+  width: 180px;
+  height: 70px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1rem;
+  box-shadow: none;
+  color: #1E1E1E;
+  font: normal normal 600 16px/46px Segoe UI;
+  letter-spacing: 0.5px;
+}
+
+button.responsive-icon-div {
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+}
+
+img.responsive-icon-element {
+  padding: 4px;
+  height: 37px;
+  width: 30px;
+}
+
+@media (max-width: 768px) {
+  .button-container.responsive-button-container {
+    width: 100%;
+    margin-left: 0px !important;
+  }
+
+  button.responsive-button {
+    width: 160px !important;
+    height: 70px !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    padding-left: 1rem !important;
+    padding-right: 0.1rem !important; 
+  }
+}
