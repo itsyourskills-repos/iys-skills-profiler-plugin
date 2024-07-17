@@ -342,7 +342,9 @@ function sumRatings(data) {
 
 // display all the elements count
 function createSelectedSkillsCount() {
+  console.log("entered");
   const htmlElementCount = sortRatingByLocalStorage();
+  console.log(htmlElementCount);
   const sumofAllRatings = sumRatings(htmlElementCount);
   var elementCountLabel = document.querySelector(".elementCountLabel");
   // elementCountLabel.style.width = "fit-content";
@@ -2944,7 +2946,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     function createSkillTabButton(id, dataTarget, iconClass, labelText,tooltipText) {
       var buttonContainer = document.createElement("div");
-      buttonContainer.className = "button-container";
+      buttonContainer.className = "button-container responsive-button-container";
       // buttonContainer.style.position = "relative";
       var button = document.createElement("button");
       // button.setAttribute("data-mdb-tab-init", "");
@@ -2953,7 +2955,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       button.style.borderRadius="10px";
       button.style.display="flex";
       button.style.alignItems="center";
-      button.className = id+" btn nav-link";
+      button.className = id+" btn nav-link responsive-button";
       button.style.paddingTop="2.5rem";
       button.style.paddingBottom="2.5rem";
       button.style.paddingLeft="1.5rem";
@@ -2977,6 +2979,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       iconElement.style.padding="4px"
       iconElement.style.height="37px";
       iconElement.style.width="30px";
+      iconElement.className = "responsive-icon-element";
 
       if (id == "hard-skills") {
         button.style.backgroundColor="#F4F3FF";
@@ -3753,24 +3756,46 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               );
               this.updateProfileData();
               await getListFromLoggedInUser("notLoadded");
-              myrate();
-              if (skillDetail?.path_addr) {
-                const elements = document.getElementsByClassName(
-                  skillDetail?.path_addr
-                );
-                console.log(elements, "ratedBtn");
-                for (const element of elements) {
-                  element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-                  element.classList.add(
-                    skillDetail?.path_addr,
-                    "selected-skills"
-                  );
-                }
+              createSelectedSkillsCount();
+              const buttonName = `${skillDetail.path_addr}button`;
+              const divName = `${skillDetail.path_addr}div`;
+              const skillButton = document.getElementById(buttonName);
+              const buttonContentDiv = document.getElementById(divName);
+              
+              // Remove existing star icon if any
+              const existingStarIcon = buttonContentDiv.querySelector('img[src*="Group 23.svg"], i.fas.fa-star');
+              if (existingStarIcon) {
+                buttonContentDiv.removeChild(existingStarIcon);
               }
+              // Add new star icon
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.style.marginLeft = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.changeRateModelElement(skillDetail);
+              });
+
+              skillButton.style.backgroundColor = "#E0DEFF";
+              buttonContentDiv.appendChild(starIcon);
+              displaySelctedSkills();
+              // myrate();
+              // if (skillDetail?.path_addr) {
+              //   const elements = document.getElementsByClassName(
+              //     skillDetail?.path_addr
+              //   );
+              //   console.log(elements, "ratedBtn");
+              //   for (const element of elements) {
+              //     element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+              //     element.classList.add(
+              //       skillDetail?.path_addr,
+              //       "selected-skills"
+              //     );
+              //   }
+              // }
               saveButtonElement.removeChild(loader);
               saveButtonElement.innerHTML = previousContent;
-
-              displaySelctedSkills();
               // this.ratedSkillEvent(skillDetail);
             } else {
               // Handle errors
@@ -3827,20 +3852,30 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
           this.updateProfileData();
-          myrate();
-          // document.getElementById(parentSkillDetailId).innerHTML = "";
-          // document.getElementById("parent-" + parentSkillDetailId).click();
-          if (skillDetail?.path_addr) {
-            const elements = document.getElementsByClassName(
-              skillDetail?.path_addr
-            );
-            console.log(elements, "ratedBtn");
-            for (const element of elements) {
-              element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-              element.classList.add(skillDetail?.path_addr, "selected-skills");
-            }
-          }
           createSelectedSkillsCount();
+          // myrate();
+          const buttonName = `${skillDetail.path_addr}button`;
+          const divName = `${skillDetail.path_addr}div`;
+          const skillButton = document.getElementById(buttonName);
+          const buttonContentDiv = document.getElementById(divName);
+          
+          // Remove existing star icon if any
+          const existingStarIcon = buttonContentDiv.querySelector('img[src*="Group 23.svg"], i.fas.fa-star');
+          if (existingStarIcon) {
+            buttonContentDiv.removeChild(existingStarIcon);
+          }
+          // Add new star icon
+          const starIcon = document.createElement("img");
+          starIcon.src = `${imagePath}Group 23.svg`;
+          starIcon.style.marginLeft = "5px";
+          starIcon.style.cursor = "pointer";
+          starIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            this.changeRateModelElement(skillDetail);
+          });
+
+          skillButton.style.backgroundColor = "#E0DEFF";
+          buttonContentDiv.appendChild(starIcon);
           displaySelctedSkills();
         })
         .catch((err) => {
@@ -3938,7 +3973,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       objExist
     );
     button.removeEventListener("click", this.saveTheSkillComment);
-
+    // const searchText = searchByName(skill.name);
+    // if (searchText.length > 0) {
+    // }
     button.addEventListener("click", (event) => {
       modalEl.hide();
       // updating view
@@ -4347,51 +4384,104 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const options = sliderObj.rating_scale_label;
         spanSliderInnerDiv.id = `spanElementForStar-${sliderObj._id}`;
         if (options.length === 2) {
-          // Creating radio buttons
-          options.forEach((option, index) => {
-            let checkboxContainer = document.createElement("div");
-            checkboxContainer.className = "checkbox-container";
-            checkboxContainer.style.display = "flex";
-            checkboxContainer.style.alignItems = "center";
-            checkboxContainer.style.marginRight = "10px";
-            let checkboxInput = document.createElement("input");
-            checkboxInput.type = "checkbox";
-            checkboxInput.style = "width:1.1rem;height:1.1rem;";
-            checkboxInput.name = `${sliderObj._id}`;
-            checkboxInput.value = index + 1;
-            checkboxInput.id = `rating-${sliderObj._id}-${index + 1}`;
-            checkboxInput.className = "checkbox-input";
-            let checkboxLabel = document.createElement("label");
-            checkboxLabel.htmlFor = `${sliderObj._id}`;
-            checkboxLabel.textContent = option;
-            checkboxLabel.className = "checkbox-label";
-            checkboxLabel.style.marginLeft = "5px";
-            checkboxContainer.appendChild(checkboxInput);
-            checkboxContainer.appendChild(checkboxLabel);
-            spanSliderInnerDiv.appendChild(checkboxContainer);
-        
-            if (objExist) {
-                // check if the rating already exists
-                objExist.rating.forEach((obj) => {
-                    if (obj.isot_rating_id === sliderObj._id) {
-                        if (obj.rating === index + 1) {
-                            checkboxInput.checked = true;
-                        }
-                    }
-                });
-            }
-            //To select the one checkbox at the time
-            checkboxInput.addEventListener("change", () => {
-              if (checkboxInput.checked) {
-                  const checkboxes = document.getElementsByName(`${sliderObj._id}`);
-                  checkboxes.forEach((checkbox) => {
-                      if (checkbox !== checkboxInput) {
-                          checkbox.checked = false;
+          if(ratingOptions.length==1 && sliderObj.rating_scale_type === "Two Choice Rating"){
+            options.forEach((option, index) => {
+              if (option === "Yes") { // Only create checkbox for "Yes"
+                  let checkboxContainer = document.createElement("div");
+                  checkboxContainer.className = "checkbox-container";
+                  checkboxContainer.style.display = "flex";
+                  checkboxContainer.style.alignItems = "center";
+                  checkboxContainer.style.marginRight = "10px";
+                  
+                  let checkboxInput = document.createElement("input");
+                  checkboxInput.type = "checkbox";
+                  checkboxInput.style.width = "1.1rem";
+                  checkboxInput.style.height = "1.1rem";
+                  checkboxInput.name = `${sliderObj._id}`;
+                  checkboxInput.value = index + 1;
+                  checkboxInput.id = `rating-${sliderObj._id}-${index + 1}`;
+                  checkboxInput.className = "checkbox-input";
+                  
+                  let checkboxLabel = document.createElement("label");
+                  checkboxLabel.htmlFor = checkboxInput.id;
+                  checkboxLabel.textContent = option;
+                  checkboxLabel.className = "checkbox-label";
+                  checkboxLabel.style.marginLeft = "5px";
+                  
+                  // Append checkbox and label to container
+                  checkboxContainer.appendChild(checkboxInput);
+                  checkboxContainer.appendChild(checkboxLabel);
+                  spanSliderInnerDiv.appendChild(checkboxContainer);
+                  
+                  // Check if rating exists and mark checkbox as checked if necessary
+                  if (objExist) {
+                      objExist.rating.forEach((obj) => {
+                          if (obj.isot_rating_id === sliderObj._id && obj.rating === index + 1) {
+                              checkboxInput.checked = true;
+                          }
+                      });
+                  }
+                  
+                  // Add event listener to ensure only one checkbox is checked at a time
+                  checkboxInput.addEventListener("change", () => {
+                      if (checkboxInput.checked) {
+                          const checkboxes = document.getElementsByName(`${sliderObj._id}`);
+                          checkboxes.forEach((checkbox) => {
+                              if (checkbox !== checkboxInput) {
+                                  checkbox.checked = false;
+                              }
+                          });
                       }
                   });
               }
             });
-          });        
+          }
+          else{
+            options.forEach((option, index) => {
+              let checkboxContainer = document.createElement("div");
+              checkboxContainer.className = "checkbox-container";
+              checkboxContainer.style.display = "flex";
+              checkboxContainer.style.alignItems = "center";
+              checkboxContainer.style.marginRight = "10px";
+              let checkboxInput = document.createElement("input");
+              checkboxInput.type = "checkbox";
+              checkboxInput.style = "width:1.1rem;height:1.1rem;";
+              checkboxInput.name = `${sliderObj._id}`;
+              checkboxInput.value = index + 1;
+              checkboxInput.id = `rating-${sliderObj._id}-${index + 1}`;
+              checkboxInput.className = "checkbox-input";
+              let checkboxLabel = document.createElement("label");
+              checkboxLabel.htmlFor = `${sliderObj._id}`;
+              checkboxLabel.textContent = option;
+              checkboxLabel.className = "checkbox-label";
+              checkboxLabel.style.marginLeft = "5px";
+              checkboxContainer.appendChild(checkboxInput);
+              checkboxContainer.appendChild(checkboxLabel);
+              spanSliderInnerDiv.appendChild(checkboxContainer);
+          
+              if (objExist) {
+                  // check if the rating already exists
+                  objExist.rating.forEach((obj) => {
+                      if (obj.isot_rating_id === sliderObj._id) {
+                          if (obj.rating === index + 1) {
+                              checkboxInput.checked = true;
+                          }
+                      }
+                  });
+              }
+              //To select the one checkbox at the time
+              checkboxInput.addEventListener("change", () => {
+                if (checkboxInput.checked) {
+                    const checkboxes = document.getElementsByName(`${sliderObj._id}`);
+                    checkboxes.forEach((checkbox) => {
+                        if (checkbox !== checkboxInput) {
+                            checkbox.checked = false;
+                        }
+                    });
+                }
+              });
+            });   
+          }
         } else {
           // Creating a slider
           if (!options.includes("Not Rated")) {
@@ -4459,7 +4549,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         ".noUi-connect { background-color: #007DFC; }";
       document.head.appendChild(sliderStyleConnect);
       const sliderHandleConnects = htmlElement.querySelector(".noUi-connects");
-      sliderHandleConnects.style.borderRadius = "10px";
+      if (sliderHandleConnects) {
+          sliderHandleConnects.style.borderRadius = "10px";
+      }
       // slider hright
       var nouiHorizontalSliderHeight = document.createElement("style");
       nouiHorizontalSliderHeight.innerHTML =
@@ -4479,11 +4571,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         ".noUi-horizontal .noUi-handle { height: 22px !important; width: 22px; border-radius: 50%; background-color: #007DFC;border :5px solid white;box-shadow:none;}";
       document.head.appendChild(sliderStyleHorizontalAndHandle);
       const sliderHandle = htmlElement.querySelector(".noUi-handle-lower");
-      sliderHandle.style.background = "#007DFC";
-      sliderHandle.style.border = "5px solid white";
-      sliderHandle.style.borderRadius = "50%";
-      sliderHandle.style.content = "none";
-      var nouiHorizontalSliderHeight = document.createElement("style");
+      if (sliderHandle) {
+        sliderHandle.style.background = "#007DFC";
+        sliderHandle.style.border = "5px solid white";
+        sliderHandle.style.borderRadius = "50%";
+        sliderHandle.style.content = "none";
+        var nouiHorizontalSliderHeight = document.createElement("style");
+      }
 
       // Rest of your code...
     }
@@ -4779,7 +4873,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     cardTitleH4.style="display: flex; margin-top: 10px; margin-bottom: 20px;";
     const skillButton = document.createElement("button");
     skillButton.className = "softskillbutton";
-    skillButton.setAttribute("id","softskillbutton");
+    skillButton.setAttribute("id",skillDetail.skills[0].path_addr+"button");
     skillButton.style.border = "1px solid #4f4f4f";
     skillButton.style.borderRadius = "10px";
     skillButton.style.margin = "5px";
@@ -4791,6 +4885,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillButton.style.fontSize = "16px";
     skillButton.setAttribute("data-mdb-tooltip-init", "");
     const buttonContentDiv = document.createElement("div")
+    buttonContentDiv.setAttribute("id",skillDetail.skills[0].path_addr+"div");
     buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
     const skillNameSpan = document.createElement("span");
     skillNameSpan.textContent = skillDetail.skills[0].name;
@@ -5078,7 +5173,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image0.style.height = '30px';
           image0.style.margin = 'auto';
           image0.style.display = 'block';
-          if(iysplugin.doughnt){
+          if(iysplugin.doughnt && tagsString != "Certifications"){
             skillContainer.appendChild(image0);
           }
         }
@@ -5089,7 +5184,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image25.style.height = '30px';
           image25.style.margin = 'auto';
           image25.style.display = 'block';
-          if(iysplugin.doughnt){
+          if(iysplugin.doughnt && tagsString != "Certifications"){
             skillContainer.appendChild(image25);
           }
         }
@@ -5100,7 +5195,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image50.style.height = '30px';
             image50.style.margin = 'auto';
             image50.style.display = 'block';
-            if(iysplugin.doughnt){
+            if(iysplugin.doughnt && tagsString != "Certifications"){
               skillContainer.appendChild(image50);
             }
         }
@@ -5111,7 +5206,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image75.style.height = '30px';
             image75.style.margin = 'auto';
             image75.style.display = 'block';
-            if(iysplugin.doughnt){
+            if(iysplugin.doughnt && tagsString != "Certifications"){
               skillContainer.appendChild(image75);
             }
         }
@@ -5122,7 +5217,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             image100.style.height = '30px';
             image100.style.margin = 'auto';
             image100.style.display = 'block';
-            if(iysplugin.doughnt){
+            if(iysplugin.doughnt && tagsString != "Certifications"){
               skillContainer.appendChild(image100);
             }
         }
@@ -5409,10 +5504,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         if (skill.rating[0].rating) {
-          if(iysplugin.experience){
+          if(iysplugin.experience && tagsString!="Certifications"){
             skillDetails.appendChild(experienceDetails);
           }
-          if(iysplugin.doughnt){
+          if(iysplugin.doughnt && tagsString!="Certifications"){
             skillDetails.appendChild(ratingDetails);
           }
         }
@@ -5918,7 +6013,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skills.forEach(skill => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
-        skillButton.setAttribute("id","softskillbutton");
+        skillButton.setAttribute("id",skill.path_addr+"button");
         skillButton.style.border = "1px solid #4f4f4f";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
@@ -5935,6 +6030,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div")
+        buttonContentDiv.setAttribute("id",skill.path_addr+"div");
         buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
         const skillNameSpan = document.createElement("span");
@@ -6258,6 +6354,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skills.forEach(skill => {
           const skillButton = document.createElement("button");
           skillButton.className = "softskillbutton";
+          skillButton.setAttribute("id",skill.path_addr+"button");
           skillButton.style.border = "1px solid #4f4f4f";
           skillButton.style.borderRadius = "10px";
           skillButton.style.margin = "5px";
@@ -6273,6 +6370,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           const ratingsCount = skill.ratings ? skill.ratings.length : 0;
           const description = skill.description;
           const buttonContentDiv = document.createElement("div")
+          buttonContentDiv.setAttribute("id",skill.path_addr+"div");
           buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
           const skillNameSpan = document.createElement("span");
@@ -6516,6 +6614,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       // if(skill.child_count >0 || skill.ratings.length >0){
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
+        skillButton.setAttribute("id",skill.path_addr+"button");
         skillButton.style.border = "1px solid #4f4f4f";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
@@ -6532,6 +6631,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div");
+        buttonContentDiv.setAttribute("id",skill.path_addr+"div");
         buttonContentDiv.style = "display:flex; align-items:center; justify-content:center;";
 
         const skillNameSpan = document.createElement("span");
@@ -6653,6 +6753,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skills.forEach(skill => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
+        skillButton.setAttribute("id",skill.path_addr+"button");
         skillButton.style.border = "1px solid #4f4f4f";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
@@ -6669,6 +6770,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div")
+        buttonContentDiv.setAttribute("id",skill.path_addr+"div");
         buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
         const skillNameSpan = document.createElement("span");
