@@ -342,7 +342,9 @@ function sumRatings(data) {
 
 // display all the elements count
 function createSelectedSkillsCount() {
+  console.log("entered");
   const htmlElementCount = sortRatingByLocalStorage();
+  console.log(htmlElementCount);
   const sumofAllRatings = sumRatings(htmlElementCount);
   var elementCountLabel = document.querySelector(".elementCountLabel");
   // elementCountLabel.style.width = "fit-content";
@@ -3754,24 +3756,46 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               );
               this.updateProfileData();
               await getListFromLoggedInUser("notLoadded");
-              myrate();
-              if (skillDetail?.path_addr) {
-                const elements = document.getElementsByClassName(
-                  skillDetail?.path_addr
-                );
-                console.log(elements, "ratedBtn");
-                for (const element of elements) {
-                  element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-                  element.classList.add(
-                    skillDetail?.path_addr,
-                    "selected-skills"
-                  );
-                }
+              createSelectedSkillsCount();
+              const buttonName = `${skillDetail.path_addr}button`;
+              const divName = `${skillDetail.path_addr}div`;
+              const skillButton = document.getElementById(buttonName);
+              const buttonContentDiv = document.getElementById(divName);
+              
+              // Remove existing star icon if any
+              const existingStarIcon = buttonContentDiv.querySelector('img[src*="Group 23.svg"], i.fas.fa-star');
+              if (existingStarIcon) {
+                buttonContentDiv.removeChild(existingStarIcon);
               }
+              // Add new star icon
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.style.marginLeft = "5px";
+              starIcon.style.cursor = "pointer";
+              starIcon.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.changeRateModelElement(skillDetail);
+              });
+
+              skillButton.style.backgroundColor = "#E0DEFF";
+              buttonContentDiv.appendChild(starIcon);
+              displaySelctedSkills();
+              // myrate();
+              // if (skillDetail?.path_addr) {
+              //   const elements = document.getElementsByClassName(
+              //     skillDetail?.path_addr
+              //   );
+              //   console.log(elements, "ratedBtn");
+              //   for (const element of elements) {
+              //     element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+              //     element.classList.add(
+              //       skillDetail?.path_addr,
+              //       "selected-skills"
+              //     );
+              //   }
+              // }
               saveButtonElement.removeChild(loader);
               saveButtonElement.innerHTML = previousContent;
-
-              displaySelctedSkills();
               // this.ratedSkillEvent(skillDetail);
             } else {
               // Handle errors
@@ -3828,20 +3852,30 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
           this.updateProfileData();
-          myrate();
-          // document.getElementById(parentSkillDetailId).innerHTML = "";
-          // document.getElementById("parent-" + parentSkillDetailId).click();
-          if (skillDetail?.path_addr) {
-            const elements = document.getElementsByClassName(
-              skillDetail?.path_addr
-            );
-            console.log(elements, "ratedBtn");
-            for (const element of elements) {
-              element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-              element.classList.add(skillDetail?.path_addr, "selected-skills");
-            }
-          }
           createSelectedSkillsCount();
+          // myrate();
+          const buttonName = `${skillDetail.path_addr}button`;
+          const divName = `${skillDetail.path_addr}div`;
+          const skillButton = document.getElementById(buttonName);
+          const buttonContentDiv = document.getElementById(divName);
+          
+          // Remove existing star icon if any
+          const existingStarIcon = buttonContentDiv.querySelector('img[src*="Group 23.svg"], i.fas.fa-star');
+          if (existingStarIcon) {
+            buttonContentDiv.removeChild(existingStarIcon);
+          }
+          // Add new star icon
+          const starIcon = document.createElement("img");
+          starIcon.src = `${imagePath}Group 23.svg`;
+          starIcon.style.marginLeft = "5px";
+          starIcon.style.cursor = "pointer";
+          starIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            this.changeRateModelElement(skillDetail);
+          });
+
+          skillButton.style.backgroundColor = "#E0DEFF";
+          buttonContentDiv.appendChild(starIcon);
           displaySelctedSkills();
         })
         .catch((err) => {
@@ -3939,7 +3973,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       objExist
     );
     button.removeEventListener("click", this.saveTheSkillComment);
-
+    // const searchText = searchByName(skill.name);
+    // if (searchText.length > 0) {
+    // }
     button.addEventListener("click", (event) => {
       modalEl.hide();
       // updating view
@@ -4837,7 +4873,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     cardTitleH4.style="display: flex; margin-top: 10px; margin-bottom: 20px;";
     const skillButton = document.createElement("button");
     skillButton.className = "softskillbutton";
-    skillButton.setAttribute("id","softskillbutton");
+    skillButton.setAttribute("id",skillDetail.skills[0].path_addr+"button");
     skillButton.style.border = "1px solid #4f4f4f";
     skillButton.style.borderRadius = "10px";
     skillButton.style.margin = "5px";
@@ -4849,6 +4885,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillButton.style.fontSize = "16px";
     skillButton.setAttribute("data-mdb-tooltip-init", "");
     const buttonContentDiv = document.createElement("div")
+    buttonContentDiv.setAttribute("id",skillDetail.skills[0].path_addr+"div");
     buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
     const skillNameSpan = document.createElement("span");
     skillNameSpan.textContent = skillDetail.skills[0].name;
@@ -5976,7 +6013,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skills.forEach(skill => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
-        skillButton.setAttribute("id","softskillbutton");
+        skillButton.setAttribute("id",skill.path_addr+"button");
         skillButton.style.border = "1px solid #4f4f4f";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
@@ -5993,6 +6030,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div")
+        buttonContentDiv.setAttribute("id",skill.path_addr+"div");
         buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
         const skillNameSpan = document.createElement("span");
@@ -6316,6 +6354,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skills.forEach(skill => {
           const skillButton = document.createElement("button");
           skillButton.className = "softskillbutton";
+          skillButton.setAttribute("id",skill.path_addr+"button");
           skillButton.style.border = "1px solid #4f4f4f";
           skillButton.style.borderRadius = "10px";
           skillButton.style.margin = "5px";
@@ -6331,6 +6370,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           const ratingsCount = skill.ratings ? skill.ratings.length : 0;
           const description = skill.description;
           const buttonContentDiv = document.createElement("div")
+          buttonContentDiv.setAttribute("id",skill.path_addr+"div");
           buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
           const skillNameSpan = document.createElement("span");
@@ -6574,6 +6614,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       // if(skill.child_count >0 || skill.ratings.length >0){
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
+        skillButton.setAttribute("id",skill.path_addr+"button");
         skillButton.style.border = "1px solid #4f4f4f";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
@@ -6590,6 +6631,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div");
+        buttonContentDiv.setAttribute("id",skill.path_addr+"div");
         buttonContentDiv.style = "display:flex; align-items:center; justify-content:center;";
 
         const skillNameSpan = document.createElement("span");
@@ -6711,6 +6753,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skills.forEach(skill => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
+        skillButton.setAttribute("id",skill.path_addr+"button");
         skillButton.style.border = "1px solid #4f4f4f";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
@@ -6727,6 +6770,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div")
+        buttonContentDiv.setAttribute("id",skill.path_addr+"div");
         buttonContentDiv.style="display:flex; align-items:center; justify-content:center;";
 
         const skillNameSpan = document.createElement("span");
