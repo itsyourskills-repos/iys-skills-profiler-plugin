@@ -9,7 +9,7 @@ const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
-const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
+const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@main/assets/img/";
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
 //   tap: "all",
 //   profile_view: "all",
@@ -5371,12 +5371,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const accordionBody = document.createElement("div");
       accordionBody.className = "accordion-body";
-      accordionBody.style="padding-20px;"
+      accordionBody.style="padding:10px;"
       skillsGroup.forEach((skill, index) => {
         const skillContainer = document.createElement("div");
         skillContainer.className =
-          "taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3 px-3";
-        skillContainer.style="background-color:#F6F7F9; padding-top:5px; padding-bottom:5px;"
+          "taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3";
+        skillContainer.style="background-color:#F6F7F9; padding:5px 10px;";
         const skillName = document.createElement("div");
         skillName.className = "bg-";
         const commentImageHTML = skill.comment
@@ -5399,8 +5399,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         skillDetails.style.justifyContent = "center";
 
         const experienceDetails = document.createElement("div");
-        experienceDetails.className = "px-3";
-
+        experienceDetails.className = "pr-3";
         const ratingValue = skill.rating.length === 2 ? skill.rating[1].rating - 1 : skill.rating[0].rating - 1;
 
         let ratingLabel = '';
@@ -5432,7 +5431,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const imagePathBase = imagePath;
 
         const ratingDetails = document.createElement("div");
-        ratingDetails.className = "ps-3  px-2";
+        ratingDetails.className = "px-2";
 
         if (percentage === 0) {
           const image0 = document.createElement("img");
@@ -5481,7 +5480,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         const actionsIconDiv = document.createElement("div");
-        actionsIconDiv.className = "ps-3";
+        actionsIconDiv.className = "actiondiv";
         const deleteIcon = document.createElement("img");
         deleteIcon.src = `${imagePath}Group 34.svg`;
         deleteIcon.style="margin-right:10px !important; height:16px; width: 14px;";
@@ -5846,7 +5845,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
           setTimeout(() => {
             document.getElementById(skillId).click();
-          }, 3000);
+          }, 700);
         })
         .catch((err) => {
           console.error(err);
@@ -5874,7 +5873,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
           setTimeout(() => {
             document.getElementById(skillId).click();
-          }, 3000);
+          }, 700);
         })
         .catch((err) => {
           console.error(err);
