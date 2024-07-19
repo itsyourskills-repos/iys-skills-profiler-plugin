@@ -2,14 +2,14 @@ var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
   console.log("LoginUser",isLoginUser);
-const ENDPOINT_URL = "https://uat-lambdaapi.iysskillstech.com/latest/dev-api/";
+const ENDPOINT_URL = "https://lambdaapi.iysskillstech.com/latest/dev-api/";
 const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
-const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
+const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@main/assets/img/";
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
 //   tap: "all",
 //   profile_view: "all",
