@@ -3,11 +3,11 @@ var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   : false;
   console.log("LoginUser",isLoginUser);
 const ENDPOINT_URL = "https://uat-lambdaapi.iysskillstech.com/latest/dev-api/";
-const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
-const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
-const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
+const loggedInUserApiEndpoint = `https://uat-api.myskillsplus.com/get-skills/`;
+const loggedInUserAddSkill = `https://uat-api.myskillsplus.com/add-skills/`;
+const deleteSkillApiEndpoint = `https://uat-api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
-  "https://api.myskillsplus.com/api/token/refresh/";
+  "https://uat-api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 const imagePath="https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
@@ -1821,7 +1821,7 @@ class IysSearchPlugin {
     const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
     if (isLoginUser && this.searchValue.length > 0) {
       fetch(
-        `https://api.myskillsplus.com/api-search/?q=${encodedSearchValue}`,
+        `https://uat-api.myskillsplus.com/api-search/?q=${encodedSearchValue}`,
         {
           method: "GET",
           headers: {
@@ -3134,7 +3134,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   SkillChildrenAPI(skillFileId) {
     let url;
     if (isLoginUser) {
-      url = `https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
+      url = `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
     } else {
       url = `${ENDPOINT_URL}children/?path_addr=${skillFileId}`;
     }
@@ -5697,7 +5697,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const previousContent = skillIdElement.innerHTML;
         // skillIdElement.appendChild(loader);
 
-        let url = isLoginUser ? `https://api.myskillsplus.com/api-child/?path_addr=${skillId}` : `${ENDPOINT_URL}children/?path_addr=${skillId}`;
+        let url = isLoginUser ? `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillId}` : `${ENDPOINT_URL}children/?path_addr=${skillId}`;
 
         fetch(url, {
             method: "GET",
@@ -5745,7 +5745,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const previousContent = selectedSkillDiv.innerHTML;
         // selectedSkillDiv.appendChild(loader);
         
-        let url = isLoginUser ? `https://api.myskillsplus.com/api-child/?path_addr=${skillId}` : `${ENDPOINT_URL}children/?path_addr=${skillId}`;
+        let url = isLoginUser ? `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillId}` : `${ENDPOINT_URL}children/?path_addr=${skillId}`;
 
         fetch(url, {
             method: "GET",
@@ -5817,7 +5817,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   treeSkillAPI(skillName,cardBodyDiv, skillId) {
     let url = "";
     if (isLoginUser) {
-      url = `https://api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
+      url = `https://uat-api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
       fetch(url, {
         method: "GET",
         headers: {
