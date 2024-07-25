@@ -2149,12 +2149,28 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     );
     role.style.marginLeft="15px";
 
+    var skillGroupDescription = document.createElement("div");
+    skillGroupDescription.className = "skillgroupdescription";
+    skillGroupDescription.setAttribute("role", "group");
+    skillGroupDescription.setAttribute("aria-label", "Three views");
+    skillGroupDescription.style = "display: flex; padding-right: 6px; padding-left: 6px; padding-top: 2px; padding-bottom: 2px; align-items: center; justify-content: center;";
+
+    var arrow = document.createElement("i");
+    arrow.className = "flashing-arrow fa-solid fa-arrow-left";
+
+    var explanationText = document.createElement("span");
+    explanationText.className = "explanation-text";
+    explanationText.textContent = " Click on Hard Skills or Soft Skills to search, select and rate on skills";
+
+    skillGroupDescription.appendChild(arrow);
+    skillGroupDescription.appendChild(explanationText);
+
     skillGroupButton.appendChild(hardSkills);
     skillGroupButton.appendChild(softSkills);
     // skillGroupButton.appendChild(role);
 
     skillGroupNavDiv.appendChild(skillGroupButton);
-
+    skillGroupNavDiv.appendChild(skillGroupDescription);
     skillGroupDiv.appendChild(skillGroupNavDiv);
 
     groupSkilltypeDiv.appendChild(skillGroupDiv);
@@ -3754,8 +3770,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               toastr.success(
                 `Adding Skill ${skillDetail.name}  Added to profile`
               );
-              this.updateProfileData();
               await getListFromLoggedInUser("notLoadded");
+              this.updateProfileData();
               createSelectedSkillsCount();
               const buttonName = `${skillDetail.path_addr}button`;
               const divName = `${skillDetail.path_addr}div`;
@@ -5889,11 +5905,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var softSkillDescription=$(".softSkillDescription");
     var softSkillDetail = $(".softskillaccordian");
     var roleDetail = $(".roleaccordian");
+    var skillGroupDescription = $(".skillgroupdescription");
     imgBodyDiv.css("display", "none");
     cardBodyDetail.css("display", "");
     softSkillDescription.css("display", "none");
     softSkillDetail.css("display", "none");
     roleDetail.css("display", "none");
+    skillGroupDescription.css("display", "none");
   }
 
   async handleRoleClick() {
@@ -5925,12 +5943,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       var softSkillDescription=$(".softSkillDescription");
       var softSkillDetail = $(".softskillaccordian");
       var roleDetail = $(".roleaccordian");
+      var skillGroupDescription = $(".skillgroupdescription");
 
       imgBodyDiv.css("display", "none");
       cardBodyDetail.css("display", "none");
       softSkillDescription.css("display","");
       softSkillDetail.css("display", "");
       roleDetail.css("display", "none");
+      skillGroupDescription.css("display", "none");
 
       var softskillaccordian = document.getElementById('softskillaccordian');
 
