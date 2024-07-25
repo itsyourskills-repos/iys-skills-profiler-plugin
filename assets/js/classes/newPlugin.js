@@ -5851,14 +5851,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .then((response) => {
           // this.createSkillPath(cardBodyDiv, response.ancestors);
-          if (response.siblings.length > 0) {
-            this.createSelectSkillsChildBox(
-              this.cardBodyDiv,
-              response.siblings
-            );
-          } else {
+          // if (response.siblings.length > 0) {
+          //   this.createSelectSkillsChildBox(
+          //     this.cardBodyDiv,
+          //     response.siblings
+          //   );
+          // } else {
             this.childrenSkillAPI(skillName,skillId);
-          }
+          // }
           setTimeout(() => {
             document.getElementById(skillId).click();
           }, 700);
@@ -5879,14 +5879,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .then((response) => {
           // this.createSkillPath(cardBodyDiv, response.ancestors);FromlocalStorage
-          if (response.siblings.length > 0) {
-            this.createSelectSkillsChildBox(
-              this.cardBodyDiv,
-              response.siblings
-            );
-          } else {
+          // if (response.siblings.length > 0) {
+          //   this.createSelectSkillsChildBox(
+          //     this.cardBodyDiv,
+          //     response.siblings
+          //   );
+          // } else {
             this.childrenSkillAPI(skillName,skillId);
-          }
+          // }
           setTimeout(() => {
             document.getElementById(skillId).click();
           }, 700);
