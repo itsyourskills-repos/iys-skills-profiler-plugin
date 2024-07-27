@@ -6022,7 +6022,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Render breadcrumb
     this.renderBreadcrumb(skills, breadcrumbPath, softSkillAccordian);
-
+    skills.sort((a, b) => (a.display_order !== null ? a.display_order : Infinity) - (b.display_order !== null ? b.display_order : Infinity));
     // Create buttons for each skill
     const skillsContainer = document.createElement("div");
     skillsContainer.classList.add("softskillparentaccordian");
@@ -6622,6 +6622,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // Render breadcrumb
     this.renderHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills, skillName);
 
+    skills.sort((a, b) => (a.display_order !== null ? a.display_order : Infinity) - (b.display_order !== null ? b.display_order : Infinity));
     // Create buttons for each skill
     const skillsContainer = document.createElement("div");
     skillsContainer.classList.add("softskillparentaccordian");
@@ -6761,7 +6762,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Render breadcrumb
     this.renderCategoryHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
-
+    skills.sort((a, b) => (a.display_order !== null ? a.display_order : Infinity) - (b.display_order !== null ? b.display_order : Infinity));
     // Create buttons for each skill
     const skillsContainer = document.createElement("div");
     skillsContainer.classList.add("softskillparentaccordian");
