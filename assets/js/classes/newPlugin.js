@@ -3076,6 +3076,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             console.log("Skill added successfully!");
             clearlocalStorage();
             await getListFromLoggedInUser();
+            this.updateProfileData();
           } else {
             // Handle errors
             console.error(
@@ -3089,6 +3090,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
       } else {
         await getListFromLoggedInUser();
+        this.updateProfileData();
       }
     }
     createSelectedSkillsCount();
