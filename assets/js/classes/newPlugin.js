@@ -2162,20 +2162,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       "ROLE",
       "The time spent on individual contribution, managing, leading and such"
     );
-    role.style.marginLeft="15px";
-    
+    role.style.marginLeft = "15px";
+
     var skillGroupDescription = document.createElement("div");
     skillGroupDescription.className = "skillgroupdescription";
     skillGroupDescription.setAttribute("role", "group");
     skillGroupDescription.setAttribute("aria-label", "Three views");
-    skillGroupDescription.style = "display: flex; padding-right: 6px; padding-left: 6px; padding-top: 2px; padding-bottom: 2px; align-items: center; justify-content: center;";
+    skillGroupDescription.style =
+      "display: flex; padding-right: 6px; padding-left: 6px; padding-top: 2px; padding-bottom: 2px; align-items: center; justify-content: center;";
 
     var arrow = document.createElement("i");
     arrow.className = "flashing-arrow fa-solid fa-arrow-left";
 
     var explanationText = document.createElement("span");
     explanationText.className = "explanation-text";
-    explanationText.textContent = " Click on Hard Skills or Soft Skills to search, select and rate on skills";
+    explanationText.textContent =
+      " Click on Hard Skills or Soft Skills to search, select and rate on skills";
 
     skillGroupDescription.appendChild(arrow);
     skillGroupDescription.appendChild(explanationText);
@@ -4050,7 +4052,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         skillList[0].name === "Related Skills" &&
         skillList[0].path_addr
       ) {
-        const url = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillList[0].path_addr}`;
+        const url = `${ENDPOINT_URL}children/?path_addr=${skillList[0].path_addr}`;
 
         fetchData(url, "GET")
           .then((response) => {
@@ -4123,7 +4125,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const updatedSkillList = [];
     for (const skill of skillList) {
       if (skill.name === "Related Skills") {
-        const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+        const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
         try {
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
           if (relatedSkills.length > 0) {
@@ -4184,7 +4186,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const updatedSkillList = [];
     for (const skill of skillList) {
       if (skill.name === "Related Skills") {
-        const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+        const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
         try {
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
           if (relatedSkills.length > 0) {
@@ -4338,7 +4340,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             console.log("zeroskill-data", skill);
             this.changeRateModelElement(skill);
           } else if (skill.name === "Related Skills") {
-            const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+            const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const relatedSkills = await this.fetchSkills(
               relatedSkillApiEndpoint
             );
@@ -6025,6 +6027,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
+          this.createSelectSkillsChildBox(
+            skillName,
+            this.cardBodyDiv,
+            response.siblings
+          );
           // this.createSkillPath(cardBodyDiv, response.ancestors);
           // if (response.siblings.length > 0) {
           //   this.createSelectSkillsChildBox(
@@ -6032,7 +6039,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           //     response.siblings
           //   );
           // } else {
-            this.childrenSkillAPI(skillName,skillId);
+
+          this.childrenSkillAPI(skillName, response.ancestors[0]["path_addr"]);
           // }
           setTimeout(() => {
             document.getElementById(skillId).click();
@@ -6053,14 +6061,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          // this.createSkillPath(cardBodyDiv, response.ancestors);FromlocalStorage
-          // if (response.siblings.length > 0) {
-          //   this.createSelectSkillsChildBox(
-          //     this.cardBodyDiv,
-          //     response.siblings
-          //   );
-          // } else {
-            this.childrenSkillAPI(skillName,skillId);
+          this.createSelectSkillsChildBox(
+            skillName,
+            this.cardBodyDiv,
+            response.siblings
+          );
+
+          // this.createSkillPath(this.cardBodyDiv, response.ancestors);
+
+          this.childrenSkillAPI(skillName, response.ancestors[0]["path_addr"]);
           // }
           setTimeout(() => {
             document.getElementById(skillId).click();
@@ -6112,20 +6121,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   async handleSoftSkillsClick() {
-      console.log("soft-skill clicked");
-      var imgBodyDiv = $(".img-body");
-      var cardBodyDetail = $(".card-body");
-      var softSkillDescription=$(".softSkillDescription");
-      var softSkillDetail = $(".softskillaccordian");
-      var roleDetail = $(".roleaccordian");
-      var skillGroupDescription = $(".skillgroupdescription");
+    console.log("soft-skill clicked");
+    var imgBodyDiv = $(".img-body");
+    var cardBodyDetail = $(".card-body");
+    var softSkillDescription = $(".softSkillDescription");
+    var softSkillDetail = $(".softskillaccordian");
+    var roleDetail = $(".roleaccordian");
+    var skillGroupDescription = $(".skillgroupdescription");
 
-      imgBodyDiv.css("display", "none");
-      cardBodyDetail.css("display", "none");
-      softSkillDescription.css("display","");
-      softSkillDetail.css("display", "");
-      roleDetail.css("display", "none");
-      skillGroupDescription.css("display", "none");
+    imgBodyDiv.css("display", "none");
+    cardBodyDetail.css("display", "none");
+    softSkillDescription.css("display", "");
+    softSkillDetail.css("display", "");
+    roleDetail.css("display", "none");
+    skillGroupDescription.css("display", "none");
 
     var softskillaccordian = document.getElementById("softskillaccordian");
 
@@ -6195,7 +6204,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Render breadcrumb
     this.renderBreadcrumb(skills, breadcrumbPath, softSkillAccordian);
-    skills.sort((a, b) => (a.display_order !== null ? a.display_order : Infinity) - (b.display_order !== null ? b.display_order : Infinity));
+    skills.sort(
+      (a, b) =>
+        (a.display_order !== null ? a.display_order : Infinity) -
+        (b.display_order !== null ? b.display_order : Infinity)
+    );
     // Create buttons for each skill
     const skillsContainer = document.createElement("div");
     skillsContainer.classList.add("softskillparentaccordian");
@@ -6458,7 +6471,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       knowledgeLink.style.color = "#A7A4DC";
       knowledgeLink.style.marginRight = "5px";
       knowledgeLink.addEventListener("click", async () => {
-        const parentSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skillId}`;
+        const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skillId}`;
         try {
           const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
 
@@ -6753,7 +6766,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       breadcrumbLink.addEventListener("click", async () => {
         if (breadcrumbItem.name == "Related Skills") {
-          const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${breadcrumbItem.path_addr}`;
+          const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
           relatedSkills.forEach((skill) => {
             if (skill.child_count === 1 && skill.ratings.length > 0) {
@@ -6886,7 +6899,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillName
     );
 
-    skills.sort((a, b) => (a.display_order !== null ? a.display_order : Infinity) - (b.display_order !== null ? b.display_order : Infinity));
+    skills.sort(
+      (a, b) =>
+        (a.display_order !== null ? a.display_order : Infinity) -
+        (b.display_order !== null ? b.display_order : Infinity)
+    );
     // Create buttons for each skill
     const skillsContainer = document.createElement("div");
     skillsContainer.classList.add("softskillparentaccordian");
@@ -6985,7 +7002,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           console.log("zeroskill-data", skill);
           this.changeRateModelElement(skill);
         } else if (skill.name === "Related Skills") {
-          const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+          const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
           relatedSkills.forEach((skill) => {
             if (skill.child_count === 1 && skill.ratings.length > 0) {
@@ -7065,8 +7082,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     softSkillAccordian.innerHTML = "";
 
     // Render breadcrumb
-    this.renderCategoryHardSkillBreadcrumb(skills, breadcrumbPath, softSkillAccordian, skillId, parentskills,skillName);
-    skills.sort((a, b) => (a.display_order !== null ? a.display_order : Infinity) - (b.display_order !== null ? b.display_order : Infinity));
+    this.renderCategoryHardSkillBreadcrumb(
+      skills,
+      breadcrumbPath,
+      softSkillAccordian,
+      skillId,
+      parentskills,
+      skillName
+    );
+    skills.sort(
+      (a, b) =>
+        (a.display_order !== null ? a.display_order : Infinity) -
+        (b.display_order !== null ? b.display_order : Infinity)
+    );
     // Create buttons for each skill
     const skillsContainer = document.createElement("div");
     skillsContainer.classList.add("softskillparentaccordian");
@@ -7176,7 +7204,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           console.log("zeroskill-data", skill);
           this.changeRateModelElement(skill);
         } else if (skill.name === "Related Skills") {
-          const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${skill.path_addr}`;
+          const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
           relatedSkills.forEach((skill) => {
             if (skill.child_count === 1 && skill.ratings.length > 0) {
@@ -7306,7 +7334,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       breadcrumbLink.addEventListener("click", async () => {
         if (breadcrumbItem.name == "Related Skills") {
-          const relatedSkillApiEndpoint = `${ENDPOINT_URL}get-recommendations/?path_addr=${breadcrumbItem.path_addr}`;
+          const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
           relatedSkills.forEach((skill) => {
             if (skill.child_count === 1 && skill.ratings.length > 0) {
