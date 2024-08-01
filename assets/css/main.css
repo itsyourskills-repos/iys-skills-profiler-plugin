@@ -380,3 +380,18 @@ img.responsive-icon-element {
     padding-right: 0.1rem !important; 
   }
 }
+.flashing-arrow {
+  animation: flash 1s infinite;
+  font-size: 30px;
+  margin-right: 15px;
+  color: #ff9800;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 2; }
+    50% { opacity: 0; }
+}
+
+.explanation-text {
+    font-size: 16px;
+}
