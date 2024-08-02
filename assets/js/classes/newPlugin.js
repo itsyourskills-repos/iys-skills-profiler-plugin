@@ -2,7 +2,7 @@ var isLoginUser = JSON?.parse(localStorage?.getItem("loginUserDetail"))
   ? true
   : false;
 console.log("LoginUser", isLoginUser);
-const ENDPOINT_URL = "http://localhost:8000/latest/dev-api/";
+const ENDPOINT_URL = "https://uat-lambdaapi.iysskillstech.com/latest/dev-api/";
 const loggedInUserApiEndpoint = `https://uat-api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://uat-api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://uat-api.myskillsplus.com/delete-skill/`;
@@ -6038,9 +6038,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           //     this.cardBodyDiv,
           //     response.siblings
           //   );
-          // } else {
+          // } else {\
 
-          this.childrenSkillAPI(skillName, response.ancestors[0]["path_addr"]);
+          if (response.ancestors.length > 0) {
+            this.childrenSkillAPI(
+              skillName,
+              response.ancestors[0]["path_addr"]
+            );
+          } else {
+            this.childrenSkillAPI(skillName, skillId);
+          }
+
           // }
           setTimeout(() => {
             document.getElementById(skillId).click();
@@ -6068,8 +6076,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           );
 
           // this.createSkillPath(this.cardBodyDiv, response.ancestors);
-
-          this.childrenSkillAPI(skillName, response.ancestors[0]["path_addr"]);
+          if (response.ancestors.length > 0) {
+            this.childrenSkillAPI(
+              skillName,
+              response.ancestors[0]["path_addr"]
+            );
+          } else {
+            this.childrenSkillAPI(skillName, skillId);
+          }
           // }
           setTimeout(() => {
             document.getElementById(skillId).click();
