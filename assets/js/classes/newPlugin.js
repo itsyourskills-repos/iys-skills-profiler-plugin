@@ -4115,7 +4115,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillList,
     identifier,
     skillId,
-    isInitialLoad = true
+    isInitialLoad = true,
+    highlightSkill
   ) {
     console.log("HardskillId", skillId);
     console.log("skillList", skillName);
@@ -4160,7 +4161,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         CardBody,
         skillId,
         updatedSkillList,
-        skillName
+        skillName,
+        highlightSkill
       );
     } else {
       CardBody.innerHTML = "";
@@ -4176,11 +4178,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     identifier,
     skillId,
     breadcrumbPath = [],
-    isInitialLoad = true
+    isInitialLoad = true,
+    highlightSkill,
+    clickedSkillParentName
   ) {
     console.log("HardskillId", skillId);
     console.log("skillList", skillName);
     console.log(skillList);
+    console.log(highlightSkill);
+    console.log(clickedSkillParentName);
 
     // Filter the skillList to handle "Related Skills"
     const updatedSkillList = [];
@@ -4194,15 +4200,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             updatedSkillList.push(skill);
           }
         } catch (error) {
-          console.error(
-            `Error fetching related skills for ${skill.name}:`,
-            error
-          );
+          console.error(`Error fetching related skills for ${skill.name}:`, error);
         }
       } else {
         updatedSkillList.push(skill);
       }
     }
+
     console.log(updatedSkillList);
     const CardBody = document.createElement("div");
 
@@ -4230,7 +4234,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       updatedSkillList.forEach((skill) => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
-        skillButton.style.border = "1px solid #4f4f4f";
+        skillButton.style.border = "2px solid rgb(22 237 255)";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
         skillButton.style.padding = "6px 12px";
@@ -4310,23 +4314,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         skillButton.appendChild(buttonContentDiv);
 
-        // skillButton.addEventListener('click', async () => {
-        //     // Remove active class from all buttons
-        //     const allButtons = document.querySelectorAll('.softskillbutton');
-        //     allButtons.forEach(btn => btn.classList.remove('active-skill-button'));
-
-        //     // Add active class to the clicked button
-        //     skillButton.classList.add('active-skill-button');
-
-        //     const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
-        //     try {
-        //         const childSkills = await this.fetchSkills(childSkillApiEndpoint);
-        //         const newBreadcrumbPath = [{ name: skillName, path_addr: skillId }, ...breadcrumbPath];
-        //         this.renderCategoryHardSkills(childSkills, newBreadcrumbPath, cardBodyInnerDiv, skill.path_addr, childSkills, skill.name);
-        //     } catch (error) {
-        //         console.error(`Error fetching child skills for ${skill.name}:`, error);
-        //     }
-        // });
         skillButton.addEventListener("click", async () => {
           const allButtons = document.querySelectorAll(".softskillbutton");
           allButtons.forEach((btn) =>
@@ -4350,7 +4337,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               }
             });
             if (relatedSkills.length > 0) {
-              // Filter out skills with child_count equal to 1
               const validRelatedSkills = relatedSkills.filter(
                 (relatedSkill) => relatedSkill.child_count !== 1
               );
@@ -4368,7 +4354,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 cardBodyInnerDiv,
                 skill.path_addr,
                 [],
-                skillName
+                skillName,
+                highlightSkill
               );
             }
           } else {
@@ -4392,11 +4379,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 cardBodyInnerDiv,
                 skill.path_addr,
                 [],
-                skillName
+                skillName,
+                highlightSkill
               );
             }
           }
         });
+
+        // Automatically click the skill if it matches clickedSkillParentName
+        if (skill.name === clickedSkillParentName) {
+          skillButton.click();
+        }
 
         skillsContainer.appendChild(skillButton);
       });
@@ -5850,7 +5843,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
 
-  childrenSkillAPI(skillName, skillId, identifier, parentIdOfHirarchy = "") {
+  childrenSkillAPI(skillName, skillId, identifier, parentIdOfHirarchy = "",highlightSkill,clickedSkillParentName) {
+    console.log(skillId);
+    console.log(clickedSkillParentName);
     const skillIdElement = document.getElementById(
       parentIdOfHirarchy !== "" ? parentIdOfHirarchy : skillId
     );
@@ -5898,12 +5893,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           console.log(skillsWithTwoTags);
 
           if (otherSkills.length > 0 || skillsWithTwoTags.length > 0) {
+            // const highlightSkill = highlightSkill ? highlightSkill : null;
             this.createSelectSkillsChildBox(
               skillName,
               this.cardBodyDiv,
               otherSkills,
               identifier,
-              skillId
+              skillId,
+              "",
+              highlightSkill
             );
 
             if (skillsWithTwoTags.length > 0) {
@@ -5912,7 +5910,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 this.cardBodyDiv,
                 skillsWithTwoTags,
                 identifier,
-                skillId
+                skillId,
+                "",
+                "",
+                highlightSkill,
+                clickedSkillParentName
               );
             }
           }
@@ -5963,7 +5965,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               this.cardBodyDiv,
               otherSkills,
               identifier,
-              skillId
+              skillId,
+              "",
+              highlightSkill
             );
 
             if (skillsWithTwoTags.length > 0) {
@@ -5972,7 +5976,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 this.cardBodyDiv,
                 skillsWithTwoTags,
                 identifier,
-                skillId
+                skillId,
+                "",
+                "",
+                highlightSkill,
+                clickedSkillParentName
               );
             }
           }
@@ -6027,11 +6035,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          this.createSelectSkillsChildBox(
-            skillName,
-            this.cardBodyDiv,
-            response.siblings
-          );
           // this.createSkillPath(cardBodyDiv, response.ancestors);
           // if (response.siblings.length > 0) {
           //   this.createSelectSkillsChildBox(
@@ -6042,9 +6045,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           if (response.ancestors.length > 0) {
             this.childrenSkillAPI(
+              response.ancestors[1]["name"],
+              response.ancestors[1]["path_addr"],
+              "",
+              "",
               skillName,
-              response.ancestors[0]["path_addr"]
+              response.ancestors[0]["name"],
             );
+            // this.childrenSkillAPI(
+            //   `${response.ancestors[1]["name"]} -> ${response.ancestors[0]["name"]}`,
+            //   response.ancestors[0]["path_addr"],
+            //   "",
+            //   "",
+            //   skillName
+            // );
           } else {
             this.childrenSkillAPI(skillName, skillId);
           }
@@ -6069,18 +6083,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         })
         .then((response) => {
-          this.createSelectSkillsChildBox(
-            skillName,
-            this.cardBodyDiv,
-            response.siblings
-          );
-
           // this.createSkillPath(this.cardBodyDiv, response.ancestors);
           if (response.ancestors.length > 0) {
             this.childrenSkillAPI(
+              response.ancestors[1]["name"],
+              response.ancestors[1]["path_addr"],
+              "",
+              "",
               skillName,
-              response.ancestors[0]["path_addr"]
+              response.ancestors[0]["name"],
             );
+            // this.childrenSkillAPI(
+            //   `${response.ancestors[1]["name"]} -> ${response.ancestors[0]["name"]}`,
+            //   response.ancestors[0]["path_addr"],
+            //   "",
+            //   "",
+            //   skillName
+            // );
           } else {
             this.childrenSkillAPI(skillName, skillId);
           }
@@ -6722,7 +6741,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     softSkillAccordian,
     skillId,
     parentskills,
-    skillName
+    skillName,
+    highlightSkill
   ) {
     console.log(skillId);
     const hardSkillId = skillId;
@@ -6758,7 +6778,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           softSkillAccordian,
           skillId,
           parentskills,
-          skillName
+          skillName,
+          highlightSkill
         );
       });
       breadcrumb.appendChild(knowledgeLink);
@@ -6797,7 +6818,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             softSkillAccordian,
             skillId,
             parentskills,
-            skillName
+            skillName,
+            highlightSkill
           );
         } else {
           const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
@@ -6814,7 +6836,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             softSkillAccordian,
             skillId,
             parentskills,
-            skillName
+            skillName,
+            highlightSkill
           );
         }
       });
@@ -6892,7 +6915,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     softSkillAccordian,
     skillId,
     parentskills = [],
-    skillName
+    skillName,
+    highlightSkill
   ) {
     console.log(skills);
     console.log(skillId, "childrenskillid");
@@ -6910,7 +6934,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       softSkillAccordian,
       skillId,
       parentskills,
-      skillName
+      skillName,
+      highlightSkill
     );
 
     skills.sort(
@@ -6940,6 +6965,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontWeight = "500";
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
+
+      if (highlightSkill && skill.name === highlightSkill) {
+        skillButton.style.backgroundColor = "rgb(216, 247, 245)";
+        skillButton.style.border="1px solid rgb(120, 248, 240)";
+      }
 
       const childCount = skill.child_count || 0;
       const ratingsCount = skill.ratings ? skill.ratings.length : 0;
@@ -7042,7 +7072,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               softSkillAccordian,
               skillId,
               parentskills,
-              skillName
+              skillName,
+              highlightSkill
             );
           }
         } else {
@@ -7066,7 +7097,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               softSkillAccordian,
               skillId,
               parentskills,
-              skillName
+              skillName,
+              highlightSkill
             );
           }
         }
@@ -7084,7 +7116,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     softSkillAccordian,
     skillId,
     parentskills = [],
-    skillName
+    skillName,
+    highlightSkill
   ) {
     console.log(skills);
     console.log(skillId, "childrenskillid");
@@ -7102,7 +7135,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       softSkillAccordian,
       skillId,
       parentskills,
-      skillName
+      skillName,
+      highlightSkill
     );
     skills.sort(
       (a, b) =>
@@ -7130,6 +7164,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontWeight = "500";
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
+
+      if (highlightSkill && skill.name === highlightSkill) {
+        skillButton.style.backgroundColor = "rgb(216, 247, 245)";
+        skillButton.style.border="1px solid rgb(120, 248, 240)";
+      }
 
       const childCount = skill.child_count || 0;
       const ratingsCount = skill.ratings ? skill.ratings.length : 0;
@@ -7244,7 +7283,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               softSkillAccordian,
               skillId,
               parentskills,
-              skillName
+              skillName,
+              highlightSkill
             );
           }
         } else {
@@ -7268,7 +7308,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               softSkillAccordian,
               skillId,
               parentskills,
-              skillName
+              skillName,
+              highlightSkill
             );
           }
         }
@@ -7285,7 +7326,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     softSkillAccordian,
     skillId,
     parentskills,
-    skillName
+    skillName,
+    highlightSkill
   ) {
     console.log(skillId);
     const hardSkillId = skillId;
@@ -7321,7 +7363,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           softSkillAccordian,
           skillId,
           parentskills,
-          skillName
+          skillName,
+          highlightSkill
         );
 
         const allButtons = document.querySelectorAll(".softskillbutton");
@@ -7365,7 +7408,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             softSkillAccordian,
             skillId,
             parentskills,
-            skillName
+            skillName,
+            highlightSkill
           );
         } else {
           const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
@@ -7382,7 +7426,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             softSkillAccordian,
             skillId,
             parentskills,
-            skillName
+            skillName,
+            highlightSkill
           );
         }
       });
