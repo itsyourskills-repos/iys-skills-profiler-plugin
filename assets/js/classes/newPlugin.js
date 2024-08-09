@@ -3954,16 +3954,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //create the cancel button element
     var closebutton = document.createElement("button");
     closebutton.setAttribute("type", "button");
-    closebutton.setAttribute("class", "btn btn-primary");
+    closebutton.setAttribute("class", "btn");
     closebutton.style.textTransform = "none";
-    closebutton.style.background = "#007DFC";
+    closebutton.style.boxShadow="none";
+    closebutton.style.color = "#1D4ED8";
+    closebutton.style.backgroundColor = "transparent";
     closebutton.style.fontSize = "inherit";
-    closebutton.style.paddingRight = "35px";
-    closebutton.style.paddingLeft = "35px";
-    closebutton.style.paddingTop = "7px";
-    closebutton.style.paddingBottom = "7px";
+    closebutton.style.padding="6px 30px"
     closebutton.style.borderRadius = "6px";
+    closebutton.style.border = "1px solid #3B82F6";
     closebutton.style.marginRight = "20px";
+    closebutton.style.cursor = "pointer"; 
     closebutton.setAttribute("id", "closeButton");
     closebutton.textContent = "Cancel";
     closebutton.setAttribute("data-mdb-dismiss", "modal");
