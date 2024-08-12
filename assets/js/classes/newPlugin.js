@@ -9,6 +9,7 @@ const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
   "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
+const logginUserDetail = JSON.parse(localStorage.getItem("loginUserDetail"));
 const imagePath =
   "https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@main/assets/img/";
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
@@ -2335,7 +2336,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var h3Element = document.createElement("p");
     h3Element.className = "h3";
     h3Element.style = "color:#1E1E1E;";
-    h3Element.textContent = "Skill Profile";
+    if (isLoginUser) {
+      var firstName = logginUserDetail.first_name;
+      function capitalizeFirstLetter(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1);
+      }
+      var capitalizedFirstName = capitalizeFirstLetter(firstName);
+
+      var firstNameSpan = document.createElement("span");
+      firstNameSpan.style = "font-weight:bold; color:#285192;"; 
+      firstNameSpan.textContent = capitalizedFirstName;
+  
+      h3Element.textContent = "";
+      h3Element.appendChild(firstNameSpan);
+      h3Element.appendChild(document.createTextNode(" Skill Profile"));
+    } else {
+        h3Element.textContent = "Skill Profile";
+    }
     var pElement = document.createElement("p");
     pElement.className = "p-0 m-0";
     pElement.style = "color:#9B9B9B";
@@ -3954,16 +3971,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //create the cancel button element
     var closebutton = document.createElement("button");
     closebutton.setAttribute("type", "button");
-    closebutton.setAttribute("class", "btn btn-primary");
+    closebutton.setAttribute("class", "btn");
     closebutton.style.textTransform = "none";
-    closebutton.style.background = "#007DFC";
+    closebutton.style.boxShadow="none";
+    closebutton.style.color = "#1D4ED8";
+    closebutton.style.backgroundColor = "transparent";
     closebutton.style.fontSize = "inherit";
-    closebutton.style.paddingRight = "35px";
-    closebutton.style.paddingLeft = "35px";
-    closebutton.style.paddingTop = "7px";
-    closebutton.style.paddingBottom = "7px";
+    closebutton.style.padding="6px 30px"
     closebutton.style.borderRadius = "6px";
+    closebutton.style.border = "1px solid #3B82F6";
     closebutton.style.marginRight = "20px";
+    closebutton.style.cursor = "pointer"; 
     closebutton.setAttribute("id", "closeButton");
     closebutton.textContent = "Cancel";
     closebutton.setAttribute("data-mdb-dismiss", "modal");
