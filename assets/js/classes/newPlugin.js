@@ -9,6 +9,7 @@ const deleteSkillApiEndpoint = `https://uat-api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
   "https://uat-api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
+const logginUserDetail = JSON.parse(localStorage.getItem("loginUserDetail"));
 const imagePath =
   "https://cdn.jsdelivr.net/gh/itsyourskills-repos/iys-skills-profiler-plugin@uatplugin/assets/img/";
 // const configuratorvalue=localStorage.setItem('iys', JSON.stringify({
@@ -2335,7 +2336,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var h3Element = document.createElement("p");
     h3Element.className = "h3";
     h3Element.style = "color:#1E1E1E;";
-    h3Element.textContent = "Skill Profile";
+    if (isLoginUser) {
+      var firstName = logginUserDetail.first_name;
+      function capitalizeFirstLetter(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1);
+      }
+      var capitalizedFirstName = capitalizeFirstLetter(firstName);
+
+      var firstNameSpan = document.createElement("span");
+      firstNameSpan.style = "font-weight:bold; color:#285192;"; 
+      firstNameSpan.textContent = capitalizedFirstName;
+  
+      h3Element.textContent = "";
+      h3Element.appendChild(firstNameSpan);
+      h3Element.appendChild(document.createTextNode(" Skill Profile"));
+    } else {
+        h3Element.textContent = "Skill Profile";
+    }
     var pElement = document.createElement("p");
     pElement.className = "p-0 m-0";
     pElement.style = "color:#9B9B9B";
