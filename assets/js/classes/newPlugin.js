@@ -4028,7 +4028,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //   modalHeader.style.borderBottom = "1px solid #ccc"; // Adjust the border style as needed
     // }
     if (objExist) {
-      rateSkillCommentBox.value = objExist.comment;
+      rateSkillCommentBox.value = objExist.rating[0].comment;
     } else {
       rateSkillCommentBox.value = "";
     }
@@ -5396,11 +5396,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
         skillContainer.appendChild(skillName);
         //comments is present to show the comment
-        if (skill.comment) {
+        if (skill.rating[0].comment) {
           const commentImage = document.createElement("img");
           commentImage.src = `${imagePath}Group 148.svg`;
           commentImage.className = "comment-image ms-1";
-          commentImage.title = skill.comment;
+          commentImage.title = skill.rating[0].comment;
           commentImage.style.cursor = "pointer";
           commentImage.style.position = "relative";
           skillContainer.appendChild(commentImage);
@@ -5709,7 +5709,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         commentDiv.style.padding = "5px 10px";
         commentDiv.style.backgroundColor = "#FF6692";
         commentDiv.style.color = "#F6F7F9";
-        commentDiv.innerHTML = skill.comment;
+        commentDiv.innerHTML = skill.rating[0].comment;
 
         // Add event listener to toggle comment visibility
         if (skill.comment) {
