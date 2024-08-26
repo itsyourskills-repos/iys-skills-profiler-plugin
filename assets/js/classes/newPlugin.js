@@ -44,7 +44,7 @@ function fetchData(url, method) {
     .then((response) => {
       if (response.status === 429) {
         // Redirect to /limit-exceeded/ page
-        window.location.href = "/limit-exceeded/";
+        window.location.href = "limit-exceeded.html";
       }
       return response.json();
     })
@@ -1133,7 +1133,7 @@ function delete_skill(skill_id, deleteIconIdentifier) {
       .then((response) => {
         if (response.status === 429) {
           // Redirect to /limit-exceeded/ page
-          window.location.href = "/limit-exceeded/";
+          window.location.href = "limit-exceeded.html";
         } else {
           return response.json();
         }
@@ -1835,7 +1835,7 @@ class IysSearchPlugin {
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
+            window.location.href = "limit-exceeded.html";
           } else {
             return response.json();
           }
@@ -1855,7 +1855,7 @@ class IysSearchPlugin {
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
+            window.location.href = "limit-exceeded.html";
           } else {
             return response.json();
           }
@@ -5232,7 +5232,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .then((response) => {
         if (response.status === 429) {
           // Redirect to /limit-exceeded/ page
-          window.location.href = "/limit-exceeded/";
+          window.location.href = "limit-exceeded.html";
         } else {
           return response.json();
         }
@@ -5784,7 +5784,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .then((response) => {
         if (response.status === 429) {
           // Redirect to /limit-exceeded/ page
-          window.location.href = "/limit-exceeded/";
+          window.location.href = "limit-exceeded.html";
         } else {
           return response.json();
         }
@@ -5810,7 +5810,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       .then((response) => {
         if (response.status === 429) {
           // Redirect to /limit-exceeded/ page
-          window.location.href = "/limit-exceeded/";
+          window.location.href = "limit-exceeded.html";
         } else {
           return response.json();
         }
@@ -5915,7 +5915,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           })
           .then((response) => {
             if (response.status === 429) {
-              window.location.href = "/limit-exceeded/";
+              window.location.href = "limit-exceeded.html";
             } else {
               return response.json();
             }
@@ -5968,7 +5968,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       })
         .then((response) => {
           if (response.status === 429) {
-            window.location.href = "/limit-exceeded/";
+            window.location.href = "limit-exceeded.html";
           } else {
             return response.json();
           }
@@ -6035,7 +6035,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       })
         .then((response) => {
           if (response.status === 429) {
-            window.location.href = "/limit-exceeded/";
+            window.location.href = "limit-exceeded.html";
           } else {
             return response.json();
           }
@@ -6124,7 +6124,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
+            window.location.href = "limit-exceeded.html";
           } else {
             return response.json();
           }
@@ -6172,7 +6172,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
-            window.location.href = "/limit-exceeded/";
+            window.location.href = "limit-exceeded.html";
           } else {
             return response.json();
           }
