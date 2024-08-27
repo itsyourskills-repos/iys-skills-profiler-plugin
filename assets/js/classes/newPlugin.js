@@ -6138,7 +6138,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           //   );
           // } else {\
 
-          if (response.ancestors.length > 0) {
+          if (response.ancestors.length > 1) {
             this.childrenSkillAPI(
               response.ancestors[1]["name"],
               response.ancestors[1]["path_addr"],
@@ -6179,7 +6179,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .then((response) => {
           // this.createSkillPath(this.cardBodyDiv, response.ancestors);
-          if (response.ancestors.length > 0) {
+          if (response.ancestors.length > 1) {
             this.childrenSkillAPI(
               response.ancestors[1]["name"],
               response.ancestors[1]["path_addr"],
