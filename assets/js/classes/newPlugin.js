@@ -824,13 +824,25 @@ function addTolocalStorage(userRatedSkill) {
 }
 
 function getListFromlocalStorage() {
-  if (localStorage.getItem("userRatedSkills")) {
-    return JSON.parse(localStorage.getItem("userRatedSkills"));
-  } else if (localStorage.getItem("logginUserRatedSkills")) {
-    return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
-  } else {
-    return [];
+  if(isLoginUser){
+    if (localStorage.getItem("logginUserRatedSkills")) {
+        return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
+    }
+    else {
+        return [];
+    }
   }
+  else{
+    if (localStorage.getItem("sampleUserRatedSkills")) {
+        return JSON.parse(localStorage.getItem("sampleUserRatedSkills"));
+    } 
+    else if(localStorage.getItem("userRatedSkills")) {
+        return JSON.parse(localStorage.getItem("userRatedSkills"));
+    }
+    else{
+        return [];
+    }
+  } 
 }
 
 function getLoggedInUserListFromlocalStorage() {
