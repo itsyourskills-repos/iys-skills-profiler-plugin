@@ -824,13 +824,25 @@ function addTolocalStorage(userRatedSkill) {
 }
 
 function getListFromlocalStorage() {
-  if (localStorage.getItem("userRatedSkills")) {
-    return JSON.parse(localStorage.getItem("userRatedSkills"));
-  } else if (localStorage.getItem("logginUserRatedSkills")) {
-    return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
-  } else {
-    return [];
+  if(isLoginUser){
+    if (localStorage.getItem("logginUserRatedSkills")) {
+        return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
+    }
+    else {
+        return [];
+    }
   }
+  else{
+    if (localStorage.getItem("sampleUserRatedSkills")) {
+        return JSON.parse(localStorage.getItem("sampleUserRatedSkills"));
+    } 
+    else if(localStorage.getItem("userRatedSkills")) {
+        return JSON.parse(localStorage.getItem("userRatedSkills"));
+    }
+    else{
+        return [];
+    }
+  } 
 }
 
 function getLoggedInUserListFromlocalStorage() {
@@ -4252,7 +4264,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       updatedSkillList.forEach((skill) => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
-        skillButton.style.border = "2px solid rgb(22 237 255)";
+        skillButton.style.border = "2px solid #16a085";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
         skillButton.style.padding = "6px 12px";
@@ -4273,11 +4285,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const skillNameSpan = document.createElement("span");
         skillNameSpan.textContent = skill.name;
-        if (skill.proxy_skill) {
-          manageTooltip(skillNameSpan, skill.proxy_skill.name);
-        } else if (skill.name.length > 30) {
+        if (skill.name.length > 30) {
           skillNameSpan.classList.add("truncate");
-          manageTooltip(skillNameSpan, skill.name);
+          if(skill.proxy_skill){
+            manageTooltip(skillNameSpan, skill.proxy_skill.name);
+          }
+          else{
+            manageTooltip(skillNameSpan, skill.name);
+          }
+        }else if (skill.proxy_skill){
+          manageTooltip(skillNameSpan, skill.proxy_skill.name);
         }
 
         if (description) {
@@ -4314,7 +4331,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               this.changeRateModelElement(skill);
             });
             buttonContentDiv.appendChild(starIcon);
-            skillButton.style.backgroundColor = "#E0DEFF";
+            skillButton.classList.add('rated-skill');
+            // skillButton.style.backgroundColor = "#E0DEFF";
           } else {
             const starIcon = document.createElement("i");
             starIcon.className = "fas fa-star";
@@ -6138,7 +6156,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           //   );
           // } else {\
 
-          if (response.ancestors.length > 0) {
+          if (response.ancestors.length > 1) {
             this.childrenSkillAPI(
               response.ancestors[1]["name"],
               response.ancestors[1]["path_addr"],
@@ -6179,7 +6197,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .then((response) => {
           // this.createSkillPath(this.cardBodyDiv, response.ancestors);
-          if (response.ancestors.length > 0) {
+          if (response.ancestors.length > 1) {
             this.childrenSkillAPI(
               response.ancestors[1]["name"],
               response.ancestors[1]["path_addr"],
@@ -6336,6 +6354,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
 
+  addHoverStyles = (element) => {
+    element.addEventListener("mouseover", () => {
+      element.style.backgroundColor = "#45e5c6"; 
+      element.style.color = "#ffffff";
+      element.style.fontWeight = "bold";
+      element.style.border = "1px solid #16a085";
+    });
+  
+    element.addEventListener("mouseout", () => {
+      element.style.backgroundColor = "#FFFFFF";
+      element.style.color = "#4f4f4f";
+      element.style.fontWeight = "500";
+      element.style.border = "1px solid #4f4f4f";
+    });
+  };
+
   renderSkills(skills, breadcrumbPath, softSkillAccordian) {
     if (!softSkillAccordian) {
       console.error("softSkillAccordian element is not defined.");
@@ -6373,6 +6407,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
+      this.addHoverStyles(skillButton);
+
       const childCount = skill.child_count || 0;
       const ratingsCount = skill.ratings ? skill.ratings.length : 0;
       const description = skill.description;
@@ -6384,11 +6420,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const skillNameSpan = document.createElement("span");
       skillNameSpan.textContent = skill.name;
-      if (skill.proxy_skill) {
-        manageTooltip(skillNameSpan, skill.proxy_skill.name);
-      } else if (skill.name.length > 30) {
+      if (skill.name.length > 30) {
         skillNameSpan.classList.add("truncate");
-        manageTooltip(skillNameSpan, skill.name);
+        if(skill.proxy_skill){
+          manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        }
+        else{
+          manageTooltip(skillNameSpan, skill.name);
+        }
+      }else if (skill.proxy_skill){
+        manageTooltip(skillNameSpan, skill.proxy_skill.name);
       }
 
       if (description) {
@@ -6429,7 +6470,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             event.stopPropagation();
             this.changeRateModelElement(skill);
           });
-          skillButton.style.backgroundColor = "#E0DEFF";
+          skillButton.classList.add('rated-skill');
+          // skillButton.style.backgroundColor = "#E0DEFF";
           buttonContentDiv.appendChild(starIcon);
         } else {
           const starIcon = document.createElement("i");
@@ -6620,7 +6662,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillList.forEach((skill) => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
-        skillButton.style.border = "2px solid rgb(22 237 255)";
+        skillButton.style.border = "2px solid #16a085";
         skillButton.style.borderRadius = "10px";
         skillButton.style.margin = "5px";
         skillButton.style.padding = "6px 12px";
@@ -6641,11 +6683,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const skillNameSpan = document.createElement("span");
         skillNameSpan.textContent = skill.name;
-        if (skill.proxy_skill) {
-          manageTooltip(skillNameSpan, skill.proxy_skill.name);
-        } else if (skill.name.length > 30) {
+        if (skill.name.length > 30) {
           skillNameSpan.classList.add("truncate");
-          manageTooltip(skillNameSpan, skill.name);
+          if(skill.proxy_skill){
+            manageTooltip(skillNameSpan, skill.proxy_skill.name);
+          }
+          else{
+            manageTooltip(skillNameSpan, skill.name);
+          }
+        }else if (skill.proxy_skill){
+          manageTooltip(skillNameSpan, skill.proxy_skill.name);
         }
 
         if (description) {
@@ -6682,7 +6729,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               this.changeRateModelElement(skill);
             });
             buttonContentDiv.appendChild(starIcon);
-            skillButton.style.backgroundColor = "#E0DEFF";
+            skillButton.classList.add('rated-skill');
+            // skillButton.style.backgroundColor = "#E0DEFF";
           } else {
             const starIcon = document.createElement("i");
             starIcon.className = "fas fa-star";
@@ -6803,9 +6851,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
+      this.addHoverStyles(skillButton);
+
+      // if (highlightSkill && skill.name === highlightSkill) {
+      //   skillButton.style.backgroundColor = "#45e5c6";
+      //   skillButton.style.border="1px solid #16a085";
+      //   skillButton.style.color="#ffffff";
+      // }
       if (highlightSkill && skill.name === highlightSkill) {
-        skillButton.style.backgroundColor = "rgb(216, 247, 245)";
-        skillButton.style.border="1px solid rgb(120, 248, 240)";
+        skillButton.classList.add('highlighted-skill');
       }
 
       const childCount = skill.child_count || 0;
@@ -6819,11 +6873,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const skillNameSpan = document.createElement("span");
       skillNameSpan.textContent = skill.name;
-      if (skill.proxy_skill) {
-        manageTooltip(skillNameSpan, skill.proxy_skill.name);
-      } else if (skill.name.length > 30) {
+      if (skill.name.length > 30) {
         skillNameSpan.classList.add("truncate");
-        manageTooltip(skillNameSpan, skill.name);
+        if(skill.proxy_skill){
+          manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        }
+        else{
+          manageTooltip(skillNameSpan, skill.name);
+        }
+      }else if (skill.proxy_skill){
+        manageTooltip(skillNameSpan, skill.proxy_skill.name);
       }
 
       if (description) {
@@ -6863,7 +6922,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             this.changeRateModelElement(skill);
           });
           buttonContentDiv.appendChild(starIcon);
-          skillButton.style.backgroundColor = "#E0DEFF";
+          skillButton.classList.add('rated-skill');
+          // skillButton.style.backgroundColor = "#E0DEFF";
         } else {
           const starIcon = document.createElement("i");
           starIcon.className = "fas fa-star";
@@ -7585,9 +7645,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
+      this.addHoverStyles(skillButton);
+
+      // if (highlightSkill && skill.name === highlightSkill) {
+      //   skillButton.style.backgroundColor = "#45e5c6";
+      //   skillButton.style.border="1px solid #16a085";
+      //   skillButton.style.color="#ffffff";
+      // }
       if (highlightSkill && skill.name === highlightSkill) {
-        skillButton.style.backgroundColor = "rgb(216, 247, 245)";
-        skillButton.style.border="1px solid rgb(120, 248, 240)";
+        skillButton.classList.add('highlighted-skill');
       }
 
       const childCount = skill.child_count || 0;
@@ -7601,11 +7667,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const skillNameSpan = document.createElement("span");
       skillNameSpan.textContent = skill.name;
-      if (skill.proxy_skill) {
-        manageTooltip(skillNameSpan, skill.proxy_skill.name);
-      } else if (skill.name.length > 30) {
+      if (skill.name.length > 30) {
         skillNameSpan.classList.add("truncate");
-        manageTooltip(skillNameSpan, skill.name);
+        if(skill.proxy_skill){
+          manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        }
+        else{
+          manageTooltip(skillNameSpan, skill.name);
+        }
+      }else if (skill.proxy_skill){
+        manageTooltip(skillNameSpan, skill.proxy_skill.name);
       }
 
       if (description) {
@@ -7642,7 +7713,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             this.changeRateModelElement(skill);
           });
           buttonContentDiv.appendChild(starIcon);
-          skillButton.style.backgroundColor = "#E0DEFF";
+          skillButton.classList.add('rated-skill');
+          // skillButton.style.backgroundColor = "#E0DEFF";
         } else {
           const starIcon = document.createElement("i");
           starIcon.className = "fas fa-star";
@@ -7784,9 +7856,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
+      this.addHoverStyles(skillButton);
+
+      // if (highlightSkill && skill.name === highlightSkill) {
+      //   skillButton.style.backgroundColor = "#45e5c6";
+      //   skillButton.style.border="1px solid #16a085";
+      //   skillButton.style.color="#ffffff";
+      // }
       if (highlightSkill && skill.name === highlightSkill) {
-        skillButton.style.backgroundColor = "rgb(216, 247, 245)";
-        skillButton.style.border="1px solid rgb(120, 248, 240)";
+        skillButton.classList.add('highlighted-skill');
       }
 
       const childCount = skill.child_count || 0;
@@ -7800,11 +7878,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const skillNameSpan = document.createElement("span");
       skillNameSpan.textContent = skill.name;
-      if (skill.proxy_skill) {
-        manageTooltip(skillNameSpan, skill.proxy_skill.name);
-      } else if (skill.name.length > 30) {
+      if (skill.name.length > 30) {
         skillNameSpan.classList.add("truncate");
-        manageTooltip(skillNameSpan, skill.name);
+        if(skill.proxy_skill){
+          manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        }
+        else{
+          manageTooltip(skillNameSpan, skill.name);
+        }
+      }else if (skill.proxy_skill){
+        manageTooltip(skillNameSpan, skill.proxy_skill.name);
       }
 
       if (description) {
@@ -7844,7 +7927,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             this.changeRateModelElement(skill);
           });
           buttonContentDiv.appendChild(starIcon);
-          skillButton.style.backgroundColor = "#E0DEFF";
+          skillButton.classList.add('rated-skill');
+          // skillButton.style.backgroundColor = "#E0DEFF";
         } else {
           const starIcon = document.createElement("i");
           starIcon.className = "fas fa-star";
