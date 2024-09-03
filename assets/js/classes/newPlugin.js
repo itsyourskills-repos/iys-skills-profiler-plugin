@@ -3857,7 +3857,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 this.changeRateModelElement(skillDetail);
               });
 
-              skillButton.style.backgroundColor = "#E0DEFF";
+              // skillButton.style.backgroundColor = "#E0DEFF";
+              skillButton.classList.add('rated-skill');
               buttonContentDiv.appendChild(starIcon);
               displaySelctedSkills();
               // myrate();
@@ -3955,7 +3956,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             this.changeRateModelElement(skillDetail);
           });
 
-          skillButton.style.backgroundColor = "#E0DEFF";
+          // skillButton.style.backgroundColor = "#E0DEFF";
+          skillButton.classList.add('rated-skill');
           buttonContentDiv.appendChild(starIcon);
           displaySelctedSkills();
         })
@@ -4309,6 +4311,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         buttonContentDiv.appendChild(skillNameSpan);
         if (childCount > 0) {
           const hoverCircleImg = document.createElement("img");
+          hoverCircleImg.className="hovercircle";
           hoverCircleImg.src = `${imagePath}hovercircle.png`;
           hoverCircleImg.alt = "circle";
           hoverCircleImg.style.width = "22px";
@@ -4352,12 +4355,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         skillButton.addEventListener("click", async () => {
           const allButtons = document.querySelectorAll(".softskillbutton");
-          allButtons.forEach((btn) =>
-            btn.classList.remove("active-skill-button")
-          );
+          allButtons.forEach((btn) => {
+            btn.classList.remove("active-skill-button");
+
+            const hoverCircle = btn.querySelector(".hovercircle");
+            if (hoverCircle) {
+                hoverCircle.style.filter = "none"; 
+            }
+          });
+    
 
           // Add active class to the clicked button
           skillButton.classList.add("active-skill-button");
+          const hoverCircle = skillButton.querySelector(".hovercircle");
+          if (hoverCircle) {
+            hoverCircle.style.filter = "brightness(0.7)"; // or remove the filter
+          }
 
           if (skill.child_count === 0 && skill.ratings.length > 0) {
             console.log("zeroskill-data", skill);
@@ -6179,7 +6192,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           // }
           setTimeout(() => {
             document.getElementById(skillId).click();
-          }, 700);
+          }, 900);
         })
         .catch((err) => {
           console.error(err);
@@ -6219,7 +6232,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           // }
           setTimeout(() => {
             document.getElementById(skillId).click();
-          }, 700);
+          }, 900);
         })
         .catch((err) => {
           console.error(err);
@@ -6354,12 +6367,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
   }
 
-  addHoverStyles = (element) => {
+  addHoverStyles = (element,hoverCircleImg) => {
     element.addEventListener("mouseover", () => {
-      element.style.backgroundColor = "#45e5c6"; 
+      element.style.backgroundColor = "#1abc9c"; 
       element.style.color = "#ffffff";
       element.style.fontWeight = "bold";
       element.style.border = "1px solid #16a085";
+
+      if(hoverCircleImg){
+        hoverCircleImg.style.filter = 'brightness(0.7)'; // Increase brightness
+      }
+
     });
   
     element.addEventListener("mouseout", () => {
@@ -6367,6 +6385,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       element.style.color = "#4f4f4f";
       element.style.fontWeight = "500";
       element.style.border = "1px solid #4f4f4f";
+
+      if (hoverCircleImg) {
+        hoverCircleImg.style.filter = 'none'; // Remove Brightness
+      }
+
     });
   };
 
@@ -6407,7 +6430,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
-      this.addHoverStyles(skillButton);
+      const hoverCircleImg = document.createElement("img");
+
+      this.addHoverStyles(skillButton,hoverCircleImg);
 
       const childCount = skill.child_count || 0;
       const ratingsCount = skill.ratings ? skill.ratings.length : 0;
@@ -6447,7 +6472,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       buttonContentDiv.appendChild(skillNameSpan);
 
       if (childCount > 0) {
-        const hoverCircleImg = document.createElement("img");
+        // const hoverCircleImg = document.createElement("img");
         hoverCircleImg.src = `${imagePath}hovercircle.png`;
         hoverCircleImg.alt = "circle";
         hoverCircleImg.style.width = "22px";
@@ -6707,6 +6732,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         buttonContentDiv.appendChild(skillNameSpan);
         if (childCount > 0) {
           const hoverCircleImg = document.createElement("img");
+          hoverCircleImg.className="hovercircle";
           hoverCircleImg.src = `${imagePath}hovercircle.png`;
           hoverCircleImg.alt = "circle";
           hoverCircleImg.style.width = "22px";
@@ -6750,12 +6776,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         skillButton.addEventListener("click", async () => {
           const allButtons = document.querySelectorAll(".softskillbutton");
-          allButtons.forEach((btn) =>
-            btn.classList.remove("active-skill-button")
-          );
+          allButtons.forEach((btn) => {
+            btn.classList.remove("active-skill-button");
+
+            const hoverCircle = btn.querySelector(".hovercircle");
+            if (hoverCircle) {
+                hoverCircle.style.filter = "none"; 
+            }
+          });
+    
 
           // Add active class to the clicked button
           skillButton.classList.add("active-skill-button");
+          const hoverCircle = skillButton.querySelector(".hovercircle");
+          if (hoverCircle) {
+            hoverCircle.style.filter = "brightness(0.7)"; // or remove the filter
+          }
 
           if (skill.child_count === 0 && skill.ratings.length > 0) {
             console.log("zeroskill-data", skill);
@@ -6851,7 +6887,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
-      this.addHoverStyles(skillButton);
+      const hoverCircleImg = document.createElement("img");
+
+      this.addHoverStyles(skillButton,hoverCircleImg);
 
       // if (highlightSkill && skill.name === highlightSkill) {
       //   skillButton.style.backgroundColor = "#45e5c6";
@@ -6859,7 +6897,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       //   skillButton.style.color="#ffffff";
       // }
       if (highlightSkill && skill.name === highlightSkill) {
-        skillButton.classList.add('highlighted-skill');
+        hoverCircleImg.classList.add("brightened");
+        skillButton.classList.add("highlighted-skill");
+      }
+      else{
+        hoverCircleImg.classList.remove("brightened");
       }
 
       const childCount = skill.child_count || 0;
@@ -6898,7 +6940,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       buttonContentDiv.appendChild(skillNameSpan);
 
       if (childCount > 0) {
-        const hoverCircleImg = document.createElement("img");
+        // const hoverCircleImg = document.createElement("img");
         hoverCircleImg.src = `${imagePath}hovercircle.png`;
         hoverCircleImg.alt = "circle";
         hoverCircleImg.style.width = "22px";
@@ -7645,7 +7687,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
-      this.addHoverStyles(skillButton);
+      const hoverCircleImg = document.createElement("img");
+
+      this.addHoverStyles(skillButton,hoverCircleImg);
 
       // if (highlightSkill && skill.name === highlightSkill) {
       //   skillButton.style.backgroundColor = "#45e5c6";
@@ -7653,7 +7697,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       //   skillButton.style.color="#ffffff";
       // }
       if (highlightSkill && skill.name === highlightSkill) {
-        skillButton.classList.add('highlighted-skill');
+        hoverCircleImg.classList.add("brightened");
+        skillButton.classList.add("highlighted-skill");
+      }
+      else{
+        hoverCircleImg.classList.remove("brightened");
       }
 
       const childCount = skill.child_count || 0;
@@ -7690,7 +7738,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       buttonContentDiv.appendChild(skillNameSpan);
       if (childCount > 0) {
-        const hoverCircleImg = document.createElement("img");
+        // const hoverCircleImg = document.createElement("img");
         hoverCircleImg.src = `${imagePath}hovercircle.png`;
         hoverCircleImg.alt = "circle";
         hoverCircleImg.style.width = "22px";
@@ -7856,7 +7904,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "16px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
-      this.addHoverStyles(skillButton);
+      const hoverCircleImg = document.createElement("img");
+
+      this.addHoverStyles(skillButton,hoverCircleImg);
 
       // if (highlightSkill && skill.name === highlightSkill) {
       //   skillButton.style.backgroundColor = "#45e5c6";
@@ -7864,7 +7914,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       //   skillButton.style.color="#ffffff";
       // }
       if (highlightSkill && skill.name === highlightSkill) {
-        skillButton.classList.add('highlighted-skill');
+        hoverCircleImg.classList.add("brightened");
+        skillButton.classList.add("highlighted-skill");
+      }
+      else{
+        hoverCircleImg.classList.remove("brightened");
       }
 
       const childCount = skill.child_count || 0;
@@ -7903,7 +7957,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       buttonContentDiv.appendChild(skillNameSpan);
 
       if (childCount > 0) {
-        const hoverCircleImg = document.createElement("img");
+        // const hoverCircleImg = document.createElement("img");
         hoverCircleImg.src = `${imagePath}hovercircle.png`;
         hoverCircleImg.alt = "circle";
         hoverCircleImg.style.width = "22px";
