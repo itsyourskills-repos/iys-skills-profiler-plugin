@@ -331,15 +331,21 @@ div#mySkillPluginSerachId {
   color: #fff;
 }
 .active-skill-button {
-  background-color: #45e5c6 !important;
+  background-color: #1abc9c !important;
   border: 1px solid #16a085 !important;
   color:#ffffff !important;
+  font-weight: bold !important;
 }
 
 .highlighted-skill {
-  background-color: #45e5c6 !important;
+  background-color: #1abc9c !important;
   border: 1px solid #16a085 !important;
   color: #ffffff !important;
+  font-weight: bold !important;
+}
+
+.brightened {
+  filter: brightness(0.7)!important;
 }
 
 .rated-skill {
