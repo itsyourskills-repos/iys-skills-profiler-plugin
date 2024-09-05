@@ -429,12 +429,13 @@ function findObjectByParentID(data, parentID) {
 }
 
 // check string for rate button
-function searchByName(searchName) {
+function searchByName(searchName,pathAddr) {
   const data = sortRatingByLocalStorage();
   const searchResult = [];
   data.forEach((item) => {
     item.RatedSkills.forEach((skill) => {
       if (
+        skill.isot_file.path_addr === pathAddr &&
         skill.isot_file.name.toLowerCase().includes(searchName.toLowerCase())
       ) {
         searchResult.push(skill);
@@ -825,12 +826,13 @@ function addTolocalStorage(userRatedSkill) {
 
 function getListFromlocalStorage() {
   if(isLoginUser){
-    if (localStorage.getItem("logginUserRatedSkills")) {
-        return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
-    }
-    else {
-        return [];
-    }
+      if (localStorage.getItem("userRatedSkills")) {
+          return JSON.parse(localStorage.getItem("userRatedSkills"));
+      } else if (localStorage.getItem("logginUserRatedSkills")) {
+          return JSON.parse(localStorage.getItem("logginUserRatedSkills"));
+      } else {
+          return [];
+      }
   }
   else{
     if (localStorage.getItem("sampleUserRatedSkills")) {
@@ -4323,7 +4325,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         if (ratingsCount > 0) {
-          const searchText = searchByName(skill.name);
+          const searchText = searchByName(skill.name,skill.path_addr);
           if (searchText.length > 0) {
             const starIcon = document.createElement("img");
             starIcon.src = `${imagePath}Group 23.svg`;
@@ -4479,7 +4481,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       ol.appendChild(li);
       if (skill.ratings && skill.ratings.length > 0) {
         console.log(skill);
-        const searchText = searchByName(skill.name);
+        const searchText = searchByName(skill.name,skill.path_addr);
         if (searchText.length > 0) {
           const starIcon = document.createElement("img");
           starIcon.src = `${imagePath}Group 23.svg`;
@@ -5089,7 +5091,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     buttonContentDiv.appendChild(skillNameSpan);
 
     if (ratingsCount > 0) {
-      const searchText = searchByName(skillDetail.skills[0].name);
+      const searchText = searchByName(skillDetail.skills[0].name,skillDetail.skills[0].path_addr);
       // if (searchText.length > 0) {
       //   const starIcon = document.createElement("img");
       //   starIcon.src = `${imagePath}Group 23.svg`;
@@ -6485,7 +6487,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       if (ratingsCount > 0) {
-        const searchText = searchByName(skill.name);
+        const searchText = searchByName(skill.name,skill.path_addr);
         if (searchText.length > 0) {
           const starIcon = document.createElement("img");
           starIcon.src = `${imagePath}Group 23.svg`;
@@ -6620,7 +6622,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const rateButtonSpan = document.createElement("span");
 
-      const searchText = searchByName(currentBreadcrumbItem.name);
+      const searchText = searchByName(currentBreadcrumbItem.name,currentBreadcrumbItem.path_addr);
       if (searchText.length > 0) {
         rateButton.style.backgroundColor = "#E0DEFF";
         rateButtonSpan.textContent = "Rated";
@@ -6744,7 +6746,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
 
         if (ratingsCount > 0) {
-          const searchText = searchByName(skill.name);
+          const searchText = searchByName(skill.name,skill.path_addr);
           if (searchText.length > 0) {
             const starIcon = document.createElement("img");
             starIcon.src = `${imagePath}Group 23.svg`;
@@ -6953,8 +6955,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       if (ratingsCount > 0) {
-        const searchText = searchByName(skill.name);
+        const searchText = searchByName(skill.name,skill.path_addr);
+        console.log(searchText);
         if (searchText.length > 0) {
+          console.log("entered");
           const starIcon = document.createElement("img");
           starIcon.src = `${imagePath}Group 23.svg`;
           starIcon.style.marginLeft = "5px";
@@ -7162,7 +7166,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const rateButtonSpan = document.createElement("span");
 
-      const searchText = searchByName(currentBreadcrumbItem.name);
+      const searchText = searchByName(currentBreadcrumbItem.name,currentBreadcrumbItem.path_addr);
 
       if (searchText.length > 0) {
         rateButton.style.backgroundColor = "#E0DEFF";
@@ -7278,7 +7282,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const rateButtonSpan = document.createElement("span");
 
-        const searchText = searchByName(clickedSkill.name);
+        const searchText = searchByName(clickedSkill.name,clickedSkill.path_addr);
         if (searchText.length > 0) {
           rateButton.style.backgroundColor = "#E0DEFF";
           rateButtonSpan.textContent = "Rated";
@@ -7394,7 +7398,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       if (ratingsCount > 0) {
-        const searchText = searchByName(skill.name);
+        const searchText = searchByName(skill.name,skill.path_addr);
         if (searchText.length > 0) {
           const starIcon = document.createElement("img");
           starIcon.src = `${imagePath}Group 23.svg`;
@@ -7593,7 +7597,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const rateButtonSpan = document.createElement("span");
 
-      const searchText = searchByName(currentBreadcrumbItem.name);
+      const searchText = searchByName(currentBreadcrumbItem.name,currentBreadcrumbItem.path_addr);
 
       if (searchText.length > 0) {
         rateButton.style.backgroundColor = "#E0DEFF";
@@ -7750,7 +7754,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       if (ratingsCount > 0) {
-        const searchText = searchByName(skill.name);
+        const searchText = searchByName(skill.name,skill.path_addr);
         if (searchText.length > 0) {
           const starIcon = document.createElement("img");
           starIcon.src = `${imagePath}Group 23.svg`;
@@ -7970,7 +7974,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       if (ratingsCount > 0) {
-        const searchText = searchByName(skill.name);
+        const searchText = searchByName(skill.name,skill.path_addr);
         if (searchText.length > 0) {
           const starIcon = document.createElement("img");
           starIcon.src = `${imagePath}Group 23.svg`;
@@ -8219,7 +8223,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const rateButtonSpan = document.createElement("span");
 
-      const searchText = searchByName(currentBreadcrumbItem.name);
+      const searchText = searchByName(currentBreadcrumbItem.name,currentBreadcrumbItem.path_addr);
 
       if (searchText.length > 0) {
         rateButton.style.backgroundColor = "#E0DEFF";
