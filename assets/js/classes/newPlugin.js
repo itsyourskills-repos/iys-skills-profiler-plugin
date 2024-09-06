@@ -5372,17 +5372,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const imagePathBase = imagePath;
 
-        if (percentage === 0) {
-          const image0 = document.createElement("img");
-          image0.src = imagePathBase + "0rate.png";
-          image0.style.width = "30px";
-          image0.style.height = "30px";
-          image0.style.margin = "auto";
-          image0.style.display = "block";
-          if (iysplugin.doughnt && tagsString != "Certifications") {
-            skillContainer.appendChild(image0);
-          }
-        }
+        // if (percentage === 0) {
+        //   const image0 = document.createElement("img");
+        //   image0.src = imagePathBase + "0rate.png";
+        //   image0.style.width = "30px";
+        //   image0.style.height = "30px";
+        //   image0.style.margin = "auto";
+        //   image0.style.display = "block";
+        //   if (iysplugin.doughnt && tagsString != "Certifications") {
+        //     skillContainer.appendChild(image0);
+        //   }
+        // }
         if (percentage === 25) {
           const image25 = document.createElement("img");
           image25.src = imagePathBase + "25.png";
@@ -5619,15 +5619,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         let showCalendarIcon = false;
 
         if (skill.rating.length === 2) {
-          ratingLabel =
-            skill.isot_file.ratings[1].rating_scale_label[ratingValue - 1];
-          showCalendarIcon =
-            skill.isot_file.ratings[1].rating_category === "Experience Level";
+            if(ratingValue > 0)
+            {
+                ratingLabel =
+                    skill.isot_file.ratings[1].rating_scale_label[ratingValue - 1];
+                showCalendarIcon =
+                    skill.isot_file.ratings[1].rating_category === "Experience Level";
+            }
         } else {
-          ratingLabel =
-            skill.isot_file.ratings[0].rating_scale_label[ratingValue - 1];
-          showCalendarIcon =
-            skill.isot_file.ratings[0].rating_category === "Experience Level";
+            if(ratingValue > 0){
+                ratingLabel =
+                    skill.isot_file.ratings[0].rating_scale_label[ratingValue - 1];
+                showCalendarIcon =
+                    skill.isot_file.ratings[0].rating_category === "Experience Level";
+            }
         }
 
         experienceDetails.innerHTML = showCalendarIcon
@@ -5655,15 +5660,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const ratingDetails = document.createElement("div");
         ratingDetails.className = "px-2";
 
-        if (percentage === 0) {
-          const image0 = document.createElement("img");
-          image0.src = imagePathBase + "0rate.png";
-          image0.style.width = "40px";
-          image0.style.height = "40px";
-          image0.style.margin = "auto";
-          image0.style.display = "block";
-          ratingDetails.appendChild(image0);
-        }
+        // if (percentage === 0) {
+        //   const image0 = document.createElement("img");
+        //   image0.src = imagePathBase + "0rate.png";
+        //   image0.style.width = "40px";
+        //   image0.style.height = "40px";
+        //   image0.style.margin = "auto";
+        //   image0.style.display = "block";
+        //   ratingDetails.appendChild(image0);
+        // }
         if (percentage === 25) {
           const image25 = document.createElement("img");
           image25.src = imagePathBase + "25.png";
