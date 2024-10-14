@@ -6015,11 +6015,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           // skillIdElement.removeChild(loader);
           skillIdElement.innerHTML = previousContent;
 
+          // const skillsWithTwoTags = response.filter(
+          //   (skill) => skill.tags.length === 2
+          // );
+          // const otherSkills = response.filter(
+          //   (skill) => skill.tags.length !== 2
+          // );
           const skillsWithTwoTags = response.filter(
-            (skill) => skill.tags.length === 2
+            (skill) => 
+              skill.tags.some(tag => tag.title === "Skills Category")
           );
+          
           const otherSkills = response.filter(
-            (skill) => skill.tags.length !== 2
+            (skill) => 
+              !skill.tags.some(tag => tag.title === "Skills Category")
           );
           console.log(otherSkills);
           console.log(skillsWithTwoTags);
@@ -6082,11 +6091,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           // selectedSkillDiv.removeChild(loader);
           selectedSkillDiv.innerHTML = previousContent;
 
+          // const skillsWithTwoTags = response.filter(
+          //   (skill) => skill.tags.length === 2
+          // );
+          // const otherSkills = response.filter(
+          //   (skill) => skill.tags.length !== 2
+          // );
           const skillsWithTwoTags = response.filter(
-            (skill) => skill.tags.length === 2
+            (skill) => 
+              skill.tags.some(tag => tag.title === "Skills Category")
           );
+          
           const otherSkills = response.filter(
-            (skill) => skill.tags.length !== 2
+            (skill) => 
+              !skill.tags.some(tag => tag.title === "Skills Category")
           );
           console.log(otherSkills);
           console.log(skillsWithTwoTags);
