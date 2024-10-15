@@ -799,29 +799,52 @@ function transformDataFromLocalStorage(originalData) {
   return transformedData;
 }
 
+// function addTolocalStorage(userRatedSkill) {
+//   // Get the existing list from local storage
+//   const existingList = JSON.parse(
+//     localStorage.getItem("userRatedSkills") || "[]"
+//   );
+
+//   // Check if the userRatedSkill already exists in the list
+//   const index = existingList.findIndex(
+//     (existingItem) =>
+//       existingItem.isot_file_id === userRatedSkill.isot_file_id &&
+//       existingItem.isot_file_id === userRatedSkill.isot_file_id
+//   );
+
+//   if (index !== -1) {
+//     // Remove the existing element from the list
+//     existingList.splice(index, 1);
+//   }
+
+//   // Add the new userRatedSkill to the list
+//   const newList = [...existingList, userRatedSkill];
+
+//   // Save the updated list in localStorage
+//   localStorage.setItem("userRatedSkills", JSON.stringify(newList));
+// }
 function addTolocalStorage(userRatedSkill) {
   // Get the existing list from local storage
   const existingList = JSON.parse(
     localStorage.getItem("userRatedSkills") || "[]"
   );
 
-  // Check if the userRatedSkill already exists in the list
+  // Find the index of the userRatedSkill if it exists
   const index = existingList.findIndex(
     (existingItem) =>
-      existingItem.isot_file_id === userRatedSkill.isot_file_id &&
       existingItem.isot_file_id === userRatedSkill.isot_file_id
   );
 
   if (index !== -1) {
-    // Remove the existing element from the list
-    existingList.splice(index, 1);
+    // If the skill already exists, update it in place
+    existingList[index] = userRatedSkill;
+  } else {
+    // If the skill doesn't exist, add it to the list
+    existingList.push(userRatedSkill);
   }
 
-  // Add the new userRatedSkill to the list
-  const newList = [...existingList, userRatedSkill];
-
-  // Save the updated list in localStorage
-  localStorage.setItem("userRatedSkills", JSON.stringify(newList));
+  // Save the updated list back to localStorage
+  localStorage.setItem("userRatedSkills", JSON.stringify(existingList));
 }
 
 function getListFromlocalStorage() {
