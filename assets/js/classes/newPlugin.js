@@ -4461,9 +4461,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
 
         // Automatically click the skill if it matches clickedSkillParentName
-        if (skill.name === clickedSkillParentName) {
+        if (skill.name === "Related Skills" || skill.name === clickedSkillParentName) {
           skillButton.click();
         }
+        // if (skill.name === clickedSkillParentName) {
+        //   skillButton.click();
+        // }
 
         skillsContainer.appendChild(skillButton);
       });
