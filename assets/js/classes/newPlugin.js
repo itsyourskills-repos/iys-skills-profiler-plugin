@@ -5414,6 +5414,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           image25.src = imagePathBase + "25.png";
           image25.style.width = "30px";
           image25.style.height = "30px";
+          image25.style.transform = "rotate(270deg)";
           image25.style.margin = "auto";
           image25.style.display = "block";
           if (iysplugin.doughnt && tagsString != "Certifications") {
@@ -5698,6 +5699,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         if (percentage === 25) {
           const image25 = document.createElement("img");
           image25.src = imagePathBase + "25.png";
+          image25.style.transform = "rotate(270deg)";
           image25.style.width = "40px";
           image25.style.height = "40px";
           image25.style.margin = "auto";
