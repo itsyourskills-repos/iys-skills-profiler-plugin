@@ -137,6 +137,60 @@ function findObjectByIsotFileId(array, isotFileId) {
   return null;
 }
 
+// function checkElementExist(skillDetail) {
+//   console.log(skillDetail, "skillDetail");
+//   if (localStorage.getItem("logginUserRatedSkills")) {
+//     let userRatedSkills = JSON.parse(
+//       localStorage.getItem("logginUserRatedSkills", "[]")
+//     );
+
+//     const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
+
+//     console.log("lastTwoId", lastTwoId);
+//     console.log("userRatedSkills", userRatedSkills);
+
+//     // checking it atlest have parent id
+//     if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
+//       let foundObject = userRatedSkills.find((skill) =>
+//         skill.isot_path_addr.endsWith(lastTwoId)
+//       );
+//       if (foundObject) {
+//         return foundObject;
+//       }
+//     }
+//     let foundObject = userRatedSkills?.find((skill) =>
+//       skill.isot_path_addr.endsWith(skillDetail.path_addr)
+//     );
+//     if (foundObject) {
+//       return foundObject;
+//     } else {
+//       return null;
+//     }
+//   } else {
+//     let userRatedSkills = JSON.parse(
+//       localStorage.getItem("userRatedSkills", "[]")
+//     );
+//     const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
+//     // checking it atlest have parent id
+//     if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
+//       let foundObject = userRatedSkills.find((skill) =>
+//         skill.isot_file_id.endsWith(lastTwoId)
+//       );
+//       if (foundObject) {
+//         return foundObject;
+//       }
+//     }
+//     let foundObject = userRatedSkills?.find((skill) =>
+//       skill.isot_file_id.endsWith(skillDetail.path_addr)
+//     );
+//     if (foundObject) {
+//       return foundObject;
+//     } else {
+//       return null;
+//     }
+//   }
+// }
+
 function checkElementExist(skillDetail) {
   console.log(skillDetail, "skillDetail");
   if (localStorage.getItem("logginUserRatedSkills")) {
@@ -144,22 +198,10 @@ function checkElementExist(skillDetail) {
       localStorage.getItem("logginUserRatedSkills", "[]")
     );
 
-    const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
-
-    console.log("lastTwoId", lastTwoId);
-    console.log("userRatedSkills", userRatedSkills);
-
-    // checking it atlest have parent id
-    if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
-      let foundObject = userRatedSkills.find((skill) =>
-        skill.isot_path_addr.endsWith(lastTwoId)
-      );
-      if (foundObject) {
-        return foundObject;
-      }
-    }
+    const skillPathAddr = skillDetail.path_addr;
+    const skillEndId = skillPathAddr.split('.').pop();
     let foundObject = userRatedSkills?.find((skill) =>
-      skill.isot_path_addr.endsWith(skillDetail.path_addr)
+      skill.isot_path_addr.endsWith(skillEndId)
     );
     if (foundObject) {
       return foundObject;
@@ -170,18 +212,11 @@ function checkElementExist(skillDetail) {
     let userRatedSkills = JSON.parse(
       localStorage.getItem("userRatedSkills", "[]")
     );
-    const lastTwoId = skillDetail.path_addr.split(".").slice(-2).join(".");
-    // checking it atlest have parent id
-    if (lastTwoId.split(".").length >= 2 && userRatedSkills) {
-      let foundObject = userRatedSkills.find((skill) =>
-        skill.isot_file_id.endsWith(lastTwoId)
-      );
-      if (foundObject) {
-        return foundObject;
-      }
-    }
+    const skillPathAddr = skillDetail.path_addr;
+    const skillEndId = skillPathAddr.split('.').pop();
+
     let foundObject = userRatedSkills?.find((skill) =>
-      skill.isot_file_id.endsWith(skillDetail.path_addr)
+      skill.isot_file_id.endsWith(skillEndId)
     );
     if (foundObject) {
       return foundObject;
@@ -429,15 +464,32 @@ function findObjectByParentID(data, parentID) {
 }
 
 // check string for rate button
+// function searchByName(searchName,pathAddr) {
+//   const data = sortRatingByLocalStorage();
+//   const searchResult = [];
+//   data.forEach((item) => {
+//     item.RatedSkills.forEach((skill) => {
+//       if (
+//         skill.isot_file.path_addr === pathAddr &&
+//         skill.isot_file.name.toLowerCase().includes(searchName.toLowerCase())
+//       ) {
+//         searchResult.push(skill);
+//       }
+//     });
+//   });
+//   return searchResult;
+// }
+
 function searchByName(searchName,pathAddr) {
   const data = sortRatingByLocalStorage();
   const searchResult = [];
   data.forEach((item) => {
     item.RatedSkills.forEach((skill) => {
-      if (
-        skill.isot_file.path_addr === pathAddr &&
-        skill.isot_file.name.toLowerCase().includes(searchName.toLowerCase())
-      ) {
+      const skillPathAddr = skill.isot_file.path_addr;
+      const skillNameMatches = skill.isot_file.name.toLowerCase().includes(searchName.toLowerCase());
+      const skillEndId = skillPathAddr.split('.').pop();
+      const pathAddrEndId = pathAddr.split('.').pop();
+      if (skillEndId === pathAddrEndId && skillNameMatches) {
         searchResult.push(skill);
       }
     });
