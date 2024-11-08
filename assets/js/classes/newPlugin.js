@@ -765,7 +765,46 @@ function hideErrorMessage(errorElement) {
 }
 
 // Helper function to create the dropdown (select element)
-function createDropdown() {
+// function createDropdown() {
+//   const dropdown = document.createElement("select");
+//   dropdown.style.width = "100%";
+//   dropdown.style.padding = "13px";
+//   dropdown.style.border = "1px solid #E6E6E6";
+//   dropdown.style.borderRadius = "4px";
+//   dropdown.style.marginBottom = "10px";
+//   dropdown.style.background = "white";
+//   dropdown.style.fontSize = "1em";
+//   dropdown.style.appearance = "none";
+//   dropdown.style.backgroundImage = `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`;
+//   dropdown.style.backgroundRepeat = "no-repeat";
+//   dropdown.style.backgroundPosition = "right 9px center";
+//   dropdown.style.backgroundSize = "1em";
+
+//   const defaultOption = document.createElement("option");
+//   defaultOption.disabled = true;
+//   defaultOption.selected = true;
+//   defaultOption.value = "";
+//   defaultOption.text = "Select Category";
+//   dropdown.appendChild(defaultOption);
+
+//   const optionsArray = [
+//     "Profile and Occupation",
+//     "Knowledge and Skills",
+//     "Tools and Technologies",
+//     "Activities",
+//     "Domain or Context",
+//   ];
+//   const options = {};
+
+//   optionsArray.forEach((optionText, index) => {
+//     options[index + 1] = createDropdownOption(optionText);
+//     dropdown.appendChild(options[index + 1]);
+//   });
+
+//   return dropdown;
+// }
+
+async function createDropdown() {
   const dropdown = document.createElement("select");
   dropdown.style.width = "100%";
   dropdown.style.padding = "13px";
@@ -780,6 +819,7 @@ function createDropdown() {
   dropdown.style.backgroundPosition = "right 9px center";
   dropdown.style.backgroundSize = "1em";
 
+  // Add default option
   const defaultOption = document.createElement("option");
   defaultOption.disabled = true;
   defaultOption.selected = true;
@@ -787,19 +827,21 @@ function createDropdown() {
   defaultOption.text = "Select Category";
   dropdown.appendChild(defaultOption);
 
-  const optionsArray = [
-    "Profile and Occupation",
-    "Knowledge and Skills",
-    "Tools and Technologies",
-    "Activities",
-    "Domain or Context",
-  ];
-  const options = {};
+  // Fetch categories from the API
+  try {
+    const response = await fetch('https://uat-lambdaapi.iysskillstech.com/latest/dev-api/categories/');
+    const categories = await response.json();
 
-  optionsArray.forEach((optionText, index) => {
-    options[index + 1] = createDropdownOption(optionText);
-    dropdown.appendChild(options[index + 1]);
-  });
+    // Populate the dropdown with category titles and IDs
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category._id; // Set the ID as the option's value
+      option.textContent = category.title;
+      dropdown.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Failed to fetch categories:", error);
+  }
 
   return dropdown;
 }
@@ -1154,7 +1196,7 @@ function ResetButton(htmlElement, disabled) {
 // Function to handle API calling for  "Add Skill" button click
 function addSkillToApi(payload) {
   // API endpoint (replace with your actual API endpoint)
-  const apiEndpoint = `https://lambdaapi.iysskillstech.com/v2/add/skills?name=${payload.name}&cat=${payload.cat}&email=${payload.email}`;
+  const apiEndpoint = `https://uat-lambdaapi.iysskillstech.com/latest/dev-api/add-skill`;
   // Make the API call using the fetch API
   return fetch(apiEndpoint, {
     method: "POST",
@@ -1162,6 +1204,7 @@ function addSkillToApi(payload) {
       "Content-Type": "application/json",
       // Add any additional headers if needed
     },
+    body: JSON.stringify(payload)
   })
     .then((response) => {
       if (!response.ok) {
@@ -1607,7 +1650,7 @@ class IysSearchPlugin {
   }
 
   // Function to open the Add Skill modal with two inputs and labels
-  openAddSkillModal(searchText) {
+  async openAddSkillModal(searchText) {
     const modalDiv = document.createElement("div");
     modalDiv.classList.add("modal", "fade", "show");
     modalDiv.style.display = "flex";
@@ -1709,7 +1752,7 @@ class IysSearchPlugin {
       'Category <span style="color:red">*</span>'
     );
     // Create the dropdown (select element)
-    const dropdown = createDropdown();
+    const dropdown = await createDropdown();
     inputContainer2.appendChild(dropdown);
 
     // Create error messages
@@ -1794,11 +1837,14 @@ class IysSearchPlugin {
       // Get the values from elementInputField and dropdownButton
       const emailValue = emailInputField.value.trim();
       const elementValue = elementInputField.value.trim();
-      const selectedCategory = dropdown.value;
+      // const selectedCategory = dropdown.value;
+      const selectedCategoryId = dropdown.value;
+      const selectedCategoryText = dropdown.options[dropdown.selectedIndex]?.text;
 
       const reqData = {
         name: elementValue,
-        cat: selectedCategory,
+        cat: selectedCategoryText,
+        cat_id:selectedCategoryId,
         email: emailValue,
       };
 
@@ -1823,7 +1869,7 @@ class IysSearchPlugin {
       }
 
       // Validate category
-      if (selectedCategory === "") {
+      if (selectedCategoryId === "") {
         displayErrorMessage(categoryError, "Category is required");
       } else {
         hideErrorMessage(categoryError);
@@ -1833,7 +1879,7 @@ class IysSearchPlugin {
       if (
         emailValue === "" ||
         elementValue === "" ||
-        selectedCategory === "" ||
+        selectedCategoryId === "" ||
         emailError.textContent !== ""
       ) {
         return; // Do not proceed if there are errors
