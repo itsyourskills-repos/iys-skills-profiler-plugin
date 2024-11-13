@@ -8109,7 +8109,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       buttonContentDiv.appendChild(skillNameSpan);
 
-      if (childCount > 0) {
+      if (childCount > 0 && childCount !=1) {
         // const hoverCircleImg = document.createElement("img");
         hoverCircleImg.src = `${imagePath}hovercircle.png`;
         hoverCircleImg.alt = "circle";
@@ -8121,7 +8121,27 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         buttonContentDiv.appendChild(hoverCircleImg);
         manageTooltip(hoverCircleImg, tooltip);
       }
-
+      else if (childCount === 1) {
+        // Fetch child skills if childCount is 1
+        const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
+        this.fetchSkills(childSkillApiEndpoint).then((childSkills) => {
+          if (Array.isArray(childSkills)) {
+            const validChildSkills = childSkills.filter(
+              (childSkill) => childSkill.name !== "Related Skills"
+            );
+            if (validChildSkills.length > 0) {
+              hoverCircleImg.src = `${imagePath}hovercircle.png`;
+              hoverCircleImg.alt = "circle";
+              hoverCircleImg.style.width = "22px";
+              hoverCircleImg.style.height = "22px";
+              var tooltip = `${childCount} sub categories`;
+              hoverCircleImg.style.marginLeft = "10px";
+              buttonContentDiv.appendChild(hoverCircleImg);
+              manageTooltip(hoverCircleImg, tooltip);
+            }
+          }
+        })
+      }
       if (ratingsCount > 0) {
         const searchText = searchByName(skill.name,skill.path_addr);
         if (searchText.length > 0) {
