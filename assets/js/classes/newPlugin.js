@@ -827,18 +827,22 @@ async function createDropdown() {
   defaultOption.text = "Select Category";
   dropdown.appendChild(defaultOption);
 
-  // Fetch categories from the API
+  // Predefined selected category IDs
+  const selectedCategoryIds = ["tags/2", "tags/3", "tags/4", "tags/11", "tags/16"];
+
   try {
-    const response = await fetch('https://uat-lambdaapi.iysskillstech.com/latest/dev-api/categories/');
+    const response = await fetch(`${ENDPOINT_URL}categories`);
     const categories = await response.json();
 
-    // Populate the dropdown with category titles and IDs
-    categories.forEach(category => {
-      const option = document.createElement("option");
-      option.value = category._id; // Set the ID as the option's value
-      option.textContent = category.title;
-      dropdown.appendChild(option);
-    });
+    // Filter categories by selectedCategoryIds and populate the dropdown
+    categories
+      .filter(category => selectedCategoryIds.includes(category._id)) // Filter only selected categories
+      .forEach(category => {
+        const option = document.createElement("option");
+        option.value = category._id;
+        option.textContent = category.title;
+        dropdown.appendChild(option);
+      });
   } catch (error) {
     console.error("Failed to fetch categories:", error);
   }
@@ -7890,7 +7894,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       }
 
       buttonContentDiv.appendChild(skillNameSpan);
-      if (childCount > 0) {
+      if (childCount > 0 && childCount != 1) {
         // const hoverCircleImg = document.createElement("img");
         hoverCircleImg.src = `${imagePath}hovercircle.png`;
         hoverCircleImg.alt = "circle";
@@ -7900,6 +7904,29 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         hoverCircleImg.style.marginLeft = "10px";
         buttonContentDiv.appendChild(hoverCircleImg);
         manageTooltip(hoverCircleImg, tooltip);
+      }
+      else if (childCount === 1) {
+        // Fetch child skills if childCount is 1
+        const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
+        this.fetchSkills(childSkillApiEndpoint).then((childSkills) => {
+          if (Array.isArray(childSkills)) {
+            const validChildSkills = childSkills.filter(
+              (childSkill) => childSkill.name !== "Related Skills"
+            );
+            if (validChildSkills.length === 0) {
+                skill.child_count = 0;
+            } else {
+              hoverCircleImg.src = `${imagePath}hovercircle.png`;
+              hoverCircleImg.alt = "circle";
+              hoverCircleImg.style.width = "22px";
+              hoverCircleImg.style.height = "22px";
+              var tooltip = `${childCount} sub categories`;
+              hoverCircleImg.style.marginLeft = "10px";
+              buttonContentDiv.appendChild(hoverCircleImg);
+              manageTooltip(hoverCircleImg, tooltip);
+            }
+          }
+        })
       }
 
       if (ratingsCount > 0) {
@@ -7970,6 +7997,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         } else {
           if (skill.child_count > 0 && skill.name !== "Related Skills") {
+            this.changeRateModelElement(skill);
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
@@ -8129,7 +8157,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             const validChildSkills = childSkills.filter(
               (childSkill) => childSkill.name !== "Related Skills"
             );
-            if (validChildSkills.length > 0) {
+            if (validChildSkills.length === 0) {
+                skill.child_count = 0;
+            } else {
               hoverCircleImg.src = `${imagePath}hovercircle.png`;
               hoverCircleImg.alt = "circle";
               hoverCircleImg.style.width = "22px";
@@ -8219,6 +8249,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         } else {
           if (skill.child_count > 0 && skill.name !== "Related Skills") {
+            this.changeRateModelElement(skill);
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
