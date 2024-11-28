@@ -4536,6 +4536,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             }
           } else {
             if (skill.child_count > 0 && skill.name !== "Related Skills") {
+              if(skill.ratings.length > 0){
+                this.changeRateModelElement(skill);
+              }
               const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
               const childSkills = await this.fetchSkills(childSkillApiEndpoint);
               const validChildSkills = childSkills.filter(
@@ -7997,7 +8000,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         } else {
           if (skill.child_count > 0 && skill.name !== "Related Skills") {
-            this.changeRateModelElement(skill);
+            if(skill.ratings.length > 0){
+              this.changeRateModelElement(skill);
+            }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
@@ -8249,7 +8254,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         } else {
           if (skill.child_count > 0 && skill.name !== "Related Skills") {
-            this.changeRateModelElement(skill);
+            if(skill.ratings.length > 0){
+              this.changeRateModelElement(skill);
+            }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
