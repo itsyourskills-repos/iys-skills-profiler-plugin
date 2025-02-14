@@ -2511,7 +2511,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     navPillsDiv.style = "display:inline-block; width:100%;";
 
     var btnGroupDiv = document.createElement("div");
-    btnGroupDiv.className = "d-flex";
+    // btnGroupDiv.className = "d-flex";
+    btnGroupDiv.className = "d-none";
     // btnGroupDiv.setAttribute("role", "group");
     btnGroupDiv.setAttribute("aria-label", "Three views");
     btnGroupDiv.style =
@@ -2549,7 +2550,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     tabContentDiv3.style = "box-shadow:none;";
 
     var quickTabContentDiv = document.createElement("div");
-    quickTabContentDiv.className = "tab-pane fade show active";
+    // quickTabContentDiv.className = "tab-pane fade show active";
+    quickTabContentDiv.className = "tab-pane fade";
     quickTabContentDiv.id = "quick-tab-content";
     quickTabContentDiv.setAttribute("role", "tabpanel");
     quickTabContentDiv.setAttribute("aria-labelledby", "home-tab0");
@@ -2571,7 +2573,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     quickTabContentDiv.appendChild(quickViewContentDiv);
 
     var tabularTabContentDiv = document.createElement("div");
-    tabularTabContentDiv.className = "tab-pane fade";
+    // tabularTabContentDiv.className = "tab-pane fade";
+    tabularTabContentDiv.className = "tab-pane fade show active";
     tabularTabContentDiv.id = "tabular-tab-content";
     tabularTabContentDiv.setAttribute("role", "tabpanel");
     tabularTabContentDiv.setAttribute("aria-labelledby", "profile-tab0");
@@ -2607,9 +2610,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     accordionItemDiv.appendChild(accordionButton);
     accordionDiv.appendChild(accordionItemDiv);
 
-    tabularTabContentDiv.appendChild(h5TabularView);
-    tabularTabContentDiv.appendChild(pTabularView);
-    tabularTabContentDiv.appendChild(brElement);
+    // tabularTabContentDiv.appendChild(h5TabularView);
+    // tabularTabContentDiv.appendChild(pTabularView);
+    // tabularTabContentDiv.appendChild(brElement);
     tabularTabContentDiv.appendChild(tabularViewContentViewDiv);
     tabularTabContentDiv.appendChild(accordionDiv);
 
