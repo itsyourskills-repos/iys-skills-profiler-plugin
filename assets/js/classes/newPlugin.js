@@ -1347,6 +1347,7 @@ class IysSearchPlugin {
       selectedSkilldiv: null,
     };
     this.selectedSkills = [];
+    this.skillSelected = false;
     if (typeof config == "object") {
       this.options = {
         ...this.options,
@@ -1501,10 +1502,20 @@ class IysSearchPlugin {
   setupCreateSearchTriggers() {
     const searchBoxElement = document.getElementById("plugin-search-id");
     searchBoxElement.addEventListener("input", (event) => {
-      event.preventDefault();
-      this.searchValue = searchBoxElement.value;
-      if (this.searchValue?.length > 0) {
-        this.searchAPI(this.searchValue);
+      if (this.skillSelected) {
+        console.log("Backspace pressed after skill selection. Clearing search box.");
+          searchBoxElement.value = ""; // Clear search box
+          this.searchValue = "";
+          this.skillSelected = false;
+          document.getElementById("dropdown-plugin-div").style.display = "none";
+      }
+      else{
+        event.preventDefault();
+        this.searchValue = searchBoxElement.value;
+        if (this.searchValue?.length > 0) {
+          console.log("searchentered");
+          this.searchAPI(this.searchValue);
+        }
       }
     });
   }
@@ -1576,6 +1587,7 @@ class IysSearchPlugin {
         li.style.fontSize = "16px";
         // li.style.borderBottom = "1px solid #E0E0E0";
         li.addEventListener("click", (event) => {
+          this.skillSelected = true;
           console.log("clicked");
           this.skillClick(i);
           div.style.display = "none";
