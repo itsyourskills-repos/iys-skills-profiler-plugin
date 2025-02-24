@@ -6604,6 +6604,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
       const hoverCircleImg = document.createElement("img");
+      const descriptionImg = document.createElement("img");
 
       this.addHoverStyles(skillButton,hoverCircleImg);
 
@@ -6622,16 +6623,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         skillNameSpan.classList.add("truncate");
         if(skill.proxy_skill){
           manageTooltip(skillNameSpan, skill.proxy_skill.name);
+          manageTooltip(descriptionImg,description);
         }
         else{
           manageTooltip(skillNameSpan, skill.name);
+          manageTooltip(descriptionImg,description);
         }
       }else if (skill.proxy_skill){
         manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        manageTooltip(descriptionImg,description);
+      }
+      else{
+        manageTooltip(skillNameSpan,description);
       }
 
       if (description) {
-        const descriptionImg = document.createElement("img");
+        // const descriptionImg = document.createElement("img");
         descriptionImg.src = `${imagePath}Group 27.svg`;
         descriptionImg.alt = "description";
         // descriptionImg.title = description;
@@ -7061,6 +7068,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
       const hoverCircleImg = document.createElement("img");
+      const descriptionImg = document.createElement("img");
 
       this.addHoverStyles(skillButton,hoverCircleImg);
 
@@ -7092,16 +7100,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         skillNameSpan.classList.add("truncate");
         if(skill.proxy_skill){
           manageTooltip(skillNameSpan, skill.proxy_skill.name);
+          manageTooltip(descriptionImg,description);
         }
         else{
           manageTooltip(skillNameSpan, skill.name);
+          manageTooltip(descriptionImg,description);
         }
       }else if (skill.proxy_skill){
         manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        manageTooltip(descriptionImg,description);
+      }
+      else{
+        manageTooltip(skillNameSpan,description);
       }
 
       if (description) {
-        const descriptionImg = document.createElement("img");
+        // const descriptionImg = document.createElement("img");
         descriptionImg.src = `${imagePath}Group 27.svg`;
         descriptionImg.alt = "description";
         // descriptionImg.title = description;
@@ -7863,6 +7877,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
       const hoverCircleImg = document.createElement("img");
+      const descriptionImg = document.createElement("img");
 
       this.addHoverStyles(skillButton,hoverCircleImg);
 
@@ -7894,16 +7909,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         skillNameSpan.classList.add("truncate");
         if(skill.proxy_skill){
           manageTooltip(skillNameSpan, skill.proxy_skill.name);
+          manageTooltip(descriptionImg,description);
         }
         else{
           manageTooltip(skillNameSpan, skill.name);
+          manageTooltip(descriptionImg,description);
         }
       }else if (skill.proxy_skill){
         manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        manageTooltip(descriptionImg,description);
+      }
+      else{
+        manageTooltip(skillNameSpan,description);
       }
 
       if (description) {
-        const descriptionImg = document.createElement("img");
+        // const descriptionImg = document.createElement("img");
         descriptionImg.src = `${imagePath}Group 27.svg`;
         descriptionImg.alt = "description";
         descriptionImg.style.marginRight = "10px";
@@ -8106,6 +8127,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
       const hoverCircleImg = document.createElement("img");
+      const descriptionImg = document.createElement("img");
 
       this.addHoverStyles(skillButton,hoverCircleImg);
 
@@ -8137,16 +8159,22 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         skillNameSpan.classList.add("truncate");
         if(skill.proxy_skill){
           manageTooltip(skillNameSpan, skill.proxy_skill.name);
+          manageTooltip(descriptionImg,description);
         }
         else{
           manageTooltip(skillNameSpan, skill.name);
+          manageTooltip(descriptionImg,description);
         }
       }else if (skill.proxy_skill){
         manageTooltip(skillNameSpan, skill.proxy_skill.name);
+        manageTooltip(descriptionImg,description);
+      }
+      else{
+        manageTooltip(skillNameSpan,description);
       }
 
       if (description) {
-        const descriptionImg = document.createElement("img");
+        // const descriptionImg = document.createElement("img");
         descriptionImg.src = `${imagePath}Group 27.svg`;
         descriptionImg.alt = "description";
         // descriptionImg.title = description;
