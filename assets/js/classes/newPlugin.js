@@ -814,10 +814,11 @@ async function createDropdown() {
   dropdown.style.background = "white";
   dropdown.style.fontSize = "1em";
   dropdown.style.appearance = "none";
-  dropdown.style.backgroundImage = `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`;
-  dropdown.style.backgroundRepeat = "no-repeat";
-  dropdown.style.backgroundPosition = "right 9px center";
-  dropdown.style.backgroundSize = "1em";
+  // dropdown.style.backgroundImage = `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`;
+  // dropdown.style.backgroundRepeat = "no-repeat";
+  // dropdown.style.backgroundPosition = "right 9px center";
+  // dropdown.style.backgroundSize = "1em";
+  dropdown.style.display = "none"; 
 
   // Add default option
   const defaultOption = document.createElement("option");
@@ -834,6 +835,8 @@ async function createDropdown() {
     const response = await fetch(`${ENDPOINT_URL}categories`);
     const categories = await response.json();
 
+    let selectedTag = "tags/11"; 
+
     // Filter categories by selectedCategoryIds and populate the dropdown
     categories
       .filter(category => selectedCategoryIds.includes(category._id)) // Filter only selected categories
@@ -842,6 +845,9 @@ async function createDropdown() {
         option.value = category._id;
         option.textContent = category.title;
         dropdown.appendChild(option);
+        if (category._id === selectedTag) {
+          option.selected = true;
+        }
       });
   } catch (error) {
     console.error("Failed to fetch categories:", error);
@@ -1220,7 +1226,7 @@ function addSkillToApi(payload) {
       // Handle the API response data as needed
 
       document.getElementById("plugin-search-id-close-button").click();
-      toastr.success("New skill element added!");
+      // toastr.success("New skill element added!");
       return data;
     })
     .catch((error) => {
@@ -1764,12 +1770,12 @@ class IysSearchPlugin {
     elementFieldContainer.appendChild(elementInputField);
 
     // Create the container for dropdown
-    const inputContainer2 = createInputContainer(
-      'Category <span style="color:red">*</span>'
-    );
+    // const inputContainer2 = createInputContainer(
+    //   'Category <span style="color:red">*</span>'
+    // );
     // Create the dropdown (select element)
     const dropdown = await createDropdown();
-    inputContainer2.appendChild(dropdown);
+    // inputContainer2.appendChild(dropdown);
 
     // Create error messages
     const emailError = createErrorMessage();
@@ -1779,7 +1785,7 @@ class IysSearchPlugin {
     elementFieldContainer.appendChild(elementError);
 
     const categoryError = createErrorMessage();
-    inputContainer2.appendChild(categoryError);
+    // inputContainer2.appendChild(categoryError);
 
     // Add cross icon to clear input field
     const elementClearIcon = document.createElement("span");
@@ -1906,6 +1912,7 @@ class IysSearchPlugin {
         .then((data) => {
           // Optionally, you can close the modal or perform other actions
           modalDiv.style.display = "none";
+          showSkillAddedNotification(reqData.name);
         })
         .catch((error) => {
           // Handle errors, show an alert, or perform other actions
@@ -1923,7 +1930,44 @@ class IysSearchPlugin {
     } else {
       console.error(`Element with ID ${this.options.pluginDivId} not found.`);
     }
-
+    
+    function showSkillAddedNotification(skillName) {
+      let notificationDiv = document.getElementById("skill-notification");
+    
+      if (!notificationDiv) {
+        notificationDiv = document.createElement("div");
+        notificationDiv.id = "skill-notification";
+        notificationDiv.style.position = "fixed";
+        notificationDiv.style.top = "32%";
+        notificationDiv.style.left = "50%";
+        notificationDiv.style.transform = "translate(-50%, -50%)";
+        notificationDiv.style.background = "#4CAF50";
+        notificationDiv.style.color = "#fff";
+        notificationDiv.style.padding = "15px 25px";
+        notificationDiv.style.borderRadius = "8px";
+        notificationDiv.style.textAlign = "center";
+        notificationDiv.style.fontSize = "16px";
+        // notificationDiv.style.fontWeight = "bold";
+        notificationDiv.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+        notificationDiv.style.zIndex = "10000";
+        notificationDiv.style.fontFamily= "system-ui";
+    
+        if (pluginDiv) {
+          pluginDiv.appendChild(notificationDiv);
+        } else {
+          document.body.appendChild(notificationDiv);
+        }
+      }
+    
+      notificationDiv.textContent = `The skill "${skillName}" has been added successfully. Kindly search to add this skill.`;
+      notificationDiv.style.display = "block";
+    
+      setTimeout(() => {
+        notificationDiv.style.display = "none";
+        notificationDiv.remove();
+      }, 2000);
+    }
+    
     function createInputContainer(labelText) {
       const container = document.createElement("div");
       container.style.position = "relative";
@@ -2709,12 +2753,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     rateSkillCommentBoxTextarea.rows = "4";
     rateSkillCommentBoxTextarea.setAttribute("data-mdb-showcounter", "true");
     rateSkillCommentBoxTextarea.maxLength = "100";
+    rateSkillCommentBoxTextarea.placeholder = "Enter Remark (20-100 characters)";
 
     // Create label for "rateSkillCommentBox"
     var rateSkillCommentBoxLabel = document.createElement("label");
     rateSkillCommentBoxLabel.className = "form-label";
     rateSkillCommentBoxLabel.setAttribute("for", "rateSkillCommentBox");
-    rateSkillCommentBoxLabel.textContent = "Enter Remark (20-100 characters)";
+    // rateSkillCommentBoxLabel.textContent = "Enter Remark (20-100 characters)";
 
     // Create form helper div
     var formHelperDiv = document.createElement("div");
@@ -5625,7 +5670,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           this.deleteSkillsFromLocalStorage(skill.isot_file.path_addr);
           skillContainer.remove();
-
+          createSelectedSkillsCount();
           // this.createListProfileSkills();
         });
 
@@ -5920,6 +5965,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           this.deleteSkillsFromLocalStorage(skill.isot_file.path_addr);
           skillContainer.remove();
           this.updateProfileData();
+          createSelectedSkillsCount();
 
           // this.createListProfileSkills();
         });
@@ -8037,7 +8083,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         } else {
           if (skill.child_count > 0 && skill.name !== "Related Skills") {
             if(skill.ratings.length > 0){
-              this.changeRateModelElement(skill);
+              let objExist = checkElementExist(skill);
+              if(!objExist){
+                this.changeRateModelElement(skill);
+              }
             }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
@@ -8298,7 +8347,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         } else {
           if (skill.child_count > 0 && skill.name !== "Related Skills") {
             if(skill.ratings.length > 0){
-              this.changeRateModelElement(skill);
+              let objExist = checkElementExist(skill);
+              if(!objExist){
+                this.changeRateModelElement(skill);
+              }
             }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
