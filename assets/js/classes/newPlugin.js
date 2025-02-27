@@ -1931,42 +1931,115 @@ class IysSearchPlugin {
       console.error(`Element with ID ${this.options.pluginDivId} not found.`);
     }
 
+    // function showSkillAddedNotification(skillName) {
+    //   let notificationDiv = document.getElementById("skill-notification");
+    
+    //   if (!notificationDiv) {
+    //     notificationDiv = document.createElement("div");
+    //     notificationDiv.id = "skill-notification";
+    //     notificationDiv.style.position = "fixed";
+    //     notificationDiv.style.top = "32%";
+    //     notificationDiv.style.left = "50%";
+    //     notificationDiv.style.transform = "translate(-50%, -50%)";
+    //     notificationDiv.style.background = "#4CAF50";
+    //     notificationDiv.style.color = "#fff";
+    //     notificationDiv.style.padding = "15px 25px";
+    //     notificationDiv.style.borderRadius = "8px";
+    //     notificationDiv.style.textAlign = "center";
+    //     notificationDiv.style.fontSize = "16px";
+    //     // notificationDiv.style.fontWeight = "bold";
+    //     notificationDiv.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+    //     notificationDiv.style.zIndex = "10000";
+    //     notificationDiv.style.fontFamily= "system-ui";
+    
+    //     if (pluginDiv) {
+    //       pluginDiv.appendChild(notificationDiv);
+    //     } else {
+    //       document.body.appendChild(notificationDiv);
+    //     }
+    //   }
+    
+    //   notificationDiv.textContent = `The skill "${skillName}" has been added successfully. Kindly search to add this skill.`;
+    //   notificationDiv.style.display = "block";
+    
+    //   setTimeout(() => {
+    //     notificationDiv.style.display = "none";
+    //     notificationDiv.remove();
+    //   }, 2000);
+    // }
+
     function showSkillAddedNotification(skillName) {
       let notificationDiv = document.getElementById("skill-notification");
-    
+  
       if (!notificationDiv) {
-        notificationDiv = document.createElement("div");
-        notificationDiv.id = "skill-notification";
-        notificationDiv.style.position = "fixed";
-        notificationDiv.style.top = "32%";
-        notificationDiv.style.left = "50%";
-        notificationDiv.style.transform = "translate(-50%, -50%)";
-        notificationDiv.style.background = "#4CAF50";
-        notificationDiv.style.color = "#fff";
-        notificationDiv.style.padding = "15px 25px";
-        notificationDiv.style.borderRadius = "8px";
-        notificationDiv.style.textAlign = "center";
-        notificationDiv.style.fontSize = "16px";
-        // notificationDiv.style.fontWeight = "bold";
-        notificationDiv.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-        notificationDiv.style.zIndex = "10000";
-        notificationDiv.style.fontFamily= "system-ui";
-    
-        if (pluginDiv) {
-          pluginDiv.appendChild(notificationDiv);
-        } else {
-          document.body.appendChild(notificationDiv);
-        }
+          notificationDiv = document.createElement("div");
+          notificationDiv.id = "skill-notification";
+          notificationDiv.style.position = "fixed";
+          notificationDiv.style.top = "32%";
+          notificationDiv.style.left = "50%";
+          notificationDiv.style.transform = "translate(-50%, -50%)";
+          notificationDiv.style.background = "#4CAF50";
+          notificationDiv.style.color = "#fff";
+          notificationDiv.style.padding = "15px 25px";
+          notificationDiv.style.borderRadius = "8px";
+          notificationDiv.style.textAlign = "center";
+          notificationDiv.style.fontSize = "16px";
+          notificationDiv.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+          notificationDiv.style.zIndex = "10000";
+          notificationDiv.style.fontFamily = "system-ui";
+          notificationDiv.style.display = "flex";
+          notificationDiv.style.alignItems = "center";
+          notificationDiv.style.justifyContent = "space-between";
+          notificationDiv.style.minWidth = "350px";
+          notificationDiv.style.gap = "10px";
+  
+          // Create the text content
+          let messageSpan = document.createElement("span");
+          messageSpan.textContent = `The skill "${skillName}" has been added successfully. Kindly search to add this skill.`;
+  
+          // Create the close button
+          let closeButton = document.createElement("button");
+          closeButton.innerHTML = "&times;";
+          closeButton.style.background = "none";
+          closeButton.style.border = "none";
+          closeButton.style.color = "#fff";
+          closeButton.style.fontSize = "20px";
+          closeButton.style.fontWeight="bold";
+          closeButton.style.cursor = "pointer";
+          closeButton.style.marginLeft = "10px";
+  
+          // Close notification when button is clicked
+          closeButton.onclick = function () {
+              notificationDiv.style.display = "none";
+              notificationDiv.remove();
+          };
+  
+          // Append elements
+          notificationDiv.appendChild(messageSpan);
+          notificationDiv.appendChild(closeButton);
+  
+          if (pluginDiv) {
+            pluginDiv.appendChild(notificationDiv);
+          } else {
+            document.body.appendChild(notificationDiv);
+          }
       }
-    
-      notificationDiv.textContent = `The skill "${skillName}" has been added successfully. Kindly search to add this skill.`;
-      notificationDiv.style.display = "block";
-    
-      setTimeout(() => {
-        notificationDiv.style.display = "none";
-        notificationDiv.remove();
-      }, 2000);
-    }
+  
+      notificationDiv.style.display = "flex";
+  
+      let timeout = setTimeout(() => {
+          if (document.body.contains(notificationDiv)) {
+              notificationDiv.style.display = "none";
+              notificationDiv.remove();
+          }
+      }, 5000);
+  
+      closeButton.onclick = function () {
+          clearTimeout(timeout);
+          notificationDiv.style.display = "none";
+          notificationDiv.remove();
+      };
+    }  
 
     function createInputContainer(labelText) {
       const container = document.createElement("div");
@@ -4017,7 +4090,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             if (response.ok) {
               // Successful response
               toastr.success(
-                `Adding Skill ${skillDetail.name}  Added to profile`
+                `${skillDetail.name}  added to your profile`
               );
               await getListFromLoggedInUser("notLoadded");
               this.updateProfileData();
@@ -4117,7 +4190,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             });
           }
 
-          toastr.success(`Adding Skill ${skillDetail.name}  Added to profile`);
+          toastr.success(`${skillDetail.name}  added to your profile`);
           this.updateProfileData();
           createSelectedSkillsCount();
           // myrate();
