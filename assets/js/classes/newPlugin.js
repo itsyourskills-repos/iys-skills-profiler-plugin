@@ -1431,6 +1431,7 @@ class IysSearchPlugin {
 
     // Add click event to clear the input field
     clearIcon.addEventListener("click", () => {
+      this.skillSelected = false;
       input.value = "";
       divDropDown.style.display = "none";
       button.style.display = "block";
@@ -2109,9 +2110,9 @@ class IysSearchPlugin {
           }
         })
         .then((response) => {
-          if (this.searchValue == response.query) {
+          // if (this.searchValue == response.query) {
             this.createSkillSearchList(response.matches, this.searchValue);
-          }
+          // }
         })
         .catch((err) => console.error(err))
         .finally(() => {
@@ -2129,12 +2130,12 @@ class IysSearchPlugin {
           }
         })
         .then((response) => {
-          if (this.searchValue == response.query) {
+          // if (this.searchValue == response.query) {
             this.createSkillSearchList(
               response.matches,
               this.searchValue.trim()
             );
-          }
+          // }
         })
         .catch((err) => console.error(err))
         .finally(() => {
