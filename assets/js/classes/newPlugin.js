@@ -7,7 +7,7 @@ const loggedInUserApiEndpoint = `https://api.myskillsplus.com/get-skills/`;
 const loggedInUserAddSkill = `https://api.myskillsplus.com/add-skills/`;
 const deleteSkillApiEndpoint = `https://api.myskillsplus.com/delete-skill/`;
 const getaccessYokenEndpoint =
-  "https://uat-api.myskillsplus.com/api/token/refresh/";
+  "https://api.myskillsplus.com/api/token/refresh/";
 const getAccessToken = JSON.parse(localStorage.getItem("tokenData"));
 const logginUserDetail = JSON.parse(localStorage.getItem("loginUserDetail"));
 const imagePath =
@@ -1931,43 +1931,6 @@ class IysSearchPlugin {
     } else {
       console.error(`Element with ID ${this.options.pluginDivId} not found.`);
     }
-    
-    // function showSkillAddedNotification(skillName) {
-    //   let notificationDiv = document.getElementById("skill-notification");
-    
-    //   if (!notificationDiv) {
-    //     notificationDiv = document.createElement("div");
-    //     notificationDiv.id = "skill-notification";
-    //     notificationDiv.style.position = "fixed";
-    //     notificationDiv.style.top = "32%";
-    //     notificationDiv.style.left = "50%";
-    //     notificationDiv.style.transform = "translate(-50%, -50%)";
-    //     notificationDiv.style.background = "#4CAF50";
-    //     notificationDiv.style.color = "#fff";
-    //     notificationDiv.style.padding = "15px 25px";
-    //     notificationDiv.style.borderRadius = "8px";
-    //     notificationDiv.style.textAlign = "center";
-    //     notificationDiv.style.fontSize = "16px";
-    //     // notificationDiv.style.fontWeight = "bold";
-    //     notificationDiv.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
-    //     notificationDiv.style.zIndex = "10000";
-    //     notificationDiv.style.fontFamily= "system-ui";
-    
-    //     if (pluginDiv) {
-    //       pluginDiv.appendChild(notificationDiv);
-    //     } else {
-    //       document.body.appendChild(notificationDiv);
-    //     }
-    //   }
-    
-    //   notificationDiv.textContent = `The skill "${skillName}" has been added successfully. Kindly search to add this skill.`;
-    //   notificationDiv.style.display = "block";
-    
-    //   setTimeout(() => {
-    //     notificationDiv.style.display = "none";
-    //     notificationDiv.remove();
-    //   }, 2000);
-    // }
 
     // function showSkillAddedNotification(skillName) {
     //   let notificationDiv = document.getElementById("skill-notification");
@@ -2078,6 +2041,7 @@ class IysSearchPlugin {
           notificationDiv.remove();
       };
     }  
+
     function createInputContainer(labelText) {
       const container = document.createElement("div");
       container.style.position = "relative";
@@ -2128,7 +2092,7 @@ class IysSearchPlugin {
     const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
     if (isLoginUser && this.searchValue.length > 0) {
       fetch(
-        `https://uat-api.myskillsplus.com/api-search/?q=${encodedSearchValue}`,
+        `https://api.myskillsplus.com/api-search/?q=${encodedSearchValue}`,
         {
           method: "GET",
           headers: {
@@ -3508,7 +3472,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   SkillChildrenAPI(skillFileId) {
     let url;
     if (isLoginUser) {
-      url = `https://uat-api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
+      url = `https://api.myskillsplus.com/api-child/?path_addr=${skillFileId}`;
     } else {
       url = `${ENDPOINT_URL}children/?path_addr=${skillFileId}`;
     }
@@ -6473,7 +6437,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     console.log(skillId);
     let url = "";
     if (isLoginUser) {
-      url = `https://uat-api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
+      url = `https://api.myskillsplus.com/api-tree/?path_addr=${skillId}`;
       fetch(url, {
         method: "GET",
         headers: {
