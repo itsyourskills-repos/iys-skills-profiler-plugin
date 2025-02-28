@@ -5555,6 +5555,36 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     });
   }
 
+  sortByPathAddrHierarchy(skills) {
+    const skillMap = new Map();
+
+    // Step 1: Store skills by their path_addr
+    skills.forEach(skill => {
+        skillMap.set(skill.isot_file.path_addr, skill);
+    });
+
+    // Step 2: Create a sorted result list
+    const sortedResult = [];
+
+    // Step 3: Identify parent skills (skills without a longer path variation)
+    skills.forEach(skill => {
+        const parentPath = skill.isot_file.path_addr;
+        if (!sortedResult.includes(skill)) {
+            sortedResult.push(skill);
+        }
+        // Find child skills that start with this parent's path
+        skills.forEach(childSkill => {
+            if (
+                childSkill.isot_file.path_addr.startsWith(parentPath + ".") && 
+                !sortedResult.includes(childSkill)
+            ) {
+                sortedResult.push(childSkill);
+            }
+        });
+    });
+
+    return sortedResult;
+  }
 
   appendQuickViewContent() {
     const skillsData = getListFromlocalStorage(); // Assuming this  retrieves the skills data
@@ -5778,6 +5808,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       groupedSkills[tagsString].push({ ...skill, index });
     });
 
+    Object.keys(groupedSkills).forEach((tag) => {
+      groupedSkills[tag] = this.sortByPathAddrHierarchy(groupedSkills[tag]);
+    });
+    
     // Append content to tabularViewContentView
     const tabularViewContentDiv = document.getElementById(
       "tabularViewContentView"
