@@ -1518,6 +1518,7 @@ class IysSearchPlugin {
       }
       else{
         event.preventDefault();
+        this.isFromSelectBox = false;
         this.searchValue = searchBoxElement.value;
         if (this.searchValue?.length > 0) {
           console.log("searchentered");
@@ -1587,6 +1588,7 @@ class IysSearchPlugin {
       // Create buttons after the unordered list
       ul.style.padding = "30px";
       ul.classList.add("dropdown-menu");
+      let autoClicked = false;
       // create the list item elements and append them to the unordered list
       for (let i = 0; i < searchResultsList.length; i++) {
         const li = document.createElement("li");
@@ -1618,12 +1620,17 @@ class IysSearchPlugin {
         //     this.searchValue,
         //     this.getSkillName(searchResultsList[i])
         //   );
+        const skillName = this.getSkillName(searchResultsList[i]);
         a.innerHTML = this.searchHighlight(
           this.searchValue,
           this.getSkillName(searchResultsList[i])
         );
         li.appendChild(a);
         ul.appendChild(li);
+        if (this.isFromSelectBox && !autoClicked && skillName.trim() === searchText.trim()) {
+          li.click(); // Trigger click event
+          autoClicked = true; // Prevent multiple clicks
+        }
         // Append buttons to the main div
       }
       ul.style.display = "contents";
@@ -2072,7 +2079,7 @@ class IysSearchPlugin {
     return text;
   }
 
-  searchAPI() {
+  searchAPI(searchValue,selectedValue,skillId) {
     // this.searchInputBox.classList.add("loading");
     this.searchInputBox.type = "text";
 
@@ -2090,10 +2097,21 @@ class IysSearchPlugin {
     div.innerHTML = ""; // Clear previous content
     div.appendChild(loader);
     const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
+    let apiUrl = `${ENDPOINT_URL}?q=${encodedSearchValue}&limit=10`;
+    if (skillId) {
+        apiUrl += `&path=${skillId}`;
+    }
+
+    if(selectedValue){
+      this.isFromSelectBox = true;
+    }
+
     if (isLoginUser && this.searchValue.length > 0) {
-      fetch(
-        `https://uat-api.myskillsplus.com/api-search/?q=${encodedSearchValue}`,
-        {
+      let authApiUrl = `https://uat-api.myskillsplus.com/api-search/?q=${encodedSearchValue}`;
+      if (skillId) {
+        authApiUrl += `&path=${skillId}`;
+      }
+      fetch(authApiUrl,{
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -2120,7 +2138,7 @@ class IysSearchPlugin {
           // div.removeChild(loader);
         });
     } else if (this.searchValue.trim().length > 0) {
-      fetch(`${ENDPOINT_URL}?q=${encodedSearchValue}&limit=10`)
+      fetch(apiUrl)
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -2402,29 +2420,390 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       "padding-right:10px; box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 10px;";
 
     var skillGroupButton = document.createElement("div");
-    skillGroupButton.className = "d-flex";
+    skillGroupButton.className = "skillgroupbutton d-flex";
     skillGroupButton.setAttribute("role", "group");
     skillGroupButton.setAttribute("aria-label", "Three views");
     skillGroupButton.style =
       "padding-right: 6px; padding-left:6px; padding-top:2px; padding-bottom:2px;";
 
+    // Create the select box container
+    var selectboxDiv = document.createElement("div");
+    selectboxDiv.className = "selectbox-container";
+    selectboxDiv.style.position = "relative";
+    selectboxDiv.style.padding = "5px";
+    selectboxDiv.style.fontFamily = "Arial, sans-serif";
+    selectboxDiv.style.borderRadius = "5px";
+
+    var searchContainer = document.createElement("div");
+    searchContainer.className ="button-container responsive-button-container category-container";
+    searchContainer.style="padding: 10px; border-radius: 10px;";
+    selectboxDiv.appendChild(searchContainer);
+
+    // Create the label
+    var searchLabel = document.createElement("label");
+    searchLabel.textContent = "Select Category";
+    searchLabel.style.display = "block";
+    searchLabel.style.fontWeight = "bold";
+    searchLabel.style.marginBottom = "5px";
+    searchContainer.appendChild(searchLabel);
+
+    // Create the search box
+    let debounceTimer;
+    let activeFetchRequest = null;
+
+    var searchBox = document.createElement("input");
+    searchBox.type = "text";
+    searchBox.placeholder = "Search skills...";
+    searchBox.className = "search-input";
+    // searchBox.style.width = "100%";
+    searchBox.style.padding = "5px";
+    searchBox.style.border = "1px solid #ccc";
+    searchBox.style.borderRadius = "5px";
+    searchBox.style.fontSize = "16px";
+    searchBox.style.boxSizing = "border-box";
+    searchBox.addEventListener("focus", function () {
+        // softskillDropdownMenu.style.display = "none";
+        // softskillSearchBox.value = "";
+        fetchSkills("");
+    });
+    searchBox.addEventListener("input", function () {
+        clearTimeout(debounceTimer);
+        // softskillDropdownMenu.style.display = "none";
+        // softskillSearchBox.value = "";
+        debounceTimer = setTimeout(() => {
+          fetchSkills(searchBox.value);
+        }, 300);
+    });
+    searchContainer.appendChild(searchBox);
+
+    // Create the dropdown menu
+    var dropdownMenu = document.createElement("div");
+    dropdownMenu.className = "dropdown-menu";
+    dropdownMenu.style.width = "100%";
+    dropdownMenu.style.border = "1px solid #ccc";
+    dropdownMenu.style.borderRadius = "5px";
+    dropdownMenu.style.backgroundColor = "#fff";
+    // dropdownMenu.style.marginTop = "5px";
+    dropdownMenu.style.display = "none";
+    dropdownMenu.style.position = "absolute";
+    dropdownMenu.style.zIndex = "1000";
+    dropdownMenu.style.maxHeight = "250px";
+    dropdownMenu.style.overflowY = "auto";
+    dropdownMenu.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)";
+
+    var loadingIndicator = document.createElement("div");
+    loadingIndicator.textContent = "Loading...";
+    loadingIndicator.style.padding = "10px";
+    loadingIndicator.style.textAlign = "center";
+    loadingIndicator.style.display = "none"; // Initially hidden
+    dropdownMenu.appendChild(loadingIndicator);
+
+    searchContainer.appendChild(dropdownMenu);
+    
+    function fetchSkills(query) {
+      if (activeFetchRequest) {
+        activeFetchRequest.abort(); // Abort the previous request if exists
+      }
+      loadingIndicator.style.display = "block";
+      dropdownMenu.innerHTML = "";
+      dropdownMenu.appendChild(loadingIndicator);
+
+      let controller = new AbortController();
+      activeFetchRequest = controller;
+
+      if (!query) {
+          console.log("Fetching all top-level skills...");
+          fetch(`https://uat-lambdaapi.iysskillstech.com/latest/dev-api/search-category-skills/?limit=10`,{ signal: controller.signal })
+              .then(response => response.json())
+              .then(response => {
+                  dropdownMenu.innerHTML = "";
+                  if (response.matches.length > 0) {
+                      response.matches.forEach(match => {
+                          match.skills.forEach(skill => {
+                              let item = createDropdownItem(skill);
+                              dropdownMenu.appendChild(item);
+                          });
+                      });
+                      dropdownMenu.style.display = "block";
+                  } else {
+                      dropdownMenu.style.display = "none";
+                  }
+              })
+              .finally(() => {
+                activeFetchRequest = null; // Reset active request
+                loadingIndicator.style.display = "none"; // Hide loader
+              });
+      } else {
+          console.log("Searching for:", query);
+          fetch(`https://uat-lambdaapi.iysskillstech.com/latest/dev-api/search-category-skills/?q=${encodeURIComponent(query)}&limit=10`,{ signal: controller.signal })
+              .then(response => response.json())
+              .then(response => {
+                  dropdownMenu.innerHTML = "";
+                  if (response.matches.length > 0) {
+                      response.matches.forEach(match => {
+                          match.skills.forEach(skill => {
+                              let skillPathParts = skill.path_addr.split(".");
+                              
+                              // If the skill has a hierarchy (i.e., has ancestors)
+                              if (skillPathParts.length > 1 && skill.path_addr[0] !== ".") {
+                                  // Fetch all ancestors and expand them in order
+                                  fetch(`https://uat-lambdaapi.iysskillstech.com/latest/dev-api/tree/?path_addr=${skill.path_addr}`)
+                                      .then(res => res.json())
+                                      .then(treeData => {
+                                          if (treeData.ancestors.length > 0) {
+                                              expandAncestors(treeData.ancestors, skill.name);
+                                          }
+                                      });
+                              } else {
+                                  let item = createDropdownItem(skill);
+                                  dropdownMenu.appendChild(item);
+                              }
+                          });
+                      });
+                      dropdownMenu.style.display = "block";
+                  } else {
+                      dropdownMenu.style.display = "none";
+                  }
+              })
+              .finally(() => {
+                activeFetchRequest = null;
+                loadingIndicator.style.display = "none";
+              });
+      }
+    }
+  
+    function expandAncestors(ancestors, highlightSkill) {
+      if (ancestors.length === 0) return;
+  
+      let parentSkill = ancestors.shift(); // Get the first ancestor
+  
+      let existingParentItem = document.querySelector(`[data-path-addr="${parentSkill.path_addr}"]`);
+      if (!existingParentItem) {
+          let parentItem = createDropdownItem(parentSkill);
+          dropdownMenu.appendChild(parentItem);
+      }
+  
+      let parentItem = document.querySelector(`[data-path-addr="${parentSkill.path_addr}"]`);
+      if (parentItem) {
+          let arrow = parentItem.querySelector("span:last-child");
+          toggleChildren(parentSkill.path_addr, parentItem, arrow, highlightSkill);
+  
+          // Recursively expand the next ancestor
+          setTimeout(() => expandAncestors(ancestors, highlightSkill), 500); 
+      }
+    }
+  
+    function createDropdownItem(skill) {
+        let item = document.createElement("div");
+        item.className = "dropdown-item";
+        item.setAttribute("data-path-addr", skill.path_addr);
+        item.style.padding = "10px";
+        item.style.cursor = "pointer";
+        item.style.display = "flex";
+        item.style.justifyContent = "space-between";
+        item.style.alignItems = "center";
+        item.style.border = "1px solid #eee";
+        item.style.transition = "background 0.3s";
+        item.style.borderRadius = "5px";
+        
+        let skillText = document.createElement("span");
+        skillText.textContent = skill.name;
+        if(skill.name.length > 25){
+          skillText.style ="display: inline-block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: top";
+          manageTooltip(skillText,skill.name);
+        }
+        skillText.style.fontWeight = "bold";
+        item.appendChild(skillText);
+        
+        if (skill.child_count > 0) {
+            var arrow = document.createElement("span");
+            arrow.textContent = ">";
+            arrow.style.cursor = "pointer";
+            arrow.onclick = function (event) {
+                item.style.backgroundColor="#f0f8ff";
+                event.stopPropagation();
+                toggleChildren(skill.path_addr, item, arrow);
+            };
+            item.appendChild(arrow);
+        }
+
+        item.addEventListener("click", function () {
+            if (skill.child_count === 0) {
+                console.log("not children skill is clicked");
+                document.getElementById("plugin-search-id").value = skill.name;
+                searchBox.value = skill.name;
+                dropdownMenu.style.display = "none";
+            } else {
+                item.style.backgroundColor="#f0f8ff";
+                toggleChildren(skill.path_addr, item, arrow);
+            }
+        });
+        return item;
+    }
+
+    function toggleChildren(pathAddr, parentItem, arrow, highlightSkill = null) {
+      var existingChildContainer = parentItem.nextElementSibling;
+      if (existingChildContainer && existingChildContainer.classList.contains("child-menu")) {
+          existingChildContainer.remove();
+          parentItem.style.backgroundColor = "#ffff";
+          if (arrow) arrow.textContent = ">";
+          return;
+      }
+  
+      fetch(`https://uat-lambdaapi.iysskillstech.com/latest/dev-api/cat-children/?path_addr=${pathAddr}&limit=200&offset=0`)
+          .then(response => response.json())
+          .then(children => {
+              if (!children.length) return;
+              var childContainer = document.createElement("div");
+              childContainer.className = "child-menu";
+              childContainer.style.padding = "5px";
+              childContainer.style.paddingLeft = "15px";
+  
+              children.forEach(child => {
+                  var childItem = document.createElement("div");
+                  childItem.className = "dropdown-item";
+                  childItem.setAttribute("data-path-addr", child.path_addr);
+                  childItem.style.padding = "8px";
+                  childItem.style.cursor = "pointer";
+                  childItem.style.display = "flex";
+                  childItem.style.justifyContent = "space-between";
+                  childItem.style.alignItems = "center";
+                  childItem.style.backgroundColor = "#fff";
+                  childItem.style.border = "1px solid #ddd";
+                  childItem.style.borderRadius = "5px";
+  
+                  var skillText = document.createElement("span");
+                  skillText.textContent = child.name;
+                  if(child.name.length > 20){
+                    skillText.style ="display: inline-block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: top";
+                    manageTooltip(skillText,child.name);
+                  }
+                  skillText.style.fontWeight = "bold";
+                  childItem.appendChild(skillText);
+  
+                  // let hasCatTag = child.tags && child.tags.some(tag => tag.title === "Cat");
+                  if (child.child_count > 0) {
+                      var childArrow = document.createElement("span");
+                      childArrow.textContent = ">";
+                      childArrow.style.cursor = "pointer";
+                      childArrow.onclick = function (event) {
+                          childItem.style.backgroundColor="#f0f8ff";
+                          event.stopPropagation();
+                          toggleChildren(child.path_addr, childItem, childArrow);
+                      };
+                      childItem.appendChild(childArrow);
+                  }
+  
+                  childItem.addEventListener("click", function () {
+                      if (child.child_count === 0) {
+                        document.getElementById("plugin-search-id").value = child.name;
+                        searchBox.value = child.name;
+                        dropdownMenu.style.display = "none";
+                      } else {
+                        childItem.style.backgroundColor="#f0f8ff";
+                        toggleChildren(child.path_addr, childItem, childArrow);
+                      }
+                  });
+  
+                  // Highlight the searched skill
+                  if (highlightSkill && child.name === highlightSkill) {
+                      childItem.style.backgroundColor = "#f0f8ff";
+                  }
+  
+                  childContainer.appendChild(childItem);
+              });
+  
+              if (parentItem.parentNode) {
+                parentItem.parentNode.insertBefore(childContainer, parentItem.nextSibling);
+                if (arrow) arrow.textContent = ">>";
+              }
+          });
+    }
+
     var hardSkills = createSkillTabButton(
       "hard-skills",
       "#hard-skills-content",
       "fa-wand-magic-sparkles",
-      "HARD SKILLS",
+      "Search Skills",
       "Knowledge and Skills related to concepts, methods, processes, technologies, tools and such"
     );
     // hardSkills.style.marginRight="14px";
     hardSkills.style.marginLeft = "15px";
-    var softSkills = createSkillTabButton(
-      "soft-skills",
-      "#soft-skills-content",
-      "fa-table",
-      "SOFT SKILLS",
-      "Cognitive/Thinking, People skills, Traits and such"
-    );
-    softSkills.style.marginLeft = "15px";
+    // var softSkills = createSkillTabButton(
+    //   "soft-skills",
+    //   "#soft-skills-content",
+    //   "fa-table",
+    //   "SOFT SKILLS",
+    //   "Cognitive/Thinking, People skills, Traits and such"
+    // );
+    // softSkills.style.marginLeft = "15px";
+    var softskillSelectboxDiv = document.createElement("div");
+    softskillSelectboxDiv.className = "button-container";
+    var selectboxButton = document.createElement("button");
+    selectboxButton.style.width = "220px";
+    selectboxButton.style.height = "70px";
+    selectboxButton.style.borderRadius = "10px";
+    selectboxButton.style.display = "flex";
+    selectboxButton.style.alignItems = "center";
+    selectboxButton.className ="btn nav-link";
+    selectboxButton.style.paddingTop = "2.5rem";
+    selectboxButton.style.paddingBottom = "2.5rem";
+    selectboxButton.style.paddingLeft = "1.5rem";
+    selectboxButton.style.paddingRight = "1rem";
+    selectboxButton.style.boxShadow = "none";
+    selectboxButton.style.color = "#1E1E1E";
+    selectboxButton.style.font = "normal normal 600 16px/46px Segoe UI;";
+    selectboxButton.style.letterSpacing = "0.5px";
+    selectboxButton.style.backgroundColor = "rgb(232, 253, 252)";
+    var selectBox = document.createElement("select");
+    selectBox.className = "custom-select";
+    selectBox.style.width = "100%";
+    selectBox.style.padding = "10px";
+    selectBox.style.border = "1px solid #ccc";
+    selectBox.style.borderRadius = "5px";
+    selectBox.style.fontFamily = "Segoe UI";
+    selectBox.style.fontSize = "16px";
+    selectBox.style.backgroundColor = "rgb(232, 253, 252)";
+    // Placeholder option
+    var placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.style.backgroundColor ="white";
+    placeholderOption.textContent = "Select Soft Skills";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    selectBox.prepend(placeholderOption);
+
+    // Function to fetch and populate options
+    async function fetchSoftSkills() {
+        try {
+            const response = await fetch("https://uat-lambdaapi.iysskillstech.com/latest/dev-api/listout-soft-skills/");
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+
+            // Iterate over each term and its skills
+            data.forEach(category => {
+                category.skills.forEach(skill => {
+                    var option = document.createElement("option");
+                    option.style.backgroundColor ="white";
+                    option.value = skill.name;
+                    option.textContent = skill.name;
+                    selectBox.appendChild(option);
+                });
+            });
+
+        } catch (error) {
+            console.error("Error fetching soft skills:", error);
+        }
+    }
+
+    // Call API to populate select box
+    fetchSoftSkills();
+    selectboxButton.appendChild(selectBox);
+    softskillSelectboxDiv.appendChild(selectboxButton);
+    softskillSelectboxDiv.style.marginLeft="15px";
+
     var role = createSkillTabButton(
       "role",
       "#role-tab-content",
@@ -2452,8 +2831,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillGroupDescription.appendChild(arrow);
     skillGroupDescription.appendChild(explanationText);
 
+    skillGroupButton.appendChild(selectboxDiv);
     skillGroupButton.appendChild(hardSkills);
-    skillGroupButton.appendChild(softSkills);
+    skillGroupButton.appendChild(softskillSelectboxDiv);
     // skillGroupButton.appendChild(role);
 
     skillGroupNavDiv.appendChild(skillGroupButton);
@@ -2548,6 +2928,40 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     homeTabDiv.appendChild(roleDetail);
 
     $(document).ready(() => {
+      const searchInputBox = document.getElementById("plugin-search-id");
+      //Click the Category skills
+      dropdownMenu.addEventListener("click", (event) => {
+          const item = event.target.closest(".dropdown-item");
+          if (item) {
+            const skillText = item.querySelector("span:first-child").textContent.trim();
+            const hasChild = item.querySelector("span:last-child")?.textContent === ">"; // Down arrow means it has children
+            const skillId = item.getAttribute("data-path-addr");
+            if (skillText && !hasChild && skillId) {
+              searchInputBox.value = skillText;
+              console.log(skillText);
+              this.searchValue = skillText;
+              if (this.searchValue && this.searchValue.trim() !== "") {
+                const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
+                console.log("entered call category searchapi");
+                this.searchAPI(encodedSearchValue,encodedSearchValue,skillId);
+              }
+              $(".hard-skills").trigger("click");
+            }
+          }
+      });
+      //Click the softskills
+      selectBox.addEventListener("change", (event) => {
+        const selectedValue = selectBox.value;
+        if (selectedValue) {
+          searchInputBox.value = selectedValue;
+          this.searchValue = selectedValue;
+          if (this.searchValue && this.searchValue.trim() !== "") {
+            const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
+            this.searchAPI(encodedSearchValue,encodedSearchValue);
+          }
+          $(".hard-skills").click();
+        }
+      });
       // Bind methods to ensure 'this' context is correct
       this.handleHardSkillsClick = this.handleHardSkillsClick.bind(this);
       this.handleSoftSkillsClick = this.handleSoftSkillsClick.bind(this);
@@ -6576,12 +6990,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var softSkillDetail = $(".softskillaccordian");
     var roleDetail = $(".roleaccordian");
     var skillGroupDescription = $(".skillgroupdescription");
+    var dropdownMenu = $(".dropdown-menu");
     imgBodyDiv.css("display", "none");
     cardBodyDetail.css("display", "");
     softSkillDescription.css("display", "none");
     softSkillDetail.css("display", "none");
     roleDetail.css("display", "none");
     skillGroupDescription.css("display", "none");
+    dropdownMenu.css("display", "none");
   }
 
   async handleRoleClick() {
