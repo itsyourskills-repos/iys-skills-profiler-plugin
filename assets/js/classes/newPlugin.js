@@ -2431,7 +2431,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     selectboxDiv.className = "selectbox-container";
     selectboxDiv.style.position = "relative";
     selectboxDiv.style.padding = "5px";
-    selectboxDiv.style.fontFamily = "Arial, sans-serif";
+    selectboxDiv.style.fontFamily = "system-ui";
     selectboxDiv.style.borderRadius = "5px";
 
     var searchContainer = document.createElement("div");
@@ -2740,7 +2740,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var softskillSelectboxDiv = document.createElement("div");
     softskillSelectboxDiv.className = "button-container";
     var selectboxButton = document.createElement("button");
-    selectboxButton.style.width = "220px";
+    selectboxButton.style.width = "auto";
     selectboxButton.style.height = "70px";
     selectboxButton.style.borderRadius = "10px";
     selectboxButton.style.display = "flex";
@@ -2752,7 +2752,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     selectboxButton.style.paddingRight = "1rem";
     selectboxButton.style.boxShadow = "none";
     selectboxButton.style.color = "#1E1E1E";
-    selectboxButton.style.font = "normal normal 600 16px/46px Segoe UI;";
+    // selectboxButton.style.font = "normal normal 600 16px/46px Segoe UI;";
     selectboxButton.style.letterSpacing = "0.5px";
     selectboxButton.style.backgroundColor = "rgb(232, 253, 252)";
     var selectBox = document.createElement("select");
@@ -2761,8 +2761,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     selectBox.style.padding = "10px";
     selectBox.style.border = "1px solid #ccc";
     selectBox.style.borderRadius = "5px";
-    selectBox.style.fontFamily = "Segoe UI";
-    selectBox.style.fontSize = "16px";
+    selectboxDiv.style.fontFamily = "system-ui";
+    selectBox.style.fontSize = "15px";
     selectBox.style.backgroundColor = "rgb(232, 253, 252)";
     // Placeholder option
     var placeholderOption = document.createElement("option");
