@@ -2547,7 +2547,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                               // If the skill has a hierarchy (i.e., has ancestors)
                               if (skillPathParts.length > 1 && skill.path_addr[0] !== ".") {
                                   // Fetch all ancestors and expand them in order
-                                  fetch(`https://uat-lambdaapi.iysskillstech.com/latest/dev-api/tree/?path_addr=${skill.path_addr}`)
+                                  fetch(`https://uat-lambdaapi.iysskillstech.com/latest/dev-api/cat-tree/?path_addr=${skill.path_addr}`)
                                       .then(res => res.json())
                                       .then(treeData => {
                                           if (treeData.ancestors.length > 0) {
@@ -2837,7 +2837,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // skillGroupButton.appendChild(role);
 
     skillGroupNavDiv.appendChild(skillGroupButton);
-    skillGroupNavDiv.appendChild(skillGroupDescription);
+    // skillGroupNavDiv.appendChild(skillGroupDescription);
     skillGroupDiv.appendChild(skillGroupNavDiv);
 
     groupSkilltypeDiv.appendChild(skillGroupDiv);
@@ -6911,13 +6911,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           // } else {\
 
           if (response.ancestors.length > 1) {
+            let lastAncestor = response.ancestors[response.ancestors.length - 1];  // Last ancestor
+            let secondLastAncestor = response.ancestors[response.ancestors.length - 2];  // Second last ancestor
             this.childrenSkillAPI(
-              response.ancestors[1]["name"],
-              response.ancestors[1]["path_addr"],
+              lastAncestor["name"],
+              lastAncestor["path_addr"],
               "",
               "",
               skillName,
-              response.ancestors[0]["name"],
+              secondLastAncestor["name"],
             );
             // this.childrenSkillAPI(
             //   `${response.ancestors[1]["name"]} -> ${response.ancestors[0]["name"]}`,
@@ -6952,13 +6954,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .then((response) => {
           // this.createSkillPath(this.cardBodyDiv, response.ancestors);
           if (response.ancestors.length > 1) {
+            let lastAncestor = response.ancestors[response.ancestors.length - 1];  // Last ancestor
+            let secondLastAncestor = response.ancestors[response.ancestors.length - 2];  // Second last ancestor
             this.childrenSkillAPI(
-              response.ancestors[1]["name"],
-              response.ancestors[1]["path_addr"],
+              lastAncestor["name"],
+              lastAncestor["path_addr"],
               "",
               "",
               skillName,
-              response.ancestors[0]["name"],
+              secondLastAncestor["name"],
             );
             // this.childrenSkillAPI(
             //   `${response.ancestors[1]["name"]} -> ${response.ancestors[0]["name"]}`,
