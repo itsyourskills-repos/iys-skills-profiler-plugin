@@ -386,6 +386,9 @@ img.responsive-icon-element {
 }
 
 @media (max-width: 768px) {
+  .skillgroupbutton{
+    flex-direction: column;
+  }
   .button-container.responsive-button-container {
     width: 100%;
     margin-left: 0px !important;
@@ -414,4 +417,10 @@ img.responsive-icon-element {
 
 .explanation-text {
     font-size: 16px;
+}
+.category-container{
+  background: linear-gradient(300deg, rgb(255, 238, 243), #f0f8ff);
+}
+.dropdown-item:hover {
+  background-color: #f0f8ff;
 }
