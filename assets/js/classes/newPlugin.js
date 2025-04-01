@@ -1361,6 +1361,8 @@ class IysSearchPlugin {
         ...config,
       };
     }
+    this.searchTimeout = null;
+    this.currentRequest = null;
   }
   //initi fuctions
   init() {
@@ -1507,23 +1509,49 @@ class IysSearchPlugin {
     this.selectedDiv.appendChild(divDropDown);
   }
 
+  // setupCreateSearchTriggers() {
+  //   const searchBoxElement = document.getElementById("plugin-search-id");
+  //   searchBoxElement.addEventListener("input", (event) => {
+  //     if (this.skillSelected) {
+  //       console.log("Backspace pressed after skill selection. Clearing search box.");
+  //         searchBoxElement.value = ""; // Clear search box
+  //         this.searchValue = "";
+  //         this.skillSelected = false;
+  //         document.getElementById("dropdown-plugin-div").style.display = "none";
+  //     }
+  //     else{
+  //       event.preventDefault();
+  //       this.isFromSelectBox = false;
+  //       this.searchValue = searchBoxElement.value;
+  //       if (this.searchValue?.length > 0) {
+  //         console.log("searchentered");
+  //         this.searchAPI(this.searchValue);
+  //       }
+  //     }
+  //   });
+  // }
+
   setupCreateSearchTriggers() {
     const searchBoxElement = document.getElementById("plugin-search-id");
     searchBoxElement.addEventListener("input", (event) => {
       if (this.skillSelected) {
         console.log("Backspace pressed after skill selection. Clearing search box.");
-          searchBoxElement.value = ""; // Clear search box
-          this.searchValue = "";
-          this.skillSelected = false;
-          document.getElementById("dropdown-plugin-div").style.display = "none";
+        this.searchBoxElement.value = ""; // Clear search box
+        this.searchValue = "";
+        this.skillSelected = false;
+        document.getElementById("dropdown-plugin-div").style.display = "none";
       }
+
       else{
         event.preventDefault();
         this.isFromSelectBox = false;
         this.searchValue = searchBoxElement.value;
         if (this.searchValue?.length > 0) {
+          clearTimeout(this.searchTimeout);
           console.log("searchentered");
-          this.searchAPI(this.searchValue);
+          this.searchTimeout = setTimeout(() => {
+            this.searchAPI(this.searchValue);
+          }, 300);
         }
       }
     });
@@ -2082,6 +2110,13 @@ class IysSearchPlugin {
 
   searchAPI(searchValue, selectedValue, skillId) {
     // this.searchInputBox.classList.add("loading");
+    if (this.currentRequest) {
+      this.currentRequest.abort(); // Cancel previous request
+    }
+
+    this.currentRequest = new AbortController(); // Create new controller
+    const signal = this.currentRequest.signal;
+
     this.searchInputBox.type = "text";
 
     const div = document.getElementById("dropdown-plugin-div");
@@ -2118,6 +2153,7 @@ class IysSearchPlugin {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${getAccessToken?.access}`,
             },
+            signal,
         })
         .then((response) => {
           if (response.status === 429) {
@@ -2132,13 +2168,17 @@ class IysSearchPlugin {
             this.createSkillSearchList(response.matches, this.searchValue, selectedValue);
           // }
         })
-        .catch((err) => console.error(err))
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            console.error(err);
+          }
+        })
         .finally(() => {
           // Remove the loader when the API call is complete
           // div.removeChild(loader);
         });
     } else if (this.searchValue.trim().length > 0) {
-      fetch(apiUrl)
+      fetch(apiUrl,{signal})
         .then((response) => {
           if (response.status === 429) {
             // Redirect to /limit-exceeded/ page
@@ -2156,7 +2196,11 @@ class IysSearchPlugin {
             );
           // }
         })
-        .catch((err) => console.error(err))
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            console.error(err);
+          }
+        })
         .finally(() => {
           // Remove the loader when the API call is complete
           // div.removeChild(loader);
@@ -3024,7 +3068,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               }
           }
       });
-      
+
       $(document).on('click', (event) => {
         if (!$(event.target).closest("#dropdownMenu").length) {
           dropdownMenu.style.display = "none";
