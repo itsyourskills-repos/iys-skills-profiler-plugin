@@ -3000,6 +3000,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             }
           }
       });
+
+      $(document).on('click', (event) => {
+        if (!$(event.target).closest("#dropdownMenu").length) {
+          dropdownMenu.style.display = "none";
+          searchBox.value = "";
+        }
+      });
+
       //Click the softskills
       selectBox.addEventListener("change", (event) => {
         const selectedValue = selectBox.value;
@@ -3025,6 +3033,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     var searchDiv = document.createElement("div");
     searchDiv.id = "serachid";
+    var skillSelectInformationDiv = document.createElement("div");
+    skillSelectInformationDiv.className = "skillSelectInformation";
+    skillSelectInformationDiv.style = "margin: 20px auto; background: #f4f6f9; padding: 15px; border-radius: 30px; width: 100%; font-family: system-ui; text-align: left; font-size: 16px; background-color: #e8f5e9;";
+    skillSelectInformationDiv.innerHTML = `
+      <span style="padding-left:5px;">To add a <strong>Skill</strong> to your profile, click
+        <img src="${imagePath}Group 24.svg" alt="select skill" class="icon" style="width: 30px; height: 30px; margin-left: 10px; margin-right:10px; vertical-align: middle;"/> 
+        To see <strong>Skills</strong> below, click
+        <img src="${imagePath}hovercircle.png" alt="children skill" class="icon" style="width: 30px; height: 30px; margin-left: 10px; margin-right:10px; vertical-align: middle;"/>
+      </span>
+    `;
     var elementCountLabelDiv = document.createElement("div");
     elementCountLabelDiv.className = "elementCountLabel";
     var tabContentDiv2 = document.createElement("div");
@@ -3039,6 +3057,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     tabContentDiv2.appendChild(replaceholderDiv);
 
     cardBodyDiv.appendChild(searchDiv);
+    cardBodyDiv.appendChild(skillSelectInformationDiv);
     cardBodyDiv.appendChild(elementCountLabelDiv);
     cardBodyDiv.appendChild(tabContentDiv2);
     homeTabDiv.appendChild(cardBodyDiv);
@@ -3091,9 +3110,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     pElement.className = "p-0 m-0";
     pElement.style = "color:#9B9B9B";
     pElement.textContent = "You have skills added to your profile.";
-
+    var skillRateInformationDiv = document.createElement("div");
+    skillRateInformationDiv.className = "skillRateInformation";
+    skillRateInformationDiv.style = "margin: 20px auto; padding: 15px; border-radius: 30px; width: 100%; font-family: system-ui; text-align: left; font-size: 16px; background-color: #ffff;";
+    skillRateInformationDiv.innerHTML = `
+      <span style="padding-left:5px;">To add proficiencies in <strong>Skills</strong> click
+        <i class="fas fa-star" style="font-size: 22px; margin-left:8px; color:#ccccff;"></i>
+      </span>
+    `;
     mb4mt3Div.appendChild(h3Element);
     mb4mt3Div.appendChild(pElement);
+    mb4mt3Div.appendChild(skillRateInformationDiv);
 
     var my3Div = document.createElement("div");
     my3Div.className = "my-3";
@@ -4569,19 +4596,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
               // Remove existing star icon if any
               const existingStarIcon = buttonContentDiv.querySelector(
-                'img[src*="Group 23.svg"], i.fas.fa-star'
+                'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
               );
               if (existingStarIcon) {
                 buttonContentDiv.removeChild(existingStarIcon);
               }
               // Add new star icon
               const starIcon = document.createElement("img");
-              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.src = `${imagePath}Group 25.svg`;
               starIcon.style.marginLeft = "5px";
               starIcon.style.cursor = "pointer";
               starIcon.addEventListener("click", (event) => {
                 event.stopPropagation();
-                this.changeRateModelElement(skillDetail);
+                this.showPopup(event,skillDetail);
               });
 
               // skillButton.style.backgroundColor = "#E0DEFF";
@@ -4668,19 +4695,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
           // Remove existing star icon if any
           const existingStarIcon = buttonContentDiv.querySelector(
-            'img[src*="Group 23.svg"], i.fas.fa-star'
+            'img[src*="Group 23.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
           );
           if (existingStarIcon) {
             buttonContentDiv.removeChild(existingStarIcon);
           }
           // Add new star icon
           const starIcon = document.createElement("img");
-          starIcon.src = `${imagePath}Group 23.svg`;
+          starIcon.src = `${imagePath}Group 25.svg`;
           starIcon.style.marginLeft = "5px";
           starIcon.style.cursor = "pointer";
           starIcon.addEventListener("click", (event) => {
             event.stopPropagation();
-            this.changeRateModelElement(skillDetail);
+            this.showPopup(eventskillDetail);
           });
 
           // skillButton.style.backgroundColor = "#E0DEFF";
@@ -5497,7 +5524,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           const searchText = searchByName(skill.name, skill.path_addr);
           if (searchText.length > 0) {
               const starIcon = document.createElement("img");
-              starIcon.src = `${imagePath}Group 23.svg`;
+              starIcon.src = `${imagePath}Group 25.svg`;
               starIcon.style.marginLeft = "5px";
               starIcon.style.cursor = "pointer";
               starIcon.addEventListener("click", (event) => {
@@ -5507,12 +5534,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               buttonContentDiv.appendChild(starIcon);
               skillButton.classList.add('rated-skill');
           } else {
-              const starIcon = document.createElement("i");
-              starIcon.className = "fas fa-star";
+              const starIcon = document.createElement("img");
+              starIcon.src = `${imagePath}Group 24.svg`;
               starIcon.setAttribute("id", skill.path_addr);
               starIcon.style.marginLeft = "5px";
               starIcon.style.cursor = "pointer";
-              starIcon.style.color = "#ccccff";
               starIcon.addEventListener("click", (event) => {
                   event.stopPropagation();
                   this.showPopup(event, skill); // Call the popup function
@@ -6291,20 +6317,29 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       //   buttonContentDiv.appendChild(starIcon);
       // }
       // else{
-      const starIcon = document.createElement("i");
-      starIcon.setAttribute("id", skillDetail.skills[0].path_addr);
-      starIcon.className = "fas fa-star";
-      starIcon.style.marginLeft = "5px";
-      starIcon.style.cursor = "pointer";
-      starIcon.style.color = "#ccccff";
-      starIcon.addEventListener("click", (event) => {
-        event.stopPropagation();
-        this.showPopup(event, skillDetail.skills[0]); // Call the popup function
-      });
-      buttonContentDiv.appendChild(starIcon);
       if (searchText.length > 0) {
+        const starIcon = document.createElement("img");
+        starIcon.src = `${imagePath}Group 25.svg`;
+        starIcon.style.marginLeft = "5px";
+        starIcon.style.cursor = "pointer";
+        starIcon.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.showPopup(event, skillDetail.skills[0]); // Call the popup function
+        });
+        buttonContentDiv.appendChild(starIcon);
         skillButton.style.backgroundColor = "#E0DEFF";
-        starIcon.style.color = "#4682B4";
+      }
+      else{
+        const starIcon = document.createElement("img");
+        starIcon.src = `${imagePath}Group 24.svg`;
+        starIcon.style.marginLeft = "5px";
+        starIcon.style.cursor = "pointer";
+        starIcon.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.showPopup(event, skillDetail.skills[0]); // Call the popup function
+        });
+        starIcon.setAttribute("id", skillDetail.skills[0].path_addr);
+        buttonContentDiv.appendChild(starIcon);
       }
       // }
     }
@@ -6939,26 +6974,64 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const actionsIconDiv = document.createElement("div");
         actionsIconDiv.className = "actiondiv";
+        actionsIconDiv.style ="display:flex; align-items:center;";
+
+        if(percentage === 0){
+          const rateIcon = document.createElement("i");
+          rateIcon.className = "fas fa-star";
+          rateIcon.style = "font-size: 20px; margin-right:10px";
+          rateIcon.setAttribute("data-mdb-tooltip-init", "");
+          rateIcon.setAttribute("title", "Click to Rate");
+          rateIcon.setAttribute("id", skill.isot_file.path_addr);
+          rateIcon.style.color = "#ccccff";
+          actionsIconDiv.appendChild(rateIcon);
+
+          rateIcon.addEventListener("click", () => {
+            document.querySelectorAll(".rating-box").forEach((box) => {
+              box.style.display = "none";
+            });
+            let ratingBox = this.createRatingBox(skill.isot_file);
+            ratingboxContainer.innerHTML = "";
+            ratingboxContainer.appendChild(ratingBox);
+            ratingBox.style.display = "block";
+          });
+        }
+        else{
+          const editIcon = document.createElement("img");
+          editIcon.src = `${imagePath}Group 35.svg`;
+          editIcon.style = "height:16px; width: 14px; margin-right:10px";
+          editIcon.setAttribute("data-mdb-tooltip-init", "");
+          editIcon.setAttribute("title", "Click to edit");
+          editIcon.setAttribute("id", skill.isot_file.path_addr);
+          editIcon.style.backgroundColor = "#EEEEEE";
+
+          editIcon.addEventListener("click", () => {
+            console.log("editing things", skill.isot_file);
+            document.querySelectorAll(".rating-box").forEach((box) => {
+              box.style.display = "none";
+            });
+            let ratingBox = this.createRatingBox(skill.isot_file); // Call the function
+            ratingboxContainer.innerHTML = "";
+            ratingboxContainer.appendChild(ratingBox);
+  
+            // Toggle visibility
+            ratingBox.style.display = "block";
+          });
+
+          if (iysplugin.isEdit) {
+            actionsIconDiv.appendChild(editIcon);
+          }
+        }
+
         const deleteIcon = document.createElement("img");
         deleteIcon.src = `${imagePath}Group 34.svg`;
         deleteIcon.style =
-          "margin-right:10px !important; height:16px; width: 14px;";
+          "height:16px; width: 14px;";
         deleteIcon.style.backgroundColor = "#EEEEEE";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.setAttribute("title", "Click to Delete");
         if (iysplugin.isDelete) {
           actionsIconDiv.appendChild(deleteIcon);
-        }
-
-        const editIcon = document.createElement("img");
-        editIcon.src = `${imagePath}Group 35.svg`;
-        editIcon.style = "height:16px; width: 14px;";
-        editIcon.setAttribute("data-mdb-tooltip-init", "");
-        editIcon.setAttribute("title", "Click to edit");
-        editIcon.setAttribute("id", skill.isot_file.path_addr);
-        editIcon.style.backgroundColor = "#EEEEEE";
-        if (iysplugin.isEdit) {
-          actionsIconDiv.appendChild(editIcon);
         }
 
         // if (skill.rating[0].rating) {
@@ -7018,26 +7091,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           createSelectedSkillsCount();
 
           // this.createListProfileSkills();
-        });
-
-        editIcon.addEventListener("click", () => {
-          console.log("editing things", skill.isot_file);
-
-          // this.changeRateModelElement(skill.isot_file);
-          // console.log("delete the skill", skill);
-          // // delete_skill(skill.id);
-          // console.log("refess the connect", skill.index);
-
-          // this.createListProfileSkills();
-          document.querySelectorAll(".rating-box").forEach((box) => {
-            box.style.display = "none";
-          });
-          let ratingBox = this.createRatingBox(skill.isot_file); // Call the function
-          ratingboxContainer.innerHTML = "";
-          ratingboxContainer.appendChild(ratingBox);
-
-          // Toggle visibility
-          ratingBox.style.display = "block";
         });
 
         // Check if the skill container is the last child
@@ -8956,7 +9009,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         rateButtonSpan.textContent = "Rated";
         rateButtonSpan.style.color = "#1E1E1E";
         const starIcon = document.createElement("img");
-        starIcon.src = `${imagePath}Group 23.svg`;
+        starIcon.src = `${imagePath}Group 25.svg`;
         starIcon.style.marginRight = "5px";
         starIcon.style.cursor = "pointer";
         rateButton.appendChild(starIcon);
@@ -8964,11 +9017,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         rateButton.style.backgroundColor = "#EFF4FA";
         rateButtonSpan.textContent = "Rate";
         rateButtonSpan.style.color = "#636363";
-        const starIcon = document.createElement("i");
-        starIcon.className = "fas fa-star";
+        const starIcon = document.createElement("img");
+        starIcon.src = `${imagePath}Group 24.svg`;
         starIcon.style.marginRight = "5px";
         starIcon.style.cursor = "pointer";
-        starIcon.style.color = "rgb(204, 204, 255)";
         rateButton.appendChild(starIcon);
       }
       rateButtonSpan.style.fontSize = "16px";
@@ -9178,7 +9230,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const searchText = searchByName(skill.name, skill.path_addr);
         if (searchText.length > 0) {
             const starIcon = document.createElement("img");
-            starIcon.src = `${imagePath}Group 23.svg`;
+            starIcon.src = `${imagePath}Group 25.svg`;
             starIcon.style.marginLeft = "5px";
             starIcon.style.cursor = "pointer";
             starIcon.addEventListener("click", (event) => {
@@ -9188,12 +9240,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             buttonContentDiv.appendChild(starIcon);
             skillButton.classList.add('rated-skill');
         } else {
-            const starIcon = document.createElement("i");
-            starIcon.className = "fas fa-star";
+            const starIcon = document.createElement("img");
+            starIcon.src = `${imagePath}Group 24.svg`;
             starIcon.setAttribute("id", skill.path_addr);
             starIcon.style.marginLeft = "5px";
             starIcon.style.cursor = "pointer";
-            starIcon.style.color = "#ccccff";
             starIcon.addEventListener("click", (event) => {
                 event.stopPropagation();
                 this.showPopup(event, skill); // Call the popup function
@@ -9475,7 +9526,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const searchText = searchByName(skill.name, skill.path_addr);
         if (searchText.length > 0) {
             const starIcon = document.createElement("img");
-            starIcon.src = `${imagePath}Group 23.svg`;
+            starIcon.src = `${imagePath}Group 25.svg`;
             starIcon.style.marginLeft = "5px";
             starIcon.style.cursor = "pointer";
             starIcon.addEventListener("click", (event) => {
@@ -9485,17 +9536,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             buttonContentDiv.appendChild(starIcon);
             skillButton.classList.add('rated-skill');
         } else {
-            const starIcon = document.createElement("i");
-            starIcon.className = "fas fa-star";
-            starIcon.setAttribute("id", skill.path_addr);
-            starIcon.style.marginLeft = "5px";
-            starIcon.style.cursor = "pointer";
-            starIcon.style.color = "#ccccff";
-            starIcon.addEventListener("click", (event) => {
-                event.stopPropagation();
-                this.showPopup(event, skill); // Call the popup function
-            });
-            buttonContentDiv.appendChild(starIcon);
+          const starIcon = document.createElement("img");
+          starIcon.src = `${imagePath}Group 24.svg`;
+          starIcon.setAttribute("id", skill.path_addr);
+          starIcon.style.marginLeft = "5px";
+          starIcon.style.cursor = "pointer";
+          starIcon.addEventListener("click", (event) => {
+              event.stopPropagation();
+              this.showPopup(event, skill); // Call the popup function
+          });
+          buttonContentDiv.appendChild(starIcon);
         }
       }
 
@@ -9758,7 +9808,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         rateButtonSpan.textContent = "Rated";
         rateButtonSpan.style.color = "#1E1E1E";
         const starIcon = document.createElement("img");
-        starIcon.src = `${imagePath}Group 23.svg`;
+        starIcon.src = `${imagePath}Group 25.svg`;
         starIcon.style.marginRight = "5px";
         starIcon.style.cursor = "pointer";
         rateButton.appendChild(starIcon);
@@ -9766,11 +9816,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         rateButton.style.backgroundColor = "#EFF4FA";
         rateButtonSpan.textContent = "Rate";
         rateButtonSpan.style.color = "#636363";
-        const starIcon = document.createElement("i");
-        starIcon.className = "fas fa-star";
+        const starIcon = document.createElement("img");
+        starIcon.src = `${imagePath}Group 24.svg`;
         starIcon.style.marginRight = "5px";
         starIcon.style.cursor = "pointer";
-        starIcon.style.color = "rgb(204, 204, 255)";
         rateButton.appendChild(starIcon);
       }
       rateButtonSpan.style.fontSize = "16px";
