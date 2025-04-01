@@ -2161,7 +2161,7 @@ class IysSearchPlugin {
           // div.removeChild(loader);
         });
     } else {
-      this.createSkillSearchList([], this.searchValue);
+      this.createSkillSearchList([], this.searchValue, selectedValue);
     }
   }
 }
@@ -3705,7 +3705,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       // buttonContainer.style.position = "relative";
       var button = document.createElement("button");
       // button.setAttribute("data-mdb-tab-init", "");
-      button.style.width = "180px";
+      button.style.width = "200px";
       button.style.height = "70px";
       button.style.borderRadius = "10px";
       button.style.display = "flex";
@@ -3716,10 +3716,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       button.style.paddingLeft = "1.5rem";
       button.style.paddingRight = "1rem";
       button.style.boxShadow = "none";
-      // button.style.fontWeight = "bold";
+      button.style.fontFamily = "system-ui";
       button.style.color = "#1E1E1E";
       button.style.font = "normal normal 600 16px/46px Segoe UI;";
       button.style.letterSpacing = "0.5px";
+      button.style.fontSize = "13px";
       //Image contains the button style
       var iconDiv = document.createElement("button");
       iconDiv.style.width = "40px";
@@ -4824,9 +4825,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillName,
     htmlElement,
     skillList,
-    breadcrumbPath = [],
     identifier,
     skillId,
+    breadcrumbPath = [],
     isInitialLoad = true,
     highlightSkill,
     clickedSkillParentName,
