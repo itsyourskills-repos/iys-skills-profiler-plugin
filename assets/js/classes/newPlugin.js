@@ -2635,15 +2635,26 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             .then(response => {
                 dropdownMenu.innerHTML = "";
                 if (response.matches.length > 0) {
-                    response.matches.forEach(match => {
-                        match.skills.forEach(skill => {
-                            let item = createDropdownItem(skill);
-                            dropdownMenu.appendChild(item);
-                        });
-                    });
-                    dropdownMenu.style.display = "block";
+                  let allSkills = [];
+  
+                  response.matches.forEach(match => {
+                      allSkills.push(...match.skills);
+                  });
+
+                  let sortedSkills = allSkills.sort((a, b) => {
+                      let orderA = a.display_order !== null ? a.display_order : Infinity;
+                      let orderB = b.display_order !== null ? b.display_order : Infinity;
+                      return orderA - orderB;
+                  });
+  
+                  sortedSkills.forEach(skill => {
+                      let item = createDropdownItem(skill);
+                      dropdownMenu.appendChild(item);
+                  });
+  
+                  dropdownMenu.style.display = "block";
                 } else {
-                    dropdownMenu.style.display = "none";
+                  dropdownMenu.style.display = "none";
                 }
             })
             .finally(() => {
@@ -2659,29 +2670,40 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               .then(response => {
                   dropdownMenu.innerHTML = "";
                   if (response.matches.length > 0) {
-                      response.matches.forEach(match => {
-                          match.skills.forEach(skill => {
-                              let skillPathParts = skill.path_addr.split(".");
-
-                              // If the skill has a hierarchy (i.e., has ancestors)
-                              if (skillPathParts.length > 1 && skill.path_addr[0] !== ".") {
-                                  // Fetch all ancestors and expand them in order
-                                  fetch(`https://lambdaapi.iysskillstech.com/latest/dev-api/cat-tree/?path_addr=${skill.path_addr}`)
-                                      .then(res => res.json())
-                                      .then(treeData => {
-                                          if (treeData.ancestors.length > 0) {
-                                              expandAncestors(treeData.ancestors, skill.name);
-                                          }
-                                      });
-                              } else {
-                                  let item = createDropdownItem(skill);
-                                  dropdownMenu.appendChild(item);
-                              }
-                          });
-                      });
-                      dropdownMenu.style.display = "block";
+                    let allSkills = [];
+                
+                    response.matches.forEach(match => {
+                        allSkills.push(...match.skills);
+                    });
+                
+                    // Sort skills by display_order, treating null as the largest value
+                    let sortedSkills = allSkills.sort((a, b) => {
+                        let orderA = a.display_order !== null ? a.display_order : Infinity;
+                        let orderB = b.display_order !== null ? b.display_order : Infinity;
+                        return orderA - orderB;
+                    });
+                
+                    sortedSkills.forEach(skill => {
+                        let skillPathParts = skill.path_addr.split(".");
+                
+                        if (skillPathParts.length > 1 && skill.path_addr[0] !== ".") {
+                            // Fetch all ancestors and expand them in order
+                            fetch(`https://lambdaapi.iysskillstech.com/latest/dev-api/cat-tree/?path_addr=${skill.path_addr}`)
+                                .then(res => res.json())
+                                .then(treeData => {
+                                    if (treeData.ancestors.length > 0) {
+                                        expandAncestors(treeData.ancestors, skill.name);
+                                    }
+                                });
+                        } else {
+                            let item = createDropdownItem(skill);
+                            dropdownMenu.appendChild(item);
+                        }
+                    });
+                
+                    dropdownMenu.style.display = "block";
                   } else {
-                      dropdownMenu.style.display = "none";
+                    dropdownMenu.style.display = "none";
                   }
               })
               .finally(() => {
@@ -2773,12 +2795,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           .then(response => response.json())
           .then(children => {
               if (!children.length) return;
+              let sortedChildren = children.sort((a, b) => {
+                let orderA = a.display_order !== null ? a.display_order : Infinity;
+                let orderB = b.display_order !== null ? b.display_order : Infinity;
+                return orderA - orderB;
+              });
               var childContainer = document.createElement("div");
               childContainer.className = "child-menu";
               childContainer.style.padding = "5px";
               childContainer.style.paddingLeft = "15px";
 
-              children.forEach(child => {
+              sortedChildren.forEach(child => {
                   var childItem = document.createElement("div");
                   childItem.className = "dropdown-item";
                   childItem.setAttribute("data-path-addr", child.path_addr);
@@ -3070,9 +3097,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       });
 
       $(document).on('click', (event) => {
-        if (!$(event.target).closest("#dropdownMenu").length) {
-          dropdownMenu.style.display = "none";
-          searchBox.value = "";
+        if (
+            !$(event.target).closest("#dropdownMenu").length && 
+            !$(event.target).closest(".dropdown-item").length
+        ) {
+            dropdownMenu.style.display = "none";
+            searchBox.value = "";
         }
       });
 
