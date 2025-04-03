@@ -1536,7 +1536,7 @@ class IysSearchPlugin {
     searchBoxElement.addEventListener("input", (event) => {
       if (this.skillSelected) {
         console.log("Backspace pressed after skill selection. Clearing search box.");
-        this.searchBoxElement.value = ""; // Clear search box
+        searchBoxElement.value = ""; // Clear search box
         this.searchValue = "";
         this.skillSelected = false;
         document.getElementById("dropdown-plugin-div").style.display = "none";
