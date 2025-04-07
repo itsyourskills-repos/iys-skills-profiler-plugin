@@ -6341,7 +6341,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
   sortSkillsByTagId(skills) {
 
-    const order = ["tags/1", "tags/2", "tags/3","tags/4","tags/5","tags/6","tags/7","tags/8","tags/9","tags/10","tags/11","tags/12","tags/13","tags/14","tags/15","tags/16","tags/17","tags/18","tags/19","tags/20","tags/21","tags/22","tags/23","tags/24","tags/25","tags/26"];
+    const order = ["tags/5", "tags/11", "tags/9","tags/12","tags/4","tags/8","tags/27","tags/7","tags/22","tags/21","tags/1","tags/2","tags/3","tags/6","tags/10","tags/13","tags/14","tags/15","tags/16","tags/17","tags/18","tags/19","tags/20","tags/23","tags/24","tags/25","tags/26","tags/28"];
 
     return skills.sort((a, b) => {
         const tagIdA = a.isot_file.tags[0]._id;
@@ -7329,7 +7329,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   getTags(tags) {
-    return tags.map((tag) => tag.title).join(", ");
+    // return tags.map((tag) => tag.title).join(", ");
+    return tags[0].title;
   }
 
   treeSkillAPI(skillName, cardBodyDiv, skillId) {
