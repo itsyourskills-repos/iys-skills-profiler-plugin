@@ -3567,7 +3567,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             
             // If it's a skill with no children (leaf node)
             if (!hasChildren) {
-                searchInputBox.value = skillName;
+                // searchInputBox.value = skillName;
                 console.log(skillName);
                 this.searchValue = skillName;
                 if (this.searchValue && this.searchValue.trim() !== "") {
@@ -5162,19 +5162,19 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     };
 
     if (isLoginUser) {
-      const saveButtonElement = document.getElementById("saveChangesButton");
+      // const saveButtonElement = document.getElementById("saveChangesButton");
       // Check if the element exists
-      console.log(saveButtonElement, "saveButtonElement");
-      if (saveButtonElement) {
-        const previousContent = saveButtonElement.innerHTML;
+      // console.log(saveButtonElement, "saveButtonElement");
+      // if (saveButtonElement) {
+        // const previousContent = saveButtonElement.innerHTML;
         // Create and append the loader
         const loader = document.createElement("div");
 
         loader.className = "loader rate";
         loader.style.width = "20px";
         loader.style.height = "20px";
-        saveButtonElement.textContent = "";
-        saveButtonElement.appendChild(loader);
+        // saveButtonElement.textContent = "";
+        // saveButtonElement.appendChild(loader);
         fetch(loggedInUserAddSkill, {
           method: "POST",
           headers: {
@@ -5232,28 +5232,28 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               //     );
               //   }
               // }
-              saveButtonElement.removeChild(loader);
-              saveButtonElement.innerHTML = previousContent;
+              // saveButtonElement.removeChild(loader);
+              // saveButtonElement.innerHTML = previousContent;
               // this.ratedSkillEvent(skillDetail);
             } else {
               // Handle errors
               toastr.success(`Remove Skill ${skillDetail.name} from profile`);
 
-              saveButtonElement.removeChild(loader);
-              saveButtonElement.innerHTML = previousContent;
+              // saveButtonElement.removeChild(loader);
+              // saveButtonElement.innerHTML = previousContent;
               this.updateProfileData();
             }
           })
           .catch((error) => {
-            if (loader && saveButtonElement) {
-              saveButtonElement.removeChild(loader);
-              saveButtonElement.innerHTML = previousContent;
+            // if (loader && saveButtonElement) {
+              // saveButtonElement.removeChild(loader);
+              // saveButtonElement.innerHTML = previousContent;
               this.updateProfileData();
-            }
+            // }
             // Handle network errors
             console.error("Error:", error);
           });
-      }
+      // }
     } else {
       console.log("creating parent for you", parentSkillDetailId);
 
@@ -6038,6 +6038,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       updatedSkillList.forEach((skill) => {
         const skillButton = document.createElement("button");
         skillButton.className = "softskillbutton";
+        skillButton.setAttribute("id", skill.path_addr + "button");
         skillButton.style.border = "2px solid #16a085";
         skillButton.style.borderRadius = "20px";
         skillButton.style.margin = "5px";
@@ -6054,6 +6055,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const description = skill.description;
 
         const buttonContentDiv = document.createElement("div");
+        buttonContentDiv.setAttribute("id", skill.path_addr + "div");
         buttonContentDiv.style =
           "display:flex; align-items:center; justify-content:center;";
 
