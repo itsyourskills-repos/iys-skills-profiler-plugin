@@ -2521,14 +2521,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillGroupNavDiv.className = "nav nav-pills m-0";
     skillGroupNavDiv.id = "skillsTab";
     skillGroupNavDiv.style =
-      "box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 10px; width:fit-content;";
+      "box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 10px; width:100%;";
 
     var skillGroupButton = document.createElement("div");
     skillGroupButton.className = "skillgroupbutton d-flex";
     skillGroupButton.setAttribute("role", "group");
     skillGroupButton.setAttribute("aria-label", "Three views");
     skillGroupButton.style =
-      "padding-right: 6px; padding-left:6px; padding-top:2px; padding-bottom:2px;";
+      "padding-right: 6px; padding-left:6px; padding-top:2px; padding-bottom:2px; width:100%;";
 
     // // Create the select box container
     // var selectboxDiv = document.createElement("div");
@@ -2858,10 +2858,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     selectboxDiv.style.padding = "7px";
     selectboxDiv.style.fontFamily = "system-ui";
     selectboxDiv.style.borderRadius = "5px";
+    selectboxDiv.style.width = "100%";
 
     var searchContainer = document.createElement("div");
     searchContainer.className ="button-container responsive-button-container category-container";
-    searchContainer.style="padding: 10px; border-radius: 10px; width:300px;";
+    searchContainer.style="padding: 10px; border-radius: 10px; width:100%;";
     selectboxDiv.appendChild(searchContainer);
 
     // Create the label
@@ -2902,11 +2903,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var dropdownMenu = document.createElement("div");
     dropdownMenu.id = "skills-horizontal-menu";
     dropdownMenu.className = "dropdown-menu";
-    dropdownMenu.style.width = "60vw";
+    dropdownMenu.style.width = "100%";
     dropdownMenu.style.border = "1px solid #ccc";
     dropdownMenu.style.borderRadius = "5px";
     dropdownMenu.style.backgroundColor = "#fff";
     dropdownMenu.style.display = "none";
+    adjustCardBodyMargin();
     dropdownMenu.style.position = "absolute";
     dropdownMenu.style.zIndex = "1000";
     dropdownMenu.style.maxHeight = "250px";
@@ -3046,6 +3048,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                 });
                 
                 dropdownMenu.style.display = "block";
+                adjustCardBodyMargin();
             })
             .catch(error => {
                 if (error.name !== 'AbortError') {
@@ -3240,6 +3243,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                                   });
                       
                                   dropdownMenu.style.display = "block";
+                                  adjustCardBodyMargin();
                               });
                         });
                       });
@@ -3249,9 +3253,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                           skillsContainer.appendChild(pill);
                       });
                       dropdownMenu.style.display = "block";
+                      adjustCardBodyMargin();
                   }
               } else {
                   dropdownMenu.style.display = "none";
+                  adjustCardBodyMargin();
               }
           })
           .catch(error => {
@@ -3320,6 +3326,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               document.getElementById("plugin-search-id").value = skill.name;
               searchBox.value = skill.name;
               dropdownMenu.style.display = "none";
+              adjustCardBodyMargin();
               if (skill.name && skill.name.trim() !== "") {
                   const encodedSearchValue = encodeURIComponent(skill.name.trim());
                   // searchAPI(encodedSearchValue, encodedSearchValue, skill.path_addr);
@@ -3330,6 +3337,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       
       return pill;
     }
+
+    function adjustCardBodyMargin() {
+      const cardBodyDiv = document.querySelector(".card-body");
+      if (!cardBodyDiv) return;
+  
+      if (dropdownMenu.style.display === "block") {
+          cardBodyDiv.style.marginTop = "17%"; // or any value you prefer
+      } else {
+          cardBodyDiv.style.marginTop = "0px";
+      }
+   }
 
     var hardSkills = createSkillTabButton(
       "hard-skills",
@@ -3443,8 +3461,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillGroupDescription.appendChild(explanationText);
 
     skillGroupButton.appendChild(selectboxDiv);
-    skillGroupButton.appendChild(hardSkills);
-    skillGroupButton.appendChild(softskillSelectboxDiv);
+    // skillGroupButton.appendChild(hardSkills);
+    // skillGroupButton.appendChild(softskillSelectboxDiv);
     // skillGroupButton.appendChild(role);
 
     skillGroupNavDiv.appendChild(skillGroupButton);
@@ -3485,12 +3503,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     imgBodyDiv.appendChild(contentImg);
     imgBodyDiv.appendChild(contentText1);
     imgBodyDiv.appendChild(contentText2);
-    homeTabDiv.appendChild(imgBodyDiv);
+    // homeTabDiv.appendChild(imgBodyDiv);
     //end the first page content image
 
     var cardBodyDiv = document.createElement("div");
     cardBodyDiv.className = "card-body";
-    cardBodyDiv.style.display = "none";
+    // cardBodyDiv.style.display = "none";
 
     // Create softSkillDetail div
     var softSkillDetail = document.createElement("div");
@@ -3575,8 +3593,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     console.log("entered call category searchapi");
                     this.searchAPI(encodedSearchValue, encodedSearchValue, skillId);
                 }
-                $(".hard-skills").trigger("click");
+                // $(".hard-skills").trigger("click");
                 dropdownMenu.style.display = "none";
+                adjustCardBodyMargin();
             }
           }
       });
@@ -3587,6 +3606,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             !$(event.target).closest(".dropdown-item").length
         ) {
             dropdownMenu.style.display = "none";
+            adjustCardBodyMargin();
             searchBox.value = "";
         }
       });
@@ -3601,7 +3621,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             const encodedSearchValue = encodeURIComponent(this.searchValue.trim());
             this.searchAPI(encodedSearchValue,encodedSearchValue);
           }
-          $(".hard-skills").click();
+          // $(".hard-skills").click();
         }
       });
       // Bind methods to ensure 'this' context is correct
