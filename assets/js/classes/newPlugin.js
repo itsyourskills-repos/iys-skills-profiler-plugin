@@ -7501,7 +7501,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           let ratingScale = skill.isot_file?.ratings?.[ratingIndex]?.rating_scale_label || [];
           let isCertification = skill.isot_file.tags?.some(tag => tag.title === "Certifications");
       
-          ratingValue = (skill.rating[ratingIndex]?.rating || 1);
+          ratingValue = (skill.rating[ratingIndex]?.rating);
       
           if (isCertification && ratingScale.length === 2) {
               // Certification case: Yes (rating = 1), No (rating = 2)
@@ -7513,9 +7513,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
         }
 
-        experienceDetails.innerHTML = showCalendarIcon
-          ? `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${ratingLabel}`
-          : `${ratingLabel}`;
+        if (ratingLabel) {
+          experienceDetails.innerHTML = showCalendarIcon
+              ? `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${ratingLabel}`
+              : `${ratingLabel}`;
+        } else {
+            experienceDetails.style.display = 'none';
+        }
 
         // const ratingDetails = document.createElement("div");
         // ratingDetails.className = "ps-3 border-end border-2  px-2";
@@ -7609,7 +7613,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         actionsIconDiv.className = "actiondiv";
         actionsIconDiv.style ="display:flex; align-items:center;";
 
-        if(percentage === 0){
+        if(percentage <= 0){
           const rateIcon = document.createElement("i");
           rateIcon.className = "fas fa-star";
           rateIcon.style = "font-size: 20px; margin-right:10px";
@@ -10356,12 +10360,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           const filterSkills = parentSkills.filter(
             (item) => item.name !== "Related Skills"
           );
+          const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
           this.renderCategoryHardSkills(
-            parentskills,
-            [],
+            filterSkills,
+            newBreadcrumbPath,
             softSkillAccordian,
             skillId,
-            parentskills,
+            filterSkills,
             skillName,
             highlightSkill,
           );
