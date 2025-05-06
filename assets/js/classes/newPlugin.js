@@ -2888,8 +2888,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     searchBox.style.borderRadius = "5px";
     searchBox.style.fontSize = "15px";
     searchBox.style.boxSizing = "border-box";
-    searchBox.addEventListener("focus", function () {
+    searchBox.addEventListener("focus", () => {
         fetchSkills("");
+        const dropdownMenu = document.getElementById("skills-horizontal-menu");
+        dropdownMenu.style.display = "block"; // Show the dropdown
     });
     searchBox.addEventListener("input", function () {
         clearTimeout(debounceTimer);
@@ -3600,14 +3602,26 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           }
       });
 
-      $(document).on('click', (event) => {
+      // $(document).on('click', (event) => {
+      //   if (
+      //       !$(event.target).closest("#dropdownMenu").length && 
+      //       !$(event.target).closest(".dropdown-item").length
+      //   ) {
+      //       dropdownMenu.style.display = "none";
+      //       adjustCardBodyMargin();
+      //       searchBox.value = "";
+      //   }
+      // });
+      document.addEventListener("click", (event) => {
+        const dropdownMenu = document.getElementById("skills-horizontal-menu");
+        const searchBox = document.querySelector(".search-input");
         if (
-            !$(event.target).closest("#dropdownMenu").length && 
-            !$(event.target).closest(".dropdown-item").length
+            !dropdownMenu.contains(event.target) &&
+            !searchBox.contains(event.target)
         ) {
             dropdownMenu.style.display = "none";
-            adjustCardBodyMargin();
             searchBox.value = "";
+            adjustCardBodyMargin();
         }
       });
 
@@ -5206,9 +5220,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           .then(async (response) => {
             if (response.ok) {
               // Successful response
-              toastr.success(
-                `${skillDetail.name}  added to your profile`
-              );
+              // toastr.success(
+              //   `${skillDetail.name}  added to your profile`
+              // );
               await getListFromLoggedInUser("notLoadded");
               this.updateProfileData();
               createSelectedSkillsCount();
@@ -5307,7 +5321,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             });
           }
 
-          toastr.success(`${skillDetail.name}  added to your profile`);
+          // toastr.success(`${skillDetail.name}  added to your profile`);
           this.updateProfileData();
           createSelectedSkillsCount();
           // myrate();
