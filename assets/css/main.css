@@ -424,3 +424,51 @@ img.responsive-icon-element {
 .dropdown-item:hover {
   background-color: #f0f8ff;
 }
+
+/* Default styles */
+.profile-tab {
+  padding: 30px;
+}
+
+.custom-container {
+  background-color: #EFF4FA;
+  padding: 30px;
+  border-radius: 10px;
+  border: 2px solid #EFF4FA;
+}
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-box {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.custom-tab-content {
+  padding: 1rem; /* .p-3 */
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .profile-tab,
+  .custom-container {
+    padding: 15px;
+  }
+
+  .custom-tab-content {
+    padding: 0 !important;
+  }
+
+  .flex-container {
+    display: block;
+  }
+
+  .custom-box {
+    padding: 0;
+  }
+}

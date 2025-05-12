@@ -3684,22 +3684,20 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     // Create profile tab pane div
     var profileTabDiv = document.createElement("div");
-    profileTabDiv.className = "tab-pane fade container-fluid";
-    profileTabDiv.style = "padding:30px;";
+    profileTabDiv.className = "tab-pane fade container-fluid profile-tab";
+    // profileTabDiv.style = "padding:30px;";
     profileTabDiv.id = "profile0";
     profileTabDiv.setAttribute("role", "tabpanel");
     profileTabDiv.setAttribute("aria-labelledby", "profile-tab0");
-
     if (iysplugin.tap == "profile") {
       profileTabDiv.classList = "show active";
       homeTabDiv.classList = "d-none";
     }
 
     var containerFluidDiv = document.createElement("div");
-    // containerFluidDiv.className = "container-fluid px-md-3 pb-md-3";
-    containerFluidDiv.className = "container-fluid";
-    containerFluidDiv.style =
-      "background-color:#EFF4FA; padding:30px; border-radius:10px; border:2px solid #EFF4FA;";
+    containerFluidDiv.className = "container-fluid custom-container";
+    // containerFluidDiv.style =
+    //   "background-color:#EFF4FA; padding:30px; border-radius:10px; border:2px solid #EFF4FA;";
 
     var mb4mt3Div = document.createElement("div");
     mb4mt3Div.className = "mb-4 mt-3";
@@ -3719,14 +3717,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   
       h3Element.textContent = "";
       h3Element.appendChild(firstNameSpan);
-      h3Element.appendChild(document.createTextNode(" Skill Profile"));
+      h3Element.appendChild(document.createTextNode(" Skills Profile"));
     } else {
-        h3Element.textContent = "Skill Profile";
+        h3Element.textContent = "Skills Profile";
     }
     var container = document.createElement("div");
-    container.style.display = "flex";
-    container.style.alignItems = "center";
-    container.style.gap = "10px"; // Optional spacing between elements
+    container.className = "flex-container";
+    // container.style.display = "flex";
+    // container.style.alignItems = "center";
+    // container.style.gap = "10px"; // Optional spacing between elements
 
     var pElement = document.createElement("p");
     pElement.className = "p-0 m-0";
@@ -3760,10 +3759,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     mb4mt3Div.appendChild(skillRateInformationDiv);
 
     var my3Div = document.createElement("div");
-    my3Div.className = "my-3";
-    my3Div.style =
-      "background-color:#FFFFFF; border-radius:10px; padding:20px;";
-
+    my3Div.className = "my-3 custom-box";
+    // my3Div.style =
+    //   "background-color:#FFFFFF; border-radius:10px; padding:20px;";
     var navPillsDiv = document.createElement("div");
     navPillsDiv.className = "nav nav-pills m-0";
     navPillsDiv.id = "viewsTab";
@@ -3804,7 +3802,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     my3Div.appendChild(navPillsDiv);
 
     var tabContentDiv3 = document.createElement("div");
-    tabContentDiv3.className = "tab-content card p-3";
+    tabContentDiv3.className = "tab-content card custom-tab-content";
+    // tabContentDiv3.className = "tab-content card p-3";
     tabContentDiv3.id = "viewsTabContent0";
     tabContentDiv3.style = "box-shadow:none;";
 
@@ -7522,7 +7521,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               ratingLabel = ratingValue === 1 ? ratingScale[0] : "";
           } else if (ratingValue > 0) {
               // Default behavior for other skills
-              ratingLabel = ratingScale[ratingValue - 1] || "";
+              ratingLabel = ratingScale[ratingValue - 2] || "";
               showCalendarIcon = skill.isot_file?.ratings?.[ratingIndex]?.rating_category === "Experience Level";
           }
         }
