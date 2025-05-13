@@ -400,7 +400,7 @@ function createSelectedSkillsCount() {
     elementCountLabel.style.border = "0.4px solid #E1F7E9";
     elementCountLabel.style.background = "#E1F7E9";
     elementCountLabel.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <div class="element-count-content-div" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
         <div style="display: flex; align-items: center;">
           <div style="display: flex; justify-content: center; align-items: center;">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
@@ -415,7 +415,7 @@ function createSelectedSkillsCount() {
             <span style="font-size:16px; color:#28a745;"> element added to your profile</span>
           </div>
         </div>
-        <a id='profile-link' href="#" onclick="openProfileTab()" style="margin-right:20px; font-size:16px; color:#46419C; text-decoration: underline;">Check your profile</a>
+        <a class="element-div-profile-link" id='profile-link' href="#" onclick="openProfileTab()" style="margin-right:20px; font-size:16px; color:#46419C; text-decoration: underline;">Check your profile</a>
       </div>`;
   } else {
     elementCountLabel.style.border = "0.4px solid #FEF4E4";
@@ -2510,7 +2510,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     //New changes
     var groupSkilltypeDiv = document.createElement("div");
-    groupSkilltypeDiv.className = "container-fluid px-md-3";
+    groupSkilltypeDiv.className = "group-skill-type container-fluid px-md-3";
 
     var skillGroupDiv = document.createElement("div");
     // skillGroupDiv.className="my-3";
@@ -3509,7 +3509,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //end the first page content image
 
     var cardBodyDiv = document.createElement("div");
-    cardBodyDiv.className = "card-body";
+    cardBodyDiv.className = "card-body-search card-body";
     // cardBodyDiv.style.display = "none";
 
     // Create softSkillDetail div
@@ -5721,7 +5721,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       console.log(updatedSkillList);
       CardBody.style.backgroundColor = "white";
       CardBody.style.padding = "12px 12px";
-      CardBody.classList.add("card-body-accordion");
+      CardBody.classList.add("card-body-accordion", "skill-accordion");
       CardBody.style.borderRadius = "10px";
       CardBody.style.margin = "10px 0px";
       CardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
@@ -6053,7 +6053,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       console.log(updatedSkillList);
       CardBody.style.backgroundColor = "white";
       CardBody.style.padding = "12px 12px";
-      CardBody.classList.add("card-body-accordion");
+      CardBody.classList.add("card-body-accordion", "skill-child-accordion");
       CardBody.style.borderRadius = "10px";
       CardBody.style.margin = "10px 0px";
       CardBody.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
@@ -6884,15 +6884,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     this.selectedASkillBox.innerHTML = "";
     const cardDiv = document.createElement("div");
     document.getElementById("replaceholder").innerHTML = "";
-    cardDiv.classList.add("card");
+    cardDiv.classList.add("card", "create-card");
     const cardBodyDiv = document.createElement("div");
     // cardBodyDiv.style.backgroundColor="#EFF4FA";
-    cardBodyDiv.classList.add("card-body");
+    cardBodyDiv.classList.add("card-body", "create-card-body");
     cardBodyDiv.style =
       "padding-left:20px; padding-right:20px; padding-top:5px; padding-bottom:5px; background-color:#EFF4FA; border-radius:5px;";
     cardBodyDiv.id = "card-body-accordion";
     const cardTitleH4 = document.createElement("h4");
-    cardTitleH4.classList.add("card-title");
+    cardTitleH4.classList.add("card-title", "create-card-title");
     cardTitleH4.style = "display: flex; padding-top: 10px;";
     const skillButton = document.createElement("button");
     skillButton.className = "softskillbutton";
