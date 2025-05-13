@@ -455,6 +455,50 @@ img.responsive-icon-element {
 
 /* Mobile view */
 @media (max-width: 768px) {
+  /* Search page mobile view */
+  .group-skill-type{
+    padding: 0px !important;
+  }
+  .card-body-search{
+    padding: 10px !important;
+    margin-top: 10px;
+  }
+  .skill-accordion{
+    padding: 10px 10px !important;
+    box-shadow: none !important;
+  }
+  .skill-child-accordion{
+    padding: 10px 10px !important;
+    box-shadow: none !important;
+  }
+  .softskillbutton{
+    padding: 3px 6px !important;
+    font-size: 12px !important;
+  }
+  .create-card{
+    box-shadow: none !important;
+  }
+  .create-card-body{
+    padding: 10px 10px !important;
+  }
+  .create-card-title{
+    padding-top: 5px !important;
+  }
+  .elementCountLabel{
+    padding: 5px 5px !important;
+    margin: 10px auto !important;
+  }
+  .element-count-content-div{
+    display: grid !important;
+    justify-content: center !important;
+  }
+  .element-div-profile-link{
+    margin: 0px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  /* Profile page mobile view */
   .profile-tab,
   .custom-container {
     padding: 15px;
