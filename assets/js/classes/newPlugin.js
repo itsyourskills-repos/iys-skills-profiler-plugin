@@ -5174,7 +5174,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     parentSkillDetailId
   ) {
     console.log("saveprocess entered");
+    const userDetails = JSON.parse(localStorage.getItem("loginUserDetail"));
+    const userId = userDetails?.id;
     let userRatedSkill = {
+      userId,
       skills: [
         {
           path_addr: skillDetail?.path_addr,
