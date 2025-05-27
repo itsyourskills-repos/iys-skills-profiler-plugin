@@ -516,3 +516,10 @@ img.responsive-icon-element {
     padding: 0;
   }
 }
+@media (max-width: 400px) {
+  #confirmPopup {
+    width: 90% !important;
+    left: 5% !important;
+    right: 5% !important;
+  }
+}
