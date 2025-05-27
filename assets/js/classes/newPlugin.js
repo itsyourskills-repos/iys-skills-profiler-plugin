@@ -2289,8 +2289,30 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     document.body.appendChild(popup);
 
     const rect = event.target.getBoundingClientRect();
-    popup.style.left = `${rect.left + window.scrollX}px`;
-    popup.style.top = `${rect.top + window.scrollY - popup.offsetHeight - 10}px`;
+    // popup.style.left = `${rect.left + window.scrollX}px`;
+    // popup.style.top = `${rect.top + window.scrollY - popup.offsetHeight - 10}px`;
+    const popupWidth = 250;
+    const padding = 10;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let left = rect.left + scrollX;
+    let top = rect.top + scrollY - popup.offsetHeight - 10;
+
+    // Prevent overflow to the right
+    if (left + popupWidth + padding > viewportWidth) {
+      left = viewportWidth - popupWidth - padding;
+    }
+
+    // Prevent popup from going above the viewport
+    if (top < scrollY) {
+      top = rect.bottom + scrollY + 10; // Show below the element
+    }
+
+    popup.style.left = `${left}px`;
+    popup.style.top = `${top}px`;
 
     // Function to hide popup when clicking outside
     function hidePopupOnClickOutside(event) {
