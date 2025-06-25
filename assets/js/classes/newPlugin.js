@@ -2542,8 +2542,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var skillGroupNavDiv = document.createElement("div");
     skillGroupNavDiv.className = "nav nav-pills m-0";
     skillGroupNavDiv.id = "skillsTab";
+    // skillGroupNavDiv.style =
+    //   "box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 10px; width:100%;";
     skillGroupNavDiv.style =
-      "box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 10px; width:100%;";
+      "width:100%;";
 
     var skillGroupButton = document.createElement("div");
     skillGroupButton.className = "skillgroupbutton d-flex";
@@ -2877,15 +2879,15 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var selectboxDiv = document.createElement("div");
     selectboxDiv.className = "selectbox-container";
     selectboxDiv.style.position = "relative";
-    selectboxDiv.style.padding = "7px";
+    // selectboxDiv.style.padding = "7px";
     selectboxDiv.style.fontFamily = "system-ui";
-    selectboxDiv.style.borderRadius = "5px";
+    // selectboxDiv.style.borderRadius = "5px";
     selectboxDiv.style.width = "100%";
 
-    var searchContainer = document.createElement("div");
-    searchContainer.className ="button-container responsive-button-container category-container";
-    searchContainer.style="padding: 10px; border-radius: 10px; width:100%;";
-    selectboxDiv.appendChild(searchContainer);
+    // var searchContainer = document.createElement("div");
+    // searchContainer.className ="button-container responsive-button-container category-container";
+    // searchContainer.style="padding: 10px; border-radius: 10px; width:100%;";
+    // selectboxDiv.appendChild(searchContainer);
 
     // Create the label
     var searchLabel = document.createElement("label");
@@ -2893,7 +2895,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     searchLabel.style.display = "block";
     searchLabel.style.fontWeight = "bold";
     searchLabel.style.marginBottom = "5px";
-    searchContainer.appendChild(searchLabel);
+    selectboxDiv.appendChild(searchLabel);
     searchLabel.style.fontSize = "15px";
 
     // Create the search box
@@ -2905,9 +2907,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     searchBox.placeholder = "In category search";
     searchBox.className = "search-input";
     searchBox.style.width = "100%";
-    searchBox.style.padding = "5px";
+    searchBox.style.padding = "10px";
     searchBox.style.border = "1px solid #ccc";
-    searchBox.style.borderRadius = "5px";
+    searchBox.style.borderRadius = "10px";
     searchBox.style.fontSize = "15px";
     searchBox.style.boxSizing = "border-box";
     searchBox.addEventListener("focus", () => {
@@ -2921,7 +2923,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           fetchSkills(searchBox.value);
         }, 300);
     });
-    searchContainer.appendChild(searchBox);
+    selectboxDiv.appendChild(searchBox);
 
     // Create the dropdown menu container
     var dropdownMenu = document.createElement("div");
@@ -2968,7 +2970,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     loadingIndicator.style.display = "none";
     dropdownMenu.appendChild(loadingIndicator);
 
-    searchContainer.appendChild(dropdownMenu);
+    selectboxDiv.appendChild(dropdownMenu);
 
     // Function to create a breadcrumb item
     function createBreadcrumbItem(skill, isLast = false) {
@@ -3303,7 +3305,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       pill.style.display = "inline-flex";
       pill.style.alignItems = "center";
       pill.style.padding = "6px 12px";
-      pill.style.backgroundColor = isHighlighted ? "#e6f2ff" : "#f0f0f0";
+      pill.style.backgroundColor = isHighlighted ? "#e6f2ff" : "rgb(255, 255, 255)";
+      pill.style.border = "1px solid rgb(79, 79, 79)";
+      pill.style.color = "rgb(79, 79, 79)";
+      pill.style.fontSize = "14px";
+      pill.style.fontWeight = "500";
       pill.style.borderRadius = "20px";
       pill.style.cursor = "pointer";
       pill.style.marginRight = "8px";
@@ -3484,7 +3490,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     skillGroupDescription.appendChild(arrow);
     skillGroupDescription.appendChild(explanationText);
 
-    skillGroupButton.appendChild(selectboxDiv);
+    skillGroupNavDiv.appendChild(selectboxDiv);
     // skillGroupButton.appendChild(hardSkills);
     // skillGroupButton.appendChild(softskillSelectboxDiv);
     // skillGroupButton.appendChild(role);
