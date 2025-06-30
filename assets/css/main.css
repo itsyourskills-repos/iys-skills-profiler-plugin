@@ -427,13 +427,13 @@ img.responsive-icon-element {
 
 /* Default styles */
 .profile-tab {
-  padding: 30px;
+  padding:0px !important;
 }
 
 .custom-container {
   background-color: #EFF4FA;
-  padding: 30px;
-  border-radius: 10px;
+  padding: 10px;
+  /* border-radius: 10px; */
   border: 2px solid #EFF4FA;
 }
 
@@ -446,11 +446,15 @@ img.responsive-icon-element {
 .custom-box {
   background-color: #FFFFFF;
   border-radius: 10px;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
-.custom-tab-content {
-  padding: 1rem; /* .p-3 */
+/* .custom-tab-content {
+  padding: 1rem;
+} */
+
+.accordion-button{
+  padding: 14px !important;
 }
 
 /* Mobile view */
