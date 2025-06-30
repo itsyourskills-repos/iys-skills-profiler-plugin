@@ -3728,7 +3728,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //   "background-color:#EFF4FA; padding:30px; border-radius:10px; border:2px solid #EFF4FA;";
 
     var mb4mt3Div = document.createElement("div");
-    mb4mt3Div.className = "mb-4 mt-3";
+    mb4mt3Div.className = "mb-4";
     var h3Element = document.createElement("p");
     h3Element.className = "h3";
     h3Element.style = "color:#1E1E1E;";
@@ -7443,6 +7443,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     );
     const accordionContainer = document.createElement("div");
     accordionContainer.className = "accordion";
+    accordionContainer.style = "border:1px solid rgb(203, 203, 203); border-radius:10px;";
     const accordionIdPrefix = "accordion";
 
     let accordionIndex = 1;
@@ -7460,6 +7461,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       accordionButton.setAttribute("data-mdb-collapse-init", true);
       accordionButton.className = "accordion-button";
       accordionButton.type = "button";
+      accordionButton.style = "background-color:#F6F7F9;";
       accordionButton.setAttribute("data-mdb-toggle", "collapse");
       accordionButton.setAttribute(
         "data-mdb-target",
@@ -7504,12 +7506,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       const accordionBody = document.createElement("div");
       accordionBody.className = "accordion-body";
-      accordionBody.style = "padding:10px;";
+      accordionBody.style = "padding:0px;";
       skillsGroup.forEach((skill, index) => {
         const skillContainer = document.createElement("div");
         skillContainer.className =
           "taggedSkills d-flex flex-wrap align-items-center justify-content-between gap-3";
-        skillContainer.style = "background-color:#F6F7F9; padding:5px 10px;";
+        skillContainer.style = "padding:4px 25px; border-bottom:1px solid rgb(203, 203, 203);";
         const ratingboxContainer = document.createElement("div");
         const skillName = document.createElement("div");
         skillName.className = "bg-";
@@ -7536,6 +7538,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
         const experienceDetails = document.createElement("div");
         experienceDetails.className = "pr-3";
+        experienceDetails.style="color:#9B9B9B";
         let ratingValue = 0;
         let ratingLabel = "";
         let showCalendarIcon = false;
@@ -7619,8 +7622,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           const image25 = document.createElement("img");
           image25.src = imagePathBase + "25.png";
           image25.style.transform = "rotate(270deg)";
-          image25.style.width = "40px";
-          image25.style.height = "40px";
+          image25.style.width = "34px";
+          image25.style.height = "34px";
           image25.style.margin = "auto";
           image25.style.display = "block";
           ratingDetails.appendChild(image25);
@@ -7628,8 +7631,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         if (percentage === 50) {
           const image50 = document.createElement("img");
           image50.src = imagePathBase + "50.png";
-          image50.style.width = "40px";
-          image50.style.height = "40px";
+          image50.style.width = "34px";
+          image50.style.height = "34px";
           image50.style.margin = "auto";
           image50.style.display = "block";
           ratingDetails.appendChild(image50);
@@ -7637,8 +7640,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         if (percentage === 75) {
           const image75 = document.createElement("img");
           image75.src = imagePathBase + "75.png";
-          image75.style.width = "40px";
-          image75.style.height = "40px";
+          image75.style.width = "34px";
+          image75.style.height = "34px";
           image75.style.margin = "auto";
           image75.style.display = "block";
           ratingDetails.appendChild(image75);
@@ -7646,8 +7649,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         if (percentage === 100) {
           const image100 = document.createElement("img");
           image100.src = imagePathBase + "100.png";
-          image100.style.width = "40px";
-          image100.style.height = "40px";
+          image100.style.width = "34px";
+          image100.style.height = "34px";
           image100.style.margin = "auto";
           image100.style.display = "block";
           ratingDetails.appendChild(image100);
@@ -7684,7 +7687,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           editIcon.setAttribute("data-mdb-tooltip-init", "");
           editIcon.setAttribute("title", "Click to edit");
           editIcon.setAttribute("id", skill.isot_file.path_addr);
-          editIcon.style.backgroundColor = "#EEEEEE";
+          // editIcon.style.backgroundColor = "#EEEEEE";
 
           editIcon.addEventListener("click", () => {
             console.log("editing things", skill.isot_file);
@@ -7708,7 +7711,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         deleteIcon.src = `${imagePath}Group 34.svg`;
         deleteIcon.style =
           "height:16px; width: 14px;";
-        deleteIcon.style.backgroundColor = "#EEEEEE";
+        // deleteIcon.style.backgroundColor = "#EEEEEE";
         deleteIcon.setAttribute("data-mdb-tooltip-init", "");
         deleteIcon.setAttribute("title", "Click to Delete");
         if (iysplugin.isDelete) {
@@ -7775,11 +7778,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
 
         // Check if the skill container is the last child
-        if (index == 0) {
-          skillContainer.classList.add("mt-0");
-        } else {
-          skillContainer.classList.add("mt-3"); // No border-bottom for the last child
-        }
+        // if (index % 2 != 0) {
+        //   skillContainer.style.backgroundColor = "#FFFFFF";
+        // }
 
         accordionBody.appendChild(skillContainer);
         accordionBody.appendChild(ratingboxContainer);
