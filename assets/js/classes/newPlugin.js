@@ -3727,7 +3727,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //   "background-color:#EFF4FA; padding:30px; border-radius:10px; border:2px solid #EFF4FA;";
 
     var mb4mt3Div = document.createElement("div");
-    mb4mt3Div.className = "mb-4";
+    mb4mt3Div.className = "mb-4 profile-header";
     var h3Element = document.createElement("p");
     h3Element.className = "h3";
     h3Element.style = "color:#1E1E1E;";
@@ -3786,13 +3786,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     mb4mt3Div.appendChild(skillRateInformationDiv);
 
     var my3Div = document.createElement("div");
-    my3Div.className = "my-3 custom-box";
+    my3Div.className = "my-3 custom-box d-flex justify-content-center";
     // my3Div.style =
     //   "background-color:#FFFFFF; border-radius:10px; padding:20px;";
     var navPillsDiv = document.createElement("div");
-    navPillsDiv.className = "nav nav-pills m-0";
+    navPillsDiv.className = "nav nav-pills view-skill-profile m-0";
     navPillsDiv.id = "viewsTab";
-    navPillsDiv.style = "display:inline-block; width:100%;";
+    navPillsDiv.style = "display:inline-block;";
 
     var btnGroupDiv = document.createElement("div");
     // btnGroupDiv.className = "d-flex";
