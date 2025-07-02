@@ -219,10 +219,21 @@ body .noUi-base {
 div#mySkillPluginSerachId {
   position: relative;
 }
-
+.view-skill-profile{
+  width: 80% !important;
+}
+.profile-header{
+  padding: 0px 10% !important;
+}
 @media only screen and (max-width: 600px) {
   .accordion{
     width: 100% !important;
+  }
+  .view-skill-profile{
+    width: 100% !important;
+  }
+  .profile-header{
+    padding: 0px !important;
   }
 }
 
@@ -444,7 +455,7 @@ img.responsive-icon-element {
 }
 
 .custom-box {
-  background-color: #FFFFFF;
+  /* background-color: #FFFFFF; */
   border-radius: 10px;
   /* padding: 20px; */
 }
