@@ -4578,6 +4578,14 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // this.crea
     this.createRateSelectedSkills(this.skillPlayground);
     // this.createListProfileSkills();
+    // Automatically search for a job role from localStorage
+    const searchSkill = localStorage.getItem("searchSkill");
+    if (searchSkill) {
+        if (searchSkill && typeof this.searchAPI === "function") {
+            this.searchValue = searchSkill;
+            this.searchAPI(searchSkill,searchSkill);
+        }
+    }
   }
 
   createPlayground() {
