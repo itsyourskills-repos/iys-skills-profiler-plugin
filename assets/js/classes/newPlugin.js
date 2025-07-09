@@ -881,31 +881,22 @@ function isValidEmail(email) {
 }
 
 function transformDataFromLocalStorage(originalData) {
-  const transformedData = { skills: [] };
+  const loginUser = JSON.parse(localStorage.getItem("loginUserDetail"));
+  const userId = loginUser?.id;
+
+  const transformedData = {
+    userId: userId || null,
+    skills: []
+  };
   originalData?.forEach((skill) => {
     const { isot_file_id, rating } = skill;
-    // console.error(skill, "skill", isot_path_addr, rating);
+    if (!isot_file_id) return;
 
-    if (!isot_file_id) {
-      return;
-    } else {
-      transformedData.skills.push({
-        path_addr: isot_file_id,
-        ratings: rating ? rating : [],
-      });
-    }
+    transformedData.skills.push({
+      path_addr: isot_file_id,
+      ratings: rating ? rating : [],
+    });
   });
-
-  //   if (!ratingsMap.has(isot_file_id)) {
-  //     ratingsMap.set(isot_file_id, []);
-  //   }
-
-  //   ratingsMap.get(isot_file_id).push({ isot_rating_id, rating, comment });
-  // });
-
-  // for (const [path_addr, ratings] of ratingsMap) {
-  //   transformedData.skills.push({ path_addr, ratings });
-  // }
 
   console.warn("transformedData", transformedData);
   return transformedData;
