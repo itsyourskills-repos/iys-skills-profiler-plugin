@@ -415,7 +415,7 @@ function createSelectedSkillsCount() {
             <span style="font-size:16px; color:#28a745;"> element added to your profile</span>
           </div>
         </div>
-        <a class="element-div-profile-link" id='profile-link' href="#" onclick="openProfileTab()" style="margin-right:20px; font-size:16px; color:#46419C; text-decoration: underline;">Check your profile</a>
+        <a class="element-div-profile-link" id='profile-link' href="#" onclick="openProfileTab()" style="margin-right:20px; font-size:16px; color:#46419C; text-decoration: underline;">Rate your Skills</a>
       </div>`;
   } else {
     elementCountLabel.style.border = "0.4px solid #FEF4E4";
@@ -3318,7 +3318,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       if (isHighlighted) {
           pill.style.border = "1px solid #0066cc";
       }
-      
+      const boldBorderSkills = ["Language Proficiency", "Roles", "Personal Attributes"];
+      if (boldBorderSkills.includes(skill.name)) {
+        pill.style.borderWidth = "2.5px";
+        pill.style.borderColor = "#1a1a1a";
+      }
       const skillName = document.createElement("span");
       skillName.textContent = skill.name;
       if (skill.name.length > 30) {
@@ -3755,34 +3759,47 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     // container.style.alignItems = "center";
     // container.style.gap = "10px"; // Optional spacing between elements
 
-    var pElement = document.createElement("p");
-    pElement.className = "p-0 m-0";
-    pElement.style = "color:#9B9B9B";
-    pElement.textContent = "You have skills added to your profile.";
+    // var pElement = document.createElement("p");
+    // pElement.className = "p-0 m-0";
+    // pElement.style = "color:#9B9B9B";
+    // pElement.textContent = "You have skills added to your profile.";
 
-    var returnHomeLink = document.createElement("a");
-    returnHomeLink.id = "home-link";
-    returnHomeLink.href = "#";
-    returnHomeLink.textContent = "Click here to select skills profile";
-    returnHomeLink.onclick = openHomeTab;
-    returnHomeLink.style.marginRight = "20px";
-    returnHomeLink.style.fontSize = "16px";
-    returnHomeLink.style.color = "#46419C";
-    returnHomeLink.style.textDecoration = "underline";
+    // var returnHomeLink = document.createElement("a");
+    // returnHomeLink.id = "home-link";
+    // returnHomeLink.href = "#";
+    // returnHomeLink.textContent = "Click here to select skills profile";
+    // returnHomeLink.onclick = openHomeTab;
+    // returnHomeLink.style.marginRight = "20px";
+    // returnHomeLink.style.fontSize = "16px";
+    // returnHomeLink.style.color = "#46419C";
+    // returnHomeLink.style.textDecoration = "underline";
 
     var skillRateInformationDiv = document.createElement("div");
     skillRateInformationDiv.className = "skillRateInformation";
-    skillRateInformationDiv.style = "margin: 20px auto; padding: 10px 0px 10px 10px; border-radius: 30px; width: 100%; font-family: system-ui; text-align: left; font-size: 16px; background-color: #ffff;";
-    skillRateInformationDiv.innerHTML = `
-      <span style="padding-left:5px;">To add proficiencies in <strong>Skills</strong> click
-        <i class="fas fa-star" style="font-size: 22px; margin-left:8px; color:#ccccff;"></i>
-      </span>
-    `;
+    skillRateInformationDiv.style = "margin: 20px auto; padding: 10px 0px 10px 10px; border-radius: 30px; width: 100%; font-family: system-ui; text-align: left; font-size: 16px;";
+    skillRateInformationDiv.style.border = "0.4px solid #E1F7E9";
+    skillRateInformationDiv.style.background = "#E1F7E9";
+    // skillRateInformationDiv.innerHTML = `
+    //   <span style="padding-left:5px;">To add proficiencies in <strong>Skills</strong> click
+    //     <i class="fas fa-star" style="font-size: 22px; margin-left:8px; color:#ccccff;"></i>
+    //   </span>
+    // `;
+    skillRateInformationDiv.innerHTML = `<div class="element-count-content-div" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <div style="display: flex; align-items: center;">
+          <div style="margin-left: 10px;">
+            <span style="font-size:16px; color:#28a745;">To add proficiencies in <strong>Skills</strong> click</span>
+          </div>
+          <div style="display: flex; justify-content: center; align-items: center;">
+            <i class="fas fa-star" style="font-size: 22px; margin-left:8px; color:#ccccff;"></i>
+          </div>
+        </div>
+        <a class="element-div-home-link" id='home-link' href="#" onclick="openHomeTab()" style="margin-right:20px; font-size:16px; color:#46419C; text-decoration: underline;">Back to Select Skills</a>
+      </div>`;
     mb4mt3Div.appendChild(h3Element);
-    container.appendChild(pElement);
-    if (iysplugin.tap != "profile") {
-      container.appendChild(returnHomeLink);
-    }
+    // container.appendChild(pElement);
+    // if (iysplugin.tap != "profile") {
+    //   container.appendChild(returnHomeLink);
+    // }
     mb4mt3Div.appendChild(container);
     mb4mt3Div.appendChild(skillRateInformationDiv);
 
