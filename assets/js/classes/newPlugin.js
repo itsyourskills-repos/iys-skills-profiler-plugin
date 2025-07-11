@@ -3312,7 +3312,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       const boldBorderSkills = ["Language Proficiency", "Roles", "Personal Attributes"];
       if (boldBorderSkills.includes(skill.name)) {
         pill.style.borderWidth = "2.5px";
-        pill.style.borderColor = "#1a1a1a";
+        pill.style.borderColor = "#009688";
       }
       const skillName = document.createElement("span");
       skillName.textContent = skill.name;
@@ -7186,13 +7186,16 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
   sortSkillsByTagId(skills) {
 
-    const order = ["tags/5", "tags/11", "tags/9","tags/12","tags/4","tags/8","tags/27","tags/7","tags/22","tags/21","tags/1","tags/2","tags/3","tags/6","tags/10","tags/13","tags/14","tags/15","tags/16","tags/17","tags/18","tags/19","tags/20","tags/23","tags/24","tags/25","tags/26","tags/28"];
+    const order = ["tags/2", "tags/7", "tags/6","tags/17","tags/5","tags/1","tags/20","tags/4","tags/13","tags/16","tags/15","tags/11","tags/14","tags/12","tags/8","tags/9","tags/3","tags/10","tags/18","tags/19","tags/21","tags/22","tags/23","tags/24","tags/25","tags/26","tags/27","tags/28"];
 
     return skills.sort((a, b) => {
-        const tagIdA = a.isot_file.tags[0]._id;
-        const tagIdB = b.isot_file.tags[0]._id;
-
-        return order.indexOf(tagIdA) - order.indexOf(tagIdB);
+      const tagsA = a.isot_file.tags;
+      const tagsB = b.isot_file.tags;
+  
+      const tagIdA = tagsA.length === 2 ? tagsA[1]._id : tagsA[0]?._id;
+      const tagIdB = tagsB.length === 2 ? tagsB[1]._id : tagsB[0]?._id;
+  
+      return order.indexOf(tagIdA) - order.indexOf(tagIdB);
     });
   }
 
@@ -8187,9 +8190,30 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   getTags(tags) {
-    // return tags.map((tag) => tag.title).join(", ");
-    return tags[0].title;
-  }
+    const aliasMap = {
+      "Area": "Career Domain",
+      "Focus Area, Specialization": "Focus Area, Specialization",
+      "Domain": "Contextual Dimensions",
+      "Role": "Role",
+      "Concepts": "Knowledge (of concepts, methods, processes etc.)",
+      "Applied Skills": "Applied Skills",
+      "Tools": "Tools, Technologies, Applications",
+      "Certifications": "Certifications",
+      "Machinery": "Machinery",
+      "Responsibilities": "Responsibilities",
+      "Personal Attributes": "Personal Attributes",
+      "Language Proficiency": "Language Proficiency",
+      "Master": "Master",
+      "Learning": "Learning",
+      "Function": "Function",
+      "HCat": "HCat"
+    };
+  
+    const selectedTag = tags.length === 2 ? tags[1] : tags[0];
+    const title = selectedTag?.title || "";
+  
+    return aliasMap[title] || title;
+  }  
 
   treeSkillAPI(skillName, cardBodyDiv, skillId) {
     console.log(skillId);
@@ -9588,39 +9612,40 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (breadcrumbPath.length > 0) {
       breadcrumb.style.display = "";
 
-      // const knowledgeLink = document.createElement("span");
-      // knowledgeLink.textContent = skillName;
-      // knowledgeLink.style.cursor = "pointer";
-      // knowledgeLink.style.color = "#A7A4DC";
-      // knowledgeLink.style.marginRight = "5px";
-      // knowledgeLink.addEventListener("click", async () => {
-      //   console.log(skillId); // Ensure skillId is logged correctly
-      //   const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
-      //   const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
-      //   const filterSkills = parentSkills.filter(
-      //     (item) => item.name !== "Related Skills"
-      //   );
-      //   this.renderHardSkills(
-      //     parentskills,
-      //     [],
-      //     softSkillAccordian,
-      //     skillId,
-      //     parentskills,
-      //     skillName,
-      //     highlightSkill,
-      //     // skillName,
-      //   );
-      //   const allButtons = document.querySelectorAll(".softskillbutton");
-      //   allButtons.forEach((btn) =>
-      //     btn.classList.remove("active-skill-button")
-      //   );
-      // });
-      // breadcrumb.appendChild(knowledgeLink);
+      const knowledgeLink = document.createElement("span");
+      knowledgeLink.textContent = skillName;
+      knowledgeLink.style.cursor = "pointer";
+      knowledgeLink.style.color = "rgb(0, 102, 204)";
+      knowledgeLink.style.color = "15px";
+      knowledgeLink.style.marginRight = "5px";
+      knowledgeLink.addEventListener("click", async () => {
+        console.log(skillId); // Ensure skillId is logged correctly
+        const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
+        const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
+        const filterSkills = parentSkills.filter(
+          (item) => item.name !== "Related Skills"
+        );
+        this.renderHardSkills(
+          parentskills,
+          [],
+          softSkillAccordian,
+          skillId,
+          parentskills,
+          skillName,
+          highlightSkill,
+          // skillName,
+        );
+        const allButtons = document.querySelectorAll(".softskillbutton");
+        allButtons.forEach((btn) =>
+          btn.classList.remove("active-skill-button")
+        );
+      });
+      breadcrumb.appendChild(knowledgeLink);
 
-      // const separator = document.createElement("img");
-      // separator.src = `${imagePath}Group 18.svg`;
-      // separator.style.marginRight = "5px";
-      // breadcrumb.appendChild(separator);
+      const separator = document.createElement("img");
+      separator.src = `${imagePath}Group 18.svg`;
+      separator.style.marginRight = "5px";
+      breadcrumb.appendChild(separator);
     }
 
     // Create clickable breadcrumb items
@@ -10368,39 +10393,40 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     if (breadcrumbPath.length > 0) {
       breadcrumb.style.display = "";
 
-      // const knowledgeLink = document.createElement("span");
-      // knowledgeLink.textContent = skillName;
-      // knowledgeLink.style.cursor = "pointer";
-      // knowledgeLink.style.color = "#A7A4DC";
-      // knowledgeLink.style.marginRight = "5px";
-      // knowledgeLink.addEventListener("click", async () => {
-      //   console.log(skillId); // Ensure skillId is logged correctly
-      //   const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
-      //   const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
-      //   const filterSkills = parentSkills.filter(
-      //     (item) => item.name !== "Related Skills"
-      //   );
-      //   this.renderCategoryHardSkills(
-      //     parentskills,
-      //     [],
-      //     softSkillAccordian,
-      //     skillId,
-      //     parentskills,
-      //     skillName,
-      //     highlightSkill
-      //   );
+      const knowledgeLink = document.createElement("span");
+      knowledgeLink.textContent = skillName;
+      knowledgeLink.style.cursor = "pointer";
+      knowledgeLink.style.color = "rgb(0, 102, 204)";
+      knowledgeLink.style.color = "15px";
+      knowledgeLink.style.marginRight = "5px";
+      knowledgeLink.addEventListener("click", async () => {
+        console.log(skillId); // Ensure skillId is logged correctly
+        const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${hardSkillId}`; // Use hardSkillId consistently
+        const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
+        const filterSkills = parentSkills.filter(
+          (item) => item.name !== "Related Skills"
+        );
+        this.renderCategoryHardSkills(
+          parentskills,
+          [],
+          softSkillAccordian,
+          skillId,
+          parentskills,
+          skillName,
+          highlightSkill
+        );
 
-      //   const allButtons = document.querySelectorAll(".softskillbutton");
-      //   allButtons.forEach((btn) =>
-      //     btn.classList.remove("active-skill-button")
-      //   );
-      // });
-      // breadcrumb.appendChild(knowledgeLink);
+        const allButtons = document.querySelectorAll(".softskillbutton");
+        allButtons.forEach((btn) =>
+          btn.classList.remove("active-skill-button")
+        );
+      });
+      breadcrumb.appendChild(knowledgeLink);
 
-      // const separator = document.createElement("img");
-      // separator.src = `${imagePath}Group 18.svg`;
-      // separator.style.marginRight = "5px";
-      // breadcrumb.appendChild(separator);
+      const separator = document.createElement("img");
+      separator.src = `${imagePath}Group 18.svg`;
+      separator.style.marginRight = "5px";
+      breadcrumb.appendChild(separator);
     }
 
     // Create clickable breadcrumb items
@@ -10415,28 +10441,28 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       breadcrumbLink.style.marginRight = "5px";
 
       breadcrumbLink.addEventListener("click", async () => {
-        if(index === 0){
-          const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
-          const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
-          const filterSkills = parentSkills.filter(
-            (item) => item.name !== "Related Skills"
-          );
-          const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
-          this.renderCategoryHardSkills(
-            filterSkills,
-            newBreadcrumbPath,
-            softSkillAccordian,
-            skillId,
-            filterSkills,
-            skillName,
-            highlightSkill,
-          );
-          const allButtons = document.querySelectorAll(".softskillbutton");
-          allButtons.forEach((btn) =>
-            btn.classList.remove("active-skill-button")
-          );
-          return;
-        }
+        // if(index === 0){
+        //   const parentSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
+        //   const parentSkills = await this.fetchSkills(parentSkillApiEndpoint);
+        //   const filterSkills = parentSkills.filter(
+        //     (item) => item.name !== "Related Skills"
+        //   );
+        //   const newBreadcrumbPath = breadcrumbPath.slice(0, index + 1);
+        //   this.renderCategoryHardSkills(
+        //     filterSkills,
+        //     newBreadcrumbPath,
+        //     softSkillAccordian,
+        //     skillId,
+        //     filterSkills,
+        //     skillName,
+        //     highlightSkill,
+        //   );
+        //   const allButtons = document.querySelectorAll(".softskillbutton");
+        //   allButtons.forEach((btn) =>
+        //     btn.classList.remove("active-skill-button")
+        //   );
+        //   return;
+        // }
         if (breadcrumbItem.name == "Related Skills") {
           const relatedSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${breadcrumbItem.path_addr}`;
           const relatedSkills = await this.fetchSkills(relatedSkillApiEndpoint);
