@@ -3792,8 +3792,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //   container.appendChild(returnHomeLink);
     // }
     mb4mt3Div.appendChild(container);
-    mb4mt3Div.appendChild(skillRateInformationDiv);
-
+    if (iysplugin.tap != "profile") {
+      mb4mt3Div.appendChild(skillRateInformationDiv);
+    }
     var my3Div = document.createElement("div");
     my3Div.className = "my-3 custom-box d-flex justify-content-center";
     // my3Div.style =
@@ -9835,6 +9836,25 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontSize = "14px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
 
+      const warningPopup = document.createElement("div");
+      warningPopup.className = "skill-popup-warning";
+      warningPopup.textContent = "Please Select the parent skill first.";
+      warningPopup.style.position = "absolute";
+      warningPopup.style.backgroundColor = "#fff3cd";
+      warningPopup.style.border = "1px solid #ffeeba";
+      warningPopup.style.padding = "6px 10px";
+      warningPopup.style.borderRadius = "8px";
+      warningPopup.style.fontSize = "13px";
+      warningPopup.style.color = "#856404";
+      warningPopup.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.1)";
+      warningPopup.style.zIndex = "9999";
+      warningPopup.style.whiteSpace = "nowrap";
+      warningPopup.style.display = "none";
+      warningPopup.style.transform = "translate(-50%, -110%)";
+      warningPopup.style.left = "50%";
+      warningPopup.style.top = "0";
+      warningPopup.style.pointerEvents = "none";
+
       const hoverCircleImg = document.createElement("img");
       const descriptionImg = document.createElement("img");
 
@@ -10030,6 +10050,32 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             //     this.changeRateModelElement(skill);
             //   }
             // }
+            if (skill.ratings.length > 0){
+              const hasLogginRated = localStorage.getItem("logginUserRatedSkills");
+              const hasUserRated = localStorage.getItem("userRatedSkills");
+
+              let ratedSkills = [];
+
+              if (hasLogginRated) {
+                ratedSkills = JSON.parse(hasLogginRated);
+              } else if (hasUserRated) {
+                ratedSkills = JSON.parse(hasUserRated);
+              }
+              
+              const isParentRated = ratedSkills.some(
+                (ratedSkill) =>
+                  ratedSkill.isot_file.name === skill.name &&
+                  ratedSkill.isot_file.path_addr === skill.path_addr
+              );
+
+              if (!isParentRated) {
+                warningPopup.style.display = "block";
+                setTimeout(() => {
+                  warningPopup.style.display = "none";
+                }, 3000);
+                return;
+              }
+            }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
@@ -10058,6 +10104,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
       });
 
+      skillButton.style.position = "relative"; 
+      skillButton.appendChild(warningPopup);
       skillsContainer.appendChild(skillButton);
       // }
     });
@@ -10128,6 +10176,25 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       skillButton.style.fontWeight = "500";
       skillButton.style.fontSize = "14px";
       skillButton.setAttribute("data-mdb-tooltip-init", "");
+
+      const warningPopup = document.createElement("div");
+      warningPopup.className = "skill-popup-warning";
+      warningPopup.textContent = "Please Select the parent skill first.";
+      warningPopup.style.position = "absolute";
+      warningPopup.style.backgroundColor = "#fff3cd";
+      warningPopup.style.border = "1px solid #ffeeba";
+      warningPopup.style.padding = "6px 10px";
+      warningPopup.style.borderRadius = "8px";
+      warningPopup.style.fontSize = "13px";
+      warningPopup.style.color = "#856404";
+      warningPopup.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.1)";
+      warningPopup.style.zIndex = "9999";
+      warningPopup.style.whiteSpace = "nowrap";
+      warningPopup.style.display = "none";
+      warningPopup.style.transform = "translate(-50%, -110%)";
+      warningPopup.style.left = "50%";
+      warningPopup.style.top = "0";
+      warningPopup.style.pointerEvents = "none";
 
       const hoverCircleImg = document.createElement("img");
       const descriptionImg = document.createElement("img");
@@ -10335,6 +10402,32 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             //     this.changeRateModelElement(skill);
             //   }
             // }
+            if (skill.ratings.length > 0){
+              const hasLogginRated = localStorage.getItem("logginUserRatedSkills");
+              const hasUserRated = localStorage.getItem("userRatedSkills");
+
+              let ratedSkills = [];
+
+              if (hasLogginRated) {
+                ratedSkills = JSON.parse(hasLogginRated);
+              } else if (hasUserRated) {
+                ratedSkills = JSON.parse(hasUserRated);
+              }
+              
+              const isParentRated = ratedSkills.some(
+                (ratedSkill) =>
+                  ratedSkill.isot_file.name === skill.name &&
+                  ratedSkill.isot_file.path_addr === skill.path_addr
+              );
+
+              if (!isParentRated) {
+                warningPopup.style.display = "block";
+                setTimeout(() => {
+                  warningPopup.style.display = "none";
+                }, 3000);
+                return;
+              }
+            }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
@@ -10363,6 +10456,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
       });
 
+      skillButton.style.position = "relative"; 
+      skillButton.appendChild(warningPopup);
       skillsContainer.appendChild(skillButton);
     });
     softSkillAccordian.appendChild(skillsContainer);
