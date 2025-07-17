@@ -3712,9 +3712,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     profileTabDiv.id = "profile0";
     profileTabDiv.setAttribute("role", "tabpanel");
     profileTabDiv.setAttribute("aria-labelledby", "profile-tab0");
-    if (iysplugin.tap == "profile") {
-      profileTabDiv.classList = "show active";
-      homeTabDiv.classList = "d-none";
+    // if (iysplugin.tap == "profile") {
+    //   profileTabDiv.classList = "show active";
+    //   homeTabDiv.classList = "d-none";
+    // }
+    if (iysplugin.tap === "profile") {
+      profileTabDiv.classList.add("show", "active");
+      homeTabDiv.classList.remove("show", "active");
     }
 
     var containerFluidDiv = document.createElement("div");
@@ -3792,7 +3796,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     //   container.appendChild(returnHomeLink);
     // }
     mb4mt3Div.appendChild(container);
-    if (iysplugin.tap != "profile") {
+    if (iysplugin.tap != "profile" || (iysplugin.tap == "profile" && iysplugin.isEdit && iysplugin.isDelete)) {
       mb4mt3Div.appendChild(skillRateInformationDiv);
     }
     var my3Div = document.createElement("div");
@@ -8206,13 +8210,40 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       "Language Proficiency": "Language Proficiency",
       "Master": "Master",
       "Learning": "Learning",
-      "Function": "Function",
-      "HCat": "HCat"
+      "Function": "Function"
     };
   
-    const selectedTag = tags.length === 2 ? tags[1] : tags[0];
+    const priority = [
+      "Area",
+      "Role",
+      "Concepts",
+      "Applied Skills",
+      "Tools",
+      "Responsibilities",
+      "Certifications",
+      "Personal Attributes",
+      "Language Proficiency",
+      "Function",
+      "Domain",
+      "Focus Area, Specialization",
+      "Machinery",
+      "Master",
+      "Learning"
+    ];
+
+    if (!tags || tags.length === 0) return "Other";
+
+    // Choose the tag with the highest priority
+    let selectedTag = tags.reduce((prev, curr) => {
+      const prevIndex = priority.indexOf(prev.title);
+      const currIndex = priority.indexOf(curr.title);
+      if (currIndex !== -1 && (prevIndex === -1 || currIndex < prevIndex)) {
+        return curr;
+      }
+      return prev;
+    });
+
     const title = selectedTag?.title || "";
-  
     return aliasMap[title] || title;
   }  
 
