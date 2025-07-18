@@ -5295,7 +5295,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               starIcon.style.cursor = "pointer";
               starIcon.addEventListener("click", (event) => {
                 event.stopPropagation();
-                this.showPopup(event,skillDetail);
+                // this.showPopup(event,skillDetail);
+                this.saveTheSkillComment("", "", skillDetail, "");
               });
 
               // skillButton.style.backgroundColor = "#E0DEFF";
@@ -5394,7 +5395,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           starIcon.style.cursor = "pointer";
           starIcon.addEventListener("click", (event) => {
             event.stopPropagation();
-            this.showPopup(event,skillDetail);
+            // this.showPopup(event,skillDetail);
+            this.saveTheSkillComment("", "", skillDetail, "");
           });
 
           // skillButton.style.backgroundColor = "#E0DEFF";
@@ -6218,7 +6220,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               starIcon.style.cursor = "pointer";
               starIcon.addEventListener("click", (event) => {
                   event.stopPropagation();
-                  this.showPopup(event, skill); // Call the popup function
+                  // this.showPopup(event, skill); // Call the popup function
+                  this.saveTheSkillComment("", "", skill, "");
               });
               buttonContentDiv.appendChild(starIcon);
               skillButton.classList.add('rated-skill');
@@ -6230,7 +6233,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               starIcon.style.cursor = "pointer";
               starIcon.addEventListener("click", (event) => {
                   event.stopPropagation();
-                  this.showPopup(event, skill); // Call the popup function
+                  // this.showPopup(event, skill); // Call the popup function
+                  this.saveTheSkillComment("", "", skill, "");
               });
               buttonContentDiv.appendChild(starIcon);
           }
@@ -7013,7 +7017,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         starIcon.style.cursor = "pointer";
         starIcon.addEventListener("click", (event) => {
           event.stopPropagation();
-          this.showPopup(event, skillDetail.skills[0]); // Call the popup function
+          // this.showPopup(event, skillDetail.skills[0]); // Call the popup function
+          this.saveTheSkillComment("", "", skillDetail.skills[0], "");
         });
         buttonContentDiv.appendChild(starIcon);
         skillButton.style.backgroundColor = "#E0DEFF";
@@ -7025,7 +7030,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         starIcon.style.cursor = "pointer";
         starIcon.addEventListener("click", (event) => {
           event.stopPropagation();
-          this.showPopup(event, skillDetail.skills[0]); // Call the popup function
+          // this.showPopup(event, skillDetail.skills[0]); // Call the popup function
+          this.saveTheSkillComment("", "", skillDetail.skills[0], "");
         });
         starIcon.setAttribute("id", skillDetail.skills[0].path_addr);
         buttonContentDiv.appendChild(starIcon);
@@ -9789,7 +9795,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       rateButton.appendChild(rateButtonSpan);
 
       rateButton.addEventListener("click", (event) => {
-        this.showPopup(event, currentBreadcrumbItem);
+        // this.showPopup(event, currentBreadcrumbItem);
+        this.saveTheSkillComment("", "", currentBreadcrumbItem, "");
       });
 
       breadcrumb.appendChild(rateButton);
@@ -10015,7 +10022,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             starIcon.style.cursor = "pointer";
             starIcon.addEventListener("click", (event) => {
                 event.stopPropagation();
-                this.showPopup(event, skill); // Call the popup function
+                // this.showPopup(event, skill); // Call the popup function
+                this.saveTheSkillComment("", "", skill, "");
             });
             buttonContentDiv.appendChild(starIcon);
             skillButton.classList.add('rated-skill');
@@ -10027,7 +10035,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             starIcon.style.cursor = "pointer";
             starIcon.addEventListener("click", (event) => {
                 event.stopPropagation();
-                this.showPopup(event, skill); // Call the popup function
+                // this.showPopup(event, skill); // Call the popup function
+                this.saveTheSkillComment("", "", skill, "");
             });
             buttonContentDiv.appendChild(starIcon);
         }
@@ -10358,7 +10367,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             starIcon.style.cursor = "pointer";
             starIcon.addEventListener("click", (event) => {
                 event.stopPropagation();
-                this.showPopup(event, skill); // Call the popup function
+                // this.showPopup(event, skill); // Call the popup function
+                this.saveTheSkillComment("", "", skill, "");
             });
             buttonContentDiv.appendChild(starIcon);
             skillButton.classList.add('rated-skill');
@@ -10370,7 +10380,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           starIcon.style.cursor = "pointer";
           starIcon.addEventListener("click", (event) => {
               event.stopPropagation();
-              this.showPopup(event, skill); // Call the popup function
+              // this.showPopup(event, skill); // Call the popup function
+              this.saveTheSkillComment("", "", skill, "");
           });
           buttonContentDiv.appendChild(starIcon);
         }
@@ -10686,7 +10697,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       rateButton.appendChild(rateButtonSpan);
 
       rateButton.addEventListener("click", (event) => {
-        this.showPopup(event, currentBreadcrumbItem);
+        // this.showPopup(event, currentBreadcrumbItem);
+        this.saveTheSkillComment("", "", currentBreadcrumbItem, "");
       });
 
       breadcrumb.appendChild(rateButton);
