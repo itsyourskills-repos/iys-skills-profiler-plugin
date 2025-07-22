@@ -10090,32 +10090,32 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             //     this.changeRateModelElement(skill);
             //   }
             // }
-            if (skill.ratings.length > 0){
-              const hasLogginRated = localStorage.getItem("logginUserRatedSkills");
-              const hasUserRated = localStorage.getItem("userRatedSkills");
+            // if (skill.ratings.length > 0){
+            //   const hasLogginRated = localStorage.getItem("logginUserRatedSkills");
+            //   const hasUserRated = localStorage.getItem("userRatedSkills");
 
-              let ratedSkills = [];
+            //   let ratedSkills = [];
 
-              if (hasLogginRated) {
-                ratedSkills = JSON.parse(hasLogginRated);
-              } else if (hasUserRated) {
-                ratedSkills = JSON.parse(hasUserRated);
-              }
+            //   if (hasLogginRated) {
+            //     ratedSkills = JSON.parse(hasLogginRated);
+            //   } else if (hasUserRated) {
+            //     ratedSkills = JSON.parse(hasUserRated);
+            //   }
               
-              const isParentRated = ratedSkills.some(
-                (ratedSkill) =>
-                  ratedSkill.isot_file.name === skill.name &&
-                  ratedSkill.isot_file.path_addr === skill.path_addr
-              );
+            //   const isParentRated = ratedSkills.some(
+            //     (ratedSkill) =>
+            //       ratedSkill.isot_file.name === skill.name &&
+            //       ratedSkill.isot_file.path_addr === skill.path_addr
+            //   );
 
-              if (!isParentRated) {
-                warningPopup.style.display = "block";
-                setTimeout(() => {
-                  warningPopup.style.display = "none";
-                }, 3000);
-                return;
-              }
-            }
+            //   if (!isParentRated) {
+            //     warningPopup.style.display = "block";
+            //     setTimeout(() => {
+            //       warningPopup.style.display = "none";
+            //     }, 3000);
+            //     return;
+            //   }
+            // }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
@@ -10444,32 +10444,32 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
             //     this.changeRateModelElement(skill);
             //   }
             // }
-            if (skill.ratings.length > 0){
-              const hasLogginRated = localStorage.getItem("logginUserRatedSkills");
-              const hasUserRated = localStorage.getItem("userRatedSkills");
+            // if (skill.ratings.length > 0){
+            //   const hasLogginRated = localStorage.getItem("logginUserRatedSkills");
+            //   const hasUserRated = localStorage.getItem("userRatedSkills");
 
-              let ratedSkills = [];
+            //   let ratedSkills = [];
 
-              if (hasLogginRated) {
-                ratedSkills = JSON.parse(hasLogginRated);
-              } else if (hasUserRated) {
-                ratedSkills = JSON.parse(hasUserRated);
-              }
+            //   if (hasLogginRated) {
+            //     ratedSkills = JSON.parse(hasLogginRated);
+            //   } else if (hasUserRated) {
+            //     ratedSkills = JSON.parse(hasUserRated);
+            //   }
               
-              const isParentRated = ratedSkills.some(
-                (ratedSkill) =>
-                  ratedSkill.isot_file.name === skill.name &&
-                  ratedSkill.isot_file.path_addr === skill.path_addr
-              );
+            //   const isParentRated = ratedSkills.some(
+            //     (ratedSkill) =>
+            //       ratedSkill.isot_file.name === skill.name &&
+            //       ratedSkill.isot_file.path_addr === skill.path_addr
+            //   );
 
-              if (!isParentRated) {
-                warningPopup.style.display = "block";
-                setTimeout(() => {
-                  warningPopup.style.display = "none";
-                }, 3000);
-                return;
-              }
-            }
+            //   if (!isParentRated) {
+            //     warningPopup.style.display = "block";
+            //     setTimeout(() => {
+            //       warningPopup.style.display = "none";
+            //     }, 3000);
+            //     return;
+            //   }
+            // }
             const childSkillApiEndpoint = `${ENDPOINT_URL}children/?path_addr=${skill.path_addr}`;
             const childSkills = await this.fetchSkills(childSkillApiEndpoint);
             const validChildSkills = childSkills.filter(
