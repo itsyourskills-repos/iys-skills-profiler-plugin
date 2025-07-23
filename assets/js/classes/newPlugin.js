@@ -201,7 +201,7 @@ function checkElementExist(skillDetail) {
     const skillPathAddr = skillDetail.path_addr;
     const skillEndId = skillPathAddr.split('.').pop();
     let foundObject = userRatedSkills?.find((skill) =>
-      skill.isot_path_addr.endsWith(skillEndId)
+      skill.isot_path_addr?.endsWith(skillEndId) ||  skill.isot_file_id?.endsWith(skillEndId)
     );
     if (foundObject) {
       return foundObject;
@@ -928,15 +928,25 @@ function transformDataFromLocalStorage(originalData) {
 // }
 function addTolocalStorage(userRatedSkill) {
   // Get the existing list from local storage
+  const storageKey = isLoginUser ? "logginUserRatedSkills" : "userRatedSkills";
+
   const existingList = JSON.parse(
-    localStorage.getItem("userRatedSkills") || "[]"
+    localStorage.getItem(storageKey) || "[]"
   );
 
   // Find the index of the userRatedSkill if it exists
-  const index = existingList.findIndex(
-    (existingItem) =>
-      existingItem.isot_file_id === userRatedSkill.isot_file_id
-  );
+  const index = existingList.findIndex((existingItem) => {
+    if (isLoginUser) {
+      if(existingItem.isot_file_id) {
+        return existingItem.isot_file_id === userRatedSkill.isot_file_id;
+      }
+      else if( existingItem.isot_path_addr) {
+        return existingItem.isot_path_addr === userRatedSkill.isot_file_id;
+      }
+    } else {
+      return existingItem.isot_file_id === userRatedSkill.isot_file_id;
+    }
+  });
 
   if (index !== -1) {
     // If the skill already exists, update it in place
@@ -947,7 +957,7 @@ function addTolocalStorage(userRatedSkill) {
   }
 
   // Save the updated list back to localStorage
-  localStorage.setItem("userRatedSkills", JSON.stringify(existingList));
+  localStorage.setItem(storageKey, JSON.stringify(existingList));
 }
 
 function getListFromlocalStorage() {
@@ -3745,8 +3755,48 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       h3Element.textContent = "";
       h3Element.appendChild(firstNameSpan);
       h3Element.appendChild(document.createTextNode(" Skills Profile"));
+      // --- Add Save Button for logged-in user ---
+      var saveSkillsBtn = document.createElement("button");
+      saveSkillsBtn.id = "loggin-user-save-btn";
+      saveSkillsBtn.textContent = "Save";
+      saveSkillsBtn.style = "margin-left:20px; padding:6px 24px; background:#007DFC; color:#fff; border:none; border-radius:6px; font-size:15px; font-weight:500; cursor:pointer; float:right;";
+      saveSkillsBtn.onclick = async () => {
+          const skills = JSON.parse(localStorage.getItem("logginUserRatedSkills") || "[]");
+          const transformSkillList = transformDataFromLocalStorage(
+            skills
+          );
+    
+          if (transformSkillList?.skills?.length > 0) {
+            console.log("adding some saved slikks ", transformSkillList);
+            fetch(loggedInUserAddSkill, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getAccessToken.access}`,
+              },
+              body: JSON.stringify(transformSkillList),
+            }).then(async (response) => {
+              // Handle the response from the server
+              if (response.ok) {
+                // Successful response
+                console.log("Skill added successfully!");
+                clearlocalStorage();
+                await getListFromLoggedInUser();
+                this.updateProfileData();
+              } else {
+                // Handle errors
+                console.error(
+                  "Failed to add skill:",
+                  response.status,
+                  response.statusText
+                );
+              }
+            });
+          }
+      };
+      h3Element.appendChild(saveSkillsBtn);
     } else {
-        h3Element.textContent = "Skills Profile";
+      h3Element.textContent = "Skills Profile";
     }
     var container = document.createElement("div");
     container.className = "flex-container";
@@ -5216,6 +5266,200 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
   }
 
   //################################################################    save skill rating details        #################################################################
+  // saveTheSkillComment(
+  //   commentValue,
+  //   ratingValue,
+  //   skillDetail,
+  //   parentSkillDetailId
+  // ) {
+  //   console.log("saveprocess entered");
+  //   const userDetails = JSON.parse(localStorage.getItem("loginUserDetail"));
+  //   const userId = userDetails?.id;
+  //   let userRatedSkill = {
+  //     userId,
+  //     skills: [
+  //       {
+  //         path_addr: skillDetail?.path_addr,
+  //         ratings: ratingValue,
+  //       },
+  //     ],
+  //   };
+
+  //   const myrate = () => {
+  //     if (parentSkillDetailId === undefined) {
+  //       var ratedButton = document.getElementById("rateBtn");
+  //       ratedButton.style.backgroundColor = "#21965333";
+  //       ratedButton.textContent = "rated";
+  //       ratedButton.innerHTML += `<i class="fas fa-star"></i>`;
+  //       ratedButton.style.color = "black";
+  //       ratedButton.style.fontWeight = "normal";
+  //     }
+  //   };
+
+  //   if (isLoginUser) {
+  //     // const saveButtonElement = document.getElementById("saveChangesButton");
+  //     // Check if the element exists
+  //     // console.log(saveButtonElement, "saveButtonElement");
+  //     // if (saveButtonElement) {
+  //       // const previousContent = saveButtonElement.innerHTML;
+  //       // Create and append the loader
+  //       const loader = document.createElement("div");
+
+  //       loader.className = "loader rate";
+  //       loader.style.width = "20px";
+  //       loader.style.height = "20px";
+  //       // saveButtonElement.textContent = "";
+  //       // saveButtonElement.appendChild(loader);
+  //       fetch(loggedInUserAddSkill, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${getAccessToken.access}`,
+  //         },
+  //         body: JSON.stringify(userRatedSkill),
+  //       })
+  //         .then(async (response) => {
+  //           if (response.ok) {
+  //             // Successful response
+  //             // toastr.success(
+  //             //   `${skillDetail.name}  added to your profile`
+  //             // );
+  //             await getListFromLoggedInUser("notLoadded");
+  //             this.updateProfileData();
+  //             createSelectedSkillsCount();
+  //             const buttonName = `${skillDetail.path_addr}button`;
+  //             const divName = `${skillDetail.path_addr}div`;
+  //             const skillButton = document.getElementById(buttonName);
+  //             const buttonContentDiv = document.getElementById(divName);
+
+  //             // Remove existing star icon if any
+  //             const existingStarIcon = buttonContentDiv.querySelector(
+  //               'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
+  //             );
+  //             if (existingStarIcon) {
+  //               buttonContentDiv.removeChild(existingStarIcon);
+  //             }
+  //             // Add new star icon
+  //             const starIcon = document.createElement("img");
+  //             starIcon.src = `${imagePath}Group 25.svg`;
+  //             starIcon.style.marginLeft = "5px";
+  //             starIcon.style.cursor = "pointer";
+  //             starIcon.addEventListener("click", (event) => {
+  //               event.stopPropagation();
+  //               // this.showPopup(event,skillDetail);
+  //               this.saveTheSkillComment("", "", skillDetail, "");
+  //             });
+
+  //             // skillButton.style.backgroundColor = "#E0DEFF";
+  //             skillButton.classList.add('rated-skill');
+  //             buttonContentDiv.appendChild(starIcon);
+  //             displaySelctedSkills();
+  //             // myrate();
+  //             // if (skillDetail?.path_addr) {
+  //             //   const elements = document.getElementsByClassName(
+  //             //     skillDetail?.path_addr
+  //             //   );
+  //             //   console.log(elements, "ratedBtn");
+  //             //   for (const element of elements) {
+  //             //     element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
+  //             //     element.classList.add(
+  //             //       skillDetail?.path_addr,
+  //             //       "selected-skills"
+  //             //     );
+  //             //   }
+  //             // }
+  //             // saveButtonElement.removeChild(loader);
+  //             // saveButtonElement.innerHTML = previousContent;
+  //             // this.ratedSkillEvent(skillDetail);
+  //           } else {
+  //             // Handle errors
+  //             toastr.success(`Remove Skill ${skillDetail.name} from profile`);
+
+  //             // saveButtonElement.removeChild(loader);
+  //             // saveButtonElement.innerHTML = previousContent;
+  //             this.updateProfileData();
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           // if (loader && saveButtonElement) {
+  //             // saveButtonElement.removeChild(loader);
+  //             // saveButtonElement.innerHTML = previousContent;
+  //             this.updateProfileData();
+  //           // }
+  //           // Handle network errors
+  //           console.error("Error:", error);
+  //         });
+  //     // }
+  //   } else {
+  //     console.log("creating parent for you", parentSkillDetailId);
+
+  //     let url = "";
+  //     if (parentSkillDetailId) {
+  //       url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}&path_addrs=${parentSkillDetailId}`;
+  //     } else {
+  //       url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`;
+  //     }
+
+  //     fetchData(url, "GET")
+  //       .then((response) => {
+  //         if (parentSkillDetailId) {
+  //           console.log("creating parent for you", parentSkillDetailId);
+  //           addTolocalStorage({
+  //             comment: commentValue,
+  //             rating: ratingValue,
+  //             isot_file_id: skillDetail?.path_addr,
+  //             isot_file: response[0],
+  //             parentSkillDetailId: parentSkillDetailId,
+  //             parentSkillDetail: response[1],
+  //           });
+  //         } else {
+  //           addTolocalStorage({
+  //             comment: commentValue,
+  //             rating: ratingValue,
+  //             isot_file_id: skillDetail?.path_addr,
+  //             isot_file: response[0],
+  //             parentSkillDetailId: parentSkillDetailId,
+  //             parentSkillDetail: null,
+  //           });
+  //         }
+
+  //         // toastr.success(`${skillDetail.name}  added to your profile`);
+  //         this.updateProfileData();
+  //         createSelectedSkillsCount();
+  //         // myrate();
+  //         const buttonName = `${skillDetail.path_addr}button`;
+  //         const divName = `${skillDetail.path_addr}div`;
+  //         const skillButton = document.getElementById(buttonName);
+  //         const buttonContentDiv = document.getElementById(divName);
+
+  //         // Remove existing star icon if any
+  //         const existingStarIcon = buttonContentDiv.querySelector(
+  //           'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
+  //         );
+  //         if (existingStarIcon) {
+  //           buttonContentDiv.removeChild(existingStarIcon);
+  //         }
+  //         // Add new star icon
+  //         const starIcon = document.createElement("img");
+  //         starIcon.src = `${imagePath}Group 25.svg`;
+  //         starIcon.style.marginLeft = "5px";
+  //         starIcon.style.cursor = "pointer";
+  //         starIcon.addEventListener("click", (event) => {
+  //           event.stopPropagation();
+  //           // this.showPopup(event,skillDetail);
+  //           this.saveTheSkillComment("", "", skillDetail, "");
+  //         });
+
+  //         // skillButton.style.backgroundColor = "#E0DEFF";
+  //         skillButton.classList.add('rated-skill');
+  //         buttonContentDiv.appendChild(starIcon);
+  //         displaySelctedSkills();
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   }
+  // }
   saveTheSkillComment(
     commentValue,
     ratingValue,
@@ -5235,180 +5479,71 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       ],
     };
 
-    const myrate = () => {
-      if (parentSkillDetailId === undefined) {
-        var ratedButton = document.getElementById("rateBtn");
-        ratedButton.style.backgroundColor = "#21965333";
-        ratedButton.textContent = "rated";
-        ratedButton.innerHTML += `<i class="fas fa-star"></i>`;
-        ratedButton.style.color = "black";
-        ratedButton.style.fontWeight = "normal";
-      }
-    };
-
-    if (isLoginUser) {
-      // const saveButtonElement = document.getElementById("saveChangesButton");
-      // Check if the element exists
-      // console.log(saveButtonElement, "saveButtonElement");
-      // if (saveButtonElement) {
-        // const previousContent = saveButtonElement.innerHTML;
-        // Create and append the loader
-        const loader = document.createElement("div");
-
-        loader.className = "loader rate";
-        loader.style.width = "20px";
-        loader.style.height = "20px";
-        // saveButtonElement.textContent = "";
-        // saveButtonElement.appendChild(loader);
-        fetch(loggedInUserAddSkill, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getAccessToken.access}`,
-          },
-          body: JSON.stringify(userRatedSkill),
-        })
-          .then(async (response) => {
-            if (response.ok) {
-              // Successful response
-              // toastr.success(
-              //   `${skillDetail.name}  added to your profile`
-              // );
-              await getListFromLoggedInUser("notLoadded");
-              this.updateProfileData();
-              createSelectedSkillsCount();
-              const buttonName = `${skillDetail.path_addr}button`;
-              const divName = `${skillDetail.path_addr}div`;
-              const skillButton = document.getElementById(buttonName);
-              const buttonContentDiv = document.getElementById(divName);
-
-              // Remove existing star icon if any
-              const existingStarIcon = buttonContentDiv.querySelector(
-                'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
-              );
-              if (existingStarIcon) {
-                buttonContentDiv.removeChild(existingStarIcon);
-              }
-              // Add new star icon
-              const starIcon = document.createElement("img");
-              starIcon.src = `${imagePath}Group 25.svg`;
-              starIcon.style.marginLeft = "5px";
-              starIcon.style.cursor = "pointer";
-              starIcon.addEventListener("click", (event) => {
-                event.stopPropagation();
-                // this.showPopup(event,skillDetail);
-                this.saveTheSkillComment("", "", skillDetail, "");
-              });
-
-              // skillButton.style.backgroundColor = "#E0DEFF";
-              skillButton.classList.add('rated-skill');
-              buttonContentDiv.appendChild(starIcon);
-              displaySelctedSkills();
-              // myrate();
-              // if (skillDetail?.path_addr) {
-              //   const elements = document.getElementsByClassName(
-              //     skillDetail?.path_addr
-              //   );
-              //   console.log(elements, "ratedBtn");
-              //   for (const element of elements) {
-              //     element.innerHTML = `<i class="fa fa-check"></i> ${skillDetail?.name}`;
-              //     element.classList.add(
-              //       skillDetail?.path_addr,
-              //       "selected-skills"
-              //     );
-              //   }
-              // }
-              // saveButtonElement.removeChild(loader);
-              // saveButtonElement.innerHTML = previousContent;
-              // this.ratedSkillEvent(skillDetail);
-            } else {
-              // Handle errors
-              toastr.success(`Remove Skill ${skillDetail.name} from profile`);
-
-              // saveButtonElement.removeChild(loader);
-              // saveButtonElement.innerHTML = previousContent;
-              this.updateProfileData();
-            }
-          })
-          .catch((error) => {
-            // if (loader && saveButtonElement) {
-              // saveButtonElement.removeChild(loader);
-              // saveButtonElement.innerHTML = previousContent;
-              this.updateProfileData();
-            // }
-            // Handle network errors
-            console.error("Error:", error);
-          });
-      // }
+    let url = "";
+    if (parentSkillDetailId) {
+      url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}&path_addrs=${parentSkillDetailId}`;
     } else {
-      console.log("creating parent for you", parentSkillDetailId);
-
-      let url = "";
-      if (parentSkillDetailId) {
-        url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}&path_addrs=${parentSkillDetailId}`;
-      } else {
-        url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`;
-      }
-
-      fetchData(url, "GET")
-        .then((response) => {
-          if (parentSkillDetailId) {
-            console.log("creating parent for you", parentSkillDetailId);
-            addTolocalStorage({
-              comment: commentValue,
-              rating: ratingValue,
-              isot_file_id: skillDetail?.path_addr,
-              isot_file: response[0],
-              parentSkillDetailId: parentSkillDetailId,
-              parentSkillDetail: response[1],
-            });
-          } else {
-            addTolocalStorage({
-              comment: commentValue,
-              rating: ratingValue,
-              isot_file_id: skillDetail?.path_addr,
-              isot_file: response[0],
-              parentSkillDetailId: parentSkillDetailId,
-              parentSkillDetail: null,
-            });
-          }
-
-          // toastr.success(`${skillDetail.name}  added to your profile`);
-          this.updateProfileData();
-          createSelectedSkillsCount();
-          // myrate();
-          const buttonName = `${skillDetail.path_addr}button`;
-          const divName = `${skillDetail.path_addr}div`;
-          const skillButton = document.getElementById(buttonName);
-          const buttonContentDiv = document.getElementById(divName);
-
-          // Remove existing star icon if any
-          const existingStarIcon = buttonContentDiv.querySelector(
-            'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
-          );
-          if (existingStarIcon) {
-            buttonContentDiv.removeChild(existingStarIcon);
-          }
-          // Add new star icon
-          const starIcon = document.createElement("img");
-          starIcon.src = `${imagePath}Group 25.svg`;
-          starIcon.style.marginLeft = "5px";
-          starIcon.style.cursor = "pointer";
-          starIcon.addEventListener("click", (event) => {
-            event.stopPropagation();
-            // this.showPopup(event,skillDetail);
-            this.saveTheSkillComment("", "", skillDetail, "");
-          });
-
-          // skillButton.style.backgroundColor = "#E0DEFF";
-          skillButton.classList.add('rated-skill');
-          buttonContentDiv.appendChild(starIcon);
-          displaySelctedSkills();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      url = `${ENDPOINT_URL}details/?path_addrs=${skillDetail?.path_addr}`;
     }
+
+    fetchData(url, "GET")
+      .then((response) => {
+        if (parentSkillDetailId) {
+          console.log("creating parent for you", parentSkillDetailId);
+          addTolocalStorage({
+            comment: commentValue,
+            rating: ratingValue,
+            isot_file_id: skillDetail?.path_addr,
+            isot_file: response[0],
+            parentSkillDetailId: parentSkillDetailId,
+            parentSkillDetail: response[1],
+          });
+        } else {
+          addTolocalStorage({
+            comment: commentValue,
+            rating: ratingValue,
+            isot_file_id: skillDetail?.path_addr,
+            isot_file: response[0],
+            parentSkillDetailId: parentSkillDetailId,
+            parentSkillDetail: null,
+          });
+        }
+
+        // toastr.success(`${skillDetail.name}  added to your profile`);
+        this.updateProfileData();
+        createSelectedSkillsCount();
+        // myrate();
+        const buttonName = `${skillDetail.path_addr}button`;
+        const divName = `${skillDetail.path_addr}div`;
+        const skillButton = document.getElementById(buttonName);
+        const buttonContentDiv = document.getElementById(divName);
+
+        // Remove existing star icon if any
+        const existingStarIcon = buttonContentDiv.querySelector(
+          'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
+        );
+        if (existingStarIcon) {
+          buttonContentDiv.removeChild(existingStarIcon);
+        }
+        // Add new star icon
+        const starIcon = document.createElement("img");
+        starIcon.src = `${imagePath}Group 25.svg`;
+        starIcon.style.marginLeft = "5px";
+        starIcon.style.cursor = "pointer";
+        starIcon.addEventListener("click", (event) => {
+          event.stopPropagation();
+          // this.showPopup(event,skillDetail);
+          this.saveTheSkillComment("", "", skillDetail, "");
+        });
+
+        // skillButton.style.backgroundColor = "#E0DEFF";
+        skillButton.classList.add('rated-skill');
+        buttonContentDiv.appendChild(starIcon);
+        displaySelctedSkills();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
   //#####################   create a html rating model box   ############s###########
   changeRateModelElement(skillDetail, parentSkillDetailId) {
