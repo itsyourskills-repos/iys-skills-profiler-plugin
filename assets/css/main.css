@@ -539,3 +539,15 @@ img.responsive-icon-element {
     right: 5% !important;
   }
 }
+.rating-details-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+}
+
+.rating-box {
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+}
