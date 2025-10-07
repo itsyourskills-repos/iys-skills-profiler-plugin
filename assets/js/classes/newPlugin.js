@@ -31,6 +31,7 @@ if (iysplugin == null) {
   iysplugin.isDelete = true;
   iysplugin.doughnt = true;
   iysplugin.experience = true;
+  iysplugin.save_button = true;
 }
 
 function fetchData(url, method) {
@@ -3741,33 +3742,96 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     var h3Element = document.createElement("p");
     h3Element.className = "h3";
     h3Element.style = "color:#1E1E1E;";
-    if (isLoginUser) {
-      var firstName = logginUserDetail.first_name;
+    // if (isLoginUser) {
+    //   var firstName = logginUserDetail.first_name;
+    //   function capitalizeFirstLetter(string) {
+    //       return string.charAt(0).toUpperCase() + string.slice(1);
+    //   }
+    //   var capitalizedFirstName = capitalizeFirstLetter(firstName);
+
+    //   var firstNameSpan = document.createElement("span");
+    //   firstNameSpan.style = "font-weight:bold; color:#285192;"; 
+    //   firstNameSpan.textContent = capitalizedFirstName;
+  
+    //   h3Element.textContent = "";
+    //   h3Element.appendChild(firstNameSpan);
+    //   h3Element.appendChild(document.createTextNode(" Skills Profile"));
+    //   // --- Add Save Button for logged-in user ---
+    //   var saveSkillsBtn = document.createElement("button");
+    //   saveSkillsBtn.id = "loggin-user-save-btn";
+    //   saveSkillsBtn.textContent = "Save";
+    //   saveSkillsBtn.style = "margin-left:20px; padding:6px 24px; background:#007DFC; color:#fff; border:none; border-radius:6px; font-size:15px; font-weight:500; cursor:pointer; float:right;";
+    //   saveSkillsBtn.onclick = async () => {
+    //       const skills = JSON.parse(localStorage.getItem("logginUserRatedSkills") || "[]");
+    //       const transformSkillList = transformDataFromLocalStorage(
+    //         skills
+    //       );
+    
+    //       if (transformSkillList?.skills?.length > 0) {
+    //         console.log("adding some saved slikks ", transformSkillList);
+    //         fetch(loggedInUserAddSkill, {
+    //           method: "POST",
+    //           headers: {
+    //             "Content-Type": "application/json",
+    //             Authorization: `Bearer ${getAccessToken.access}`,
+    //           },
+    //           body: JSON.stringify(transformSkillList),
+    //         }).then(async (response) => {
+    //           // Handle the response from the server
+    //           if (response.ok) {
+    //             // Successful response
+    //             console.log("Skill added successfully!");
+    //             clearlocalStorage();
+    //             await getListFromLoggedInUser();
+    //             this.updateProfileData();
+    //           } else {
+    //             // Handle errors
+    //             console.error(
+    //               "Failed to add skill:",
+    //               response.status,
+    //               response.statusText
+    //             );
+    //           }
+    //         });
+    //       }
+    //   };
+    //   h3Element.appendChild(saveSkillsBtn);
+    // } else {
+    //   h3Element.textContent = "Skills Profile";
+    // }
+    var h3Element = document.createElement("p");
+    h3Element.className = "h3";
+    h3Element.style = "color:#1E1E1E;";
+
+    if (isLoginUser && logginUserDetail?.first_name) {
       function capitalizeFirstLetter(string) {
-          return string.charAt(0).toUpperCase() + string.slice(1);
+        return string.charAt(0).toUpperCase() + string.slice(1);
       }
-      var capitalizedFirstName = capitalizeFirstLetter(firstName);
+      var capitalizedFirstName = capitalizeFirstLetter(logginUserDetail.first_name);
 
       var firstNameSpan = document.createElement("span");
-      firstNameSpan.style = "font-weight:bold; color:#285192;"; 
+      firstNameSpan.style = "font-weight:bold; color:#285192;";
       firstNameSpan.textContent = capitalizedFirstName;
-  
+
       h3Element.textContent = "";
       h3Element.appendChild(firstNameSpan);
       h3Element.appendChild(document.createTextNode(" Skills Profile"));
-      // --- Add Save Button for logged-in user ---
+    } else {
+      h3Element.textContent = "Skills Profile";
+    }
+
+    if (iysplugin.save_button) {
       var saveSkillsBtn = document.createElement("button");
       saveSkillsBtn.id = "loggin-user-save-btn";
       saveSkillsBtn.textContent = "Save";
       saveSkillsBtn.style = "margin-left:20px; padding:6px 24px; background:#007DFC; color:#fff; border:none; border-radius:6px; font-size:15px; font-weight:500; cursor:pointer; float:right;";
       saveSkillsBtn.onclick = async () => {
-          const skills = JSON.parse(localStorage.getItem("logginUserRatedSkills") || "[]");
-          const transformSkillList = transformDataFromLocalStorage(
-            skills
-          );
-    
-          if (transformSkillList?.skills?.length > 0) {
-            console.log("adding some saved slikks ", transformSkillList);
+        const skills = JSON.parse(localStorage.getItem(isLoginUser ? "logginUserRatedSkills" : "userRatedSkills") || "[]");
+        const transformSkillList = transformDataFromLocalStorage(skills);
+
+        if (transformSkillList?.skills?.length > 0) {
+          if (isLoginUser) {
+            // Save via API for logged-in user
             fetch(loggedInUserAddSkill, {
               method: "POST",
               headers: {
@@ -3776,27 +3840,23 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
               },
               body: JSON.stringify(transformSkillList),
             }).then(async (response) => {
-              // Handle the response from the server
               if (response.ok) {
-                // Successful response
-                console.log("Skill added successfully!");
                 clearlocalStorage();
                 await getListFromLoggedInUser();
                 this.updateProfileData();
               } else {
-                // Handle errors
-                console.error(
-                  "Failed to add skill:",
-                  response.status,
-                  response.statusText
-                );
+                console.error("Failed to add skill:", response.status, response.statusText);
               }
             });
+          } else {
+            // Save to localStorage for not logged-in user
+            localStorage.setItem("userRatedSkills", JSON.stringify(skills));
+            toastr.success("Skills saved locally!");
+            this.updateProfileData();
           }
+        }
       };
       h3Element.appendChild(saveSkillsBtn);
-    } else {
-      h3Element.textContent = "Skills Profile";
     }
     var container = document.createElement("div");
     container.className = "flex-container";
@@ -5517,7 +5577,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const divName = `${skillDetail.path_addr}div`;
         const skillButton = document.getElementById(buttonName);
         const buttonContentDiv = document.getElementById(divName);
-
         // Remove existing star icon if any
         const existingStarIcon = skillButton.querySelector(
           'img[src*="Group 24.svg"], img[src*="Group 25.svg"], i.fas.fa-star'
@@ -5525,20 +5584,128 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         if (existingStarIcon) {
           existingStarIcon.remove();   // <-- no parent reference needed
         }
-        // Add new star icon
+        
+        // const ratingContainer = document.createElement("div");
+        // ratingContainer.className = "rating-details-container";
+        // ratingContainer.style.display = "flex";
+        // ratingContainer.style.alignItems = "center";
+        // ratingContainer.style.gap = "6px";
+        // ratingContainer.style.marginLeft = "10px";
+
+        const storageKey = isLoginUser ? "logginUserRatedSkills" : "userRatedSkills";
+        const storedSkills = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        const matchedSkill = storedSkills.find(s => s.isot_file_id === skillDetail?.path_addr);
+        let ratingLabel = "";
+        let percentage = 0;
+        let showCalendarIcon = false;
+
+        if (matchedSkill?.isot_file?.ratings?.length) {
+          let ratingIndex = matchedSkill.rating.length === 2 ? 1 : 0;
+          const ratingValue = matchedSkill.rating[ratingIndex]?.rating;
+          const ratingScale = matchedSkill.isot_file?.ratings?.[ratingIndex]?.rating_scale_label || [];
+          const isCertification = matchedSkill.isot_file.tags?.some(tag => tag.title === "Certifications");
+
+          if (isCertification && matchedSkill.isot_file.ratings[ratingIndex].rating_scale_type === "Two Choice Rating") {
+            percentage = (ratingValue === 1) ? 100 : 0;
+            ratingLabel = ratingValue === 1 ? ratingScale[0] : "";
+          } else {
+            const ratingScaleLength = ratingScale.length;
+            if (ratingScaleLength > 0) {
+              percentage = ((ratingValue - 1) / ratingScaleLength) * 100;
+            }
+            if (ratingValue > 0) {
+              ratingLabel = ratingScale[ratingValue - 2] || "";
+            }
+            showCalendarIcon = matchedSkill.isot_file?.ratings?.[ratingIndex]?.rating_category === "Experience Level";
+          }
+        }
+
+        // ======= Create doughnut image =======
+        const ratingDetails = document.createElement("div");
+        ratingDetails.className = "px-2 rating-details";
+
+        if (percentage === 25) {
+          const image25 = document.createElement("img");
+          image25.src = imagePath + "25.png";
+          image25.style.width = "34px";
+          image25.style.height = "34px";
+          ratingDetails.appendChild(image25);
+        }
+        if (percentage === 50) {
+          const image50 = document.createElement("img");
+          image50.src = imagePath + "50.png";
+          image50.style.width = "34px";
+          image50.style.height = "34px";
+          ratingDetails.appendChild(image50);
+        }
+        if (percentage === 75) {
+          const image75 = document.createElement("img");
+          image75.src = imagePath + "75.png";
+          image75.style.width = "34px";
+          image75.style.height = "34px";
+          ratingDetails.appendChild(image75);
+        }
+        if (percentage === 100) {
+          const image100 = document.createElement("img");
+          image100.src = imagePath + "100.png";
+          image100.style.width = "34px";
+          image100.style.height = "34px";
+          ratingDetails.appendChild(image100);
+        }
+
+        // ======= Create label =======
+        const experienceDetails = document.createElement("div");
+        experienceDetails.className = "pr-3 experience-details";
+        experienceDetails.style.color = "#9B9B9B";
+        experienceDetails.style.fontSize = "14px";
+        experienceDetails.innerHTML = showCalendarIcon
+          ? `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${ratingLabel}`
+          : `${ratingLabel}`;
+
+        // if (ratingLabel) {
+        //   ratingContainer.appendChild(experienceDetails);
+        //   ratingContainer.appendChild(ratingDetails);
+        //   buttonContentDiv.appendChild(ratingContainer);
+        // } else {
+        //   buttonContentDiv.appendChild(ratingContainer);
+        // }
+        skillButton.classList.add('rated-skill');
+
+        // Create the main flex container for rating details and star
+        const ratingFlexContainer = document.createElement("div");
+        ratingFlexContainer.style.display = "flex";
+        ratingFlexContainer.className = "rating-details-container";
+        ratingFlexContainer.style.alignItems = "center";
+        ratingFlexContainer.style.gap = "6px"; // for spacing
+
+        const prevRatingContainer = buttonContentDiv.querySelector('.rating-details-container');
+        if (prevRatingContainer) {
+          prevRatingContainer.remove();
+        }
+
+        // Append rating label and doughnut images
+        if (ratingLabel) {
+          ratingFlexContainer.appendChild(experienceDetails);
+          ratingFlexContainer.appendChild(ratingDetails);
+        }
+
+        // Create the star icon
         const starIcon = document.createElement("img");
         starIcon.src = `${imagePath}Group 25.svg`;
-        starIcon.style.marginLeft = "5px";
         starIcon.style.cursor = "pointer";
+        starIcon.style.marginLeft = "10px";
         starIcon.addEventListener("click", (event) => {
           event.stopPropagation();
-          // this.showPopup(event,skillDetail);
-          this.saveTheSkillComment("", "", skillDetail, "");
+          let ratingBox=document.querySelector(`[data-ratingbox-addr="${skillDetail.path_addr}"]`);
+          if(!ratingBox){
+            ratingBox = this.createRatingBoxSearchPage(skillDetail);
+            // ratingBox.setAttribute("data-ratingbox-addr", skillDetail.path_addr);
+            buttonContentDiv.appendChild(ratingBox);
+          }
+          ratingBox.style.display = "block";
         });
-
-        // skillButton.style.backgroundColor = "#E0DEFF";
-        skillButton.classList.add('rated-skill');
-        buttonContentDiv.appendChild(starIcon);
+        ratingFlexContainer.appendChild(starIcon);
+        buttonContentDiv.appendChild(ratingFlexContainer);
         displaySelctedSkills();
       })
       .catch((err) => {
@@ -5803,6 +5970,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     let ratingBox = document.createElement("div");
     ratingBox.className = "rating-box";
+    ratingBox.setAttribute("data-ratingbox-addr", skillDetail.path_addr);
     ratingBox.style.display = "none";
     ratingBox.style.padding = "20px";
     ratingBox.style.border = "1px solid #ccc";
@@ -10774,11 +10942,89 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         }
     
         buttonContentDiv.appendChild(leftDiv);
+        
+        const rightIconDiv = document.createElement("div");
+        rightIconDiv.style.display = "flex";
+        rightIconDiv.style.alignItems = "center";
+        rightIconDiv.className = "rating-details-container";
     
+        // --- Rating details logic ---
+        let ratingLabel = "";
+        let percentage = 0;
+        let showCalendarIcon = false;
+        const storageKey = isLoginUser ? "logginUserRatedSkills" : "userRatedSkills";
+        const storedSkills = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        const matchedSkill = storedSkills.find(s => s.isot_file_id === skill.path_addr);
+
+        if (matchedSkill?.isot_file?.ratings?.length) {
+            let ratingIndex = matchedSkill.rating.length === 2 ? 1 : 0;
+            const ratingValue = matchedSkill.rating[ratingIndex]?.rating;
+            const ratingScale = matchedSkill.isot_file?.ratings?.[ratingIndex]?.rating_scale_label || [];
+            const isCertification = matchedSkill.isot_file.tags?.some(tag => tag.title === "Certifications");
+
+            if (isCertification && matchedSkill.isot_file.ratings[ratingIndex].rating_scale_type === "Two Choice Rating") {
+                percentage = (ratingValue === 1) ? 100 : 0;
+                ratingLabel = ratingValue === 1 ? ratingScale[0] : "";
+            } else {
+                const ratingScaleLength = ratingScale.length;
+                if (ratingScaleLength > 0) {
+                    percentage = ((ratingValue - 1) / ratingScaleLength) * 100;
+                }
+                if (ratingValue > 0) {
+                    ratingLabel = ratingScale[ratingValue - 2] || "";
+                }
+                showCalendarIcon = matchedSkill.isot_file?.ratings?.[ratingIndex]?.rating_category === "Experience Level";
+            }
+        }
+
+        // ======= Create doughnut image =======
+        const ratingDetails = document.createElement("div");
+        ratingDetails.className = "px-2 rating-details";
+        if (percentage === 25) {
+            const image25 = document.createElement("img");
+            image25.src = imagePath + "25.png";
+            image25.style.width = "34px";
+            image25.style.height = "34px";
+            ratingDetails.appendChild(image25);
+        }
+        if (percentage === 50) {
+            const image50 = document.createElement("img");
+            image50.src = imagePath + "50.png";
+            image50.style.width = "34px";
+            image50.style.height = "34px";
+            ratingDetails.appendChild(image50);
+        }
+        if (percentage === 75) {
+            const image75 = document.createElement("img");
+            image75.src = imagePath + "75.png";
+            image75.style.width = "34px";
+            image75.style.height = "34px";
+            ratingDetails.appendChild(image75);
+        }
+        if (percentage === 100) {
+            const image100 = document.createElement("img");
+            image100.src = imagePath + "100.png";
+            image100.style.width = "34px";
+            image100.style.height = "34px";
+            ratingDetails.appendChild(image100);
+        }
+
+        // ======= Create label =======
+        const experienceDetails = document.createElement("div");
+        experienceDetails.className = "pr-3 experience-details";
+        experienceDetails.style.color = "#9B9B9B";
+        experienceDetails.style.fontSize = "14px";
+        experienceDetails.innerHTML = showCalendarIcon
+            ? `<i class="fa fa-lg fa-calendar-days me-1 text-primary"></i> ${ratingLabel}`
+            : `${ratingLabel}`;
+
+        // Only add if label is present
+        if (ratingLabel) {
+            rightIconDiv.appendChild(experienceDetails);
+            rightIconDiv.appendChild(ratingDetails);
+        }
+
         if (ratingsCount > 0) {
-          const rightIconDiv = document.createElement("div");
-          rightIconDiv.style.display = "flex";
-          rightIconDiv.style.alignItems = "center";
           const searchText = searchByName(skill.name, skill.path_addr);
           const starIcon = document.createElement("img");
           if (searchText.length > 0) {
