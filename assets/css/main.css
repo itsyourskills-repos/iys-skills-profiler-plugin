@@ -429,25 +429,13 @@ div#mySkillPluginSerachId {
     padding: 0 !important;
   }
 
-  .my-skills-px-2{
-    margin-left: -10rem !important;
-  }
-
   .pr-3{
     width: fit-content !important;
     font-size: 0.6rem !important;
   }
 
-  .actiondiv {
-    display: none !important;
-  }
-
   .accordion-header{
     height: auto;
-  }
-
-  .mobile-actions {
-    display: block !important;
   }
 
   .save-profile-btn{
@@ -708,6 +696,18 @@ img.responsive-icon-element {
   }
   .create-card-title{
     padding-top: 5px !important;
+  }
+
+  .my-skills-px-2{
+    margin-left: -10rem !important;
+  }
+
+  .mobile-actions {
+    display: block !important;
+  }
+
+  .actiondiv {
+    display: none !important;
   }
  
   /* Profile page mobile view */

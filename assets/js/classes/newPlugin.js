@@ -1294,11 +1294,6 @@ class IysSearchPlugin {
     const div = document.getElementById("dropdown-plugin-div");
     div.innerHTML = "";
 
-    const overlay = document.createElement("div");
-    overlay.id = "global-loader";
-    overlay.innerHTML = `<div class="loader-spinner"></div>`;
-    document.body.appendChild(overlay);
-
     this.searchResultsList = searchResultsList;
     if (searchResultsList.length > 0) {
       let autoClicked = false;
@@ -1400,7 +1395,6 @@ class IysSearchPlugin {
       // Append the button to the main div
       div.appendChild(button);
     }
-    document.body.removeChild(overlay);
   }
 
   // Function to open the Add Skill modal with two inputs and labels
@@ -1767,12 +1761,15 @@ class IysSearchPlugin {
     this.currentRequest = new AbortController(); // Create new controller
     const signal = this.currentRequest.signal;
 
+    this.searchInputBox.type = "text";
+
     const div = document.getElementById("dropdown-plugin-div");
 
-    const overlay = document.createElement("div");
-    overlay.id = "global-loader";
-    overlay.innerHTML = `<div class="loader-spinner"></div>`;
-    document.body.appendChild(overlay);
+    const loader = document.createElement("div");
+    loader.className = "loader";
+
+    div.innerHTML = "";
+    div.appendChild(loader);
 
     const cardBodySearch = document.querySelector(".card-body-search");
     cardBodySearch.style.display = "block";
@@ -1819,7 +1816,7 @@ class IysSearchPlugin {
           }
         })
         .finally(() => {
-          document.body.removeChild(overlay);
+          div.removeChild(loader);
         });
     } else if (this.searchValue.trim().length > 0) {
       fetch(apiUrl,{signal})
@@ -1844,7 +1841,7 @@ class IysSearchPlugin {
           }
         })
         .finally(() => {
-          document.body.removeChild(overlay);
+          div.removeChild(loader);
         });
     } else {
       this.createSkillSearchList([], this.searchValue, selectedValue);
@@ -2525,26 +2522,18 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       tabBtn.addEventListener("click", () => {
         setActiveTab(tabBtn);
         if (index===0){
-          const selectBoxValue = document.getElementById("plugin-search-id").value;
-          if(selectBoxValue !== ""){
-            openHomeTab()
-            const dropdownMenu = document.getElementById("skills-horizontal-menu");
-            dropdownMenu.style.display = "none";
-            const categoryHeader = document.getElementById("category-header");
-            categoryHeader.style.display = "none";
-          } else {
-            this.categoryLabelsContainer.innerHTML = "";
-            this.categoryLabelsContainer.appendChild(this.categoryHeadingLabel);
-            this.categoryLabelsContainer.appendChild(this.categorySearchLabel);
-            this.fetchSkills("");
-            openHomeTab()
-            const cardBodySearch = document.querySelector(".card-body-search");
-            cardBodySearch.style.display = "none";
-            const dropdownMenu = document.getElementById("skills-horizontal-menu");
-            dropdownMenu.style.display = "block"; 
-            const categoryHeader = document.getElementById("category-header");
-            categoryHeader.style.display = "none";
-          }
+          this.categoryLabelsContainer.innerHTML = "";
+          this.categoryLabelsContainer.appendChild(this.categoryHeadingLabel);
+          this.categoryLabelsContainer.appendChild(this.categorySearchLabel);
+          this.fetchSkills("");
+          this.searchInputBox.value = "";
+          openHomeTab()
+          const cardBodySearch = document.querySelector(".card-body-search");
+          cardBodySearch.style.display = "none";
+          const dropdownMenu = document.getElementById("skills-horizontal-menu");
+          dropdownMenu.style.display = "block"; 
+          const categoryHeader = document.getElementById("category-header");
+          categoryHeader.style.display = "none";
         } else {
           clearTimeout(debounceTimer);
           debounceTimer = setTimeout(() => {
@@ -7123,6 +7112,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         ? `https://api.myskillsplus.com/api-child/?path_addr=${pathAddr}`
         : `${ENDPOINT_URL}children/?path_addr=${pathAddr}`;
 
+      const cardbodyaccordion = document.getElementById("card-body-accordion")
+      const loader = document.createElement("div");
+      loader.className = "loader";
+      cardbodyaccordion.appendChild(loader);
+
       fetch(url, {
         method: "GET",
         headers: {
@@ -7163,10 +7157,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         })
         .catch((err) => {
           console.error(err);
-          skillIdElement.removeChild(loader);
           skillIdElement.innerHTML = previousContent;
+        }).finally(() => {
+            cardbodyaccordion.removeChild(loader);
         });
     } else {
+
+      const cardBodySearch = document.querySelector(".card-body-search");
+      cardBodySearch.style.display = "block";
+      const loader = document.createElement("div");
+      loader.className = "loader";
+      cardBodySearch.appendChild(loader);
 
       let url = isLoginUser
         ? `https://api.myskillsplus.com/api-child/?path_addr=${pathAddr}`
@@ -7205,6 +7206,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         .catch((err) => {
           selectedSkillDiv.innerHTML = previousContent;
           console.error(err);
+        }).finally(() => {
+          cardBodySearch.removeChild(loader);
         });
     }
   }
