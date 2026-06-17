@@ -2312,7 +2312,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     }
 
     .pagination-txt-info{
-      font-family: "Inter", sans-serif;
       color: #414651;
       font-weight: 600;
       font-size: 0.7rem;
@@ -2327,10 +2326,8 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     .bg-{
       width: 100%;
-      font-family: "Inter", sans-serif;
       color: #181D27;
       font-weight: 500;
-      font-style: Medium;
       font-size: 0.85rem;
       line-height: 100%;
       letter-spacing: -0.03em;
@@ -2353,6 +2350,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     .save-profile-btn{
       border-radius: 3rem;
+      font-family: "Inter", sans-serif !important;
       width: 8rem;
       height: 2.75rem;
       border: none;
@@ -6428,7 +6426,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         const experienceDetails = document.createElement("div");
         experienceDetails.className = "pr-3";
         experienceDetails.style="color:#414141;";
-        experienceDetails.style.fontFamily="Inter, sans-serif";  
         experienceDetails.style.fontSize = "0.75rem"; 
         let ratingValue = 0;
         let ratingLabel = "";
@@ -6582,13 +6579,17 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         });
 
         if(percentage <= 0){
-          const rateIcon = document.createElement("i");
-          rateIcon.className = "fas fa-star";
-          rateIcon.style = "font-size: 20px; display:block; cursor:pointer;";
-          rateIcon.setAttribute("data-mdb-tooltip-init", "");
-          rateIcon.setAttribute("title", "Click to Rate");
+          const rateIcon = document.createElement("button");
+          rateIcon.textContent = "Rate";
+          rateIcon.style.border = "1px solid #B8C3FF";
+          rateIcon.style.backgroundColor = "white";
+          rateIcon.style.padding = "0.2rem 0.9rem";
+          rateIcon.style.borderRadius = "2rem";
+          rateIcon.style.fontFamily = "Inter, sans-serif";
+          rateIcon.style.fontWeight = "500";
+          rateIcon.style.fontSize = "0.85rem";
+          rateIcon.style.color = "#3F5AF7";
           rateIcon.setAttribute("id", skill.isot_file.path_addr);
-          rateIcon.style.color = "#ccccff";
           actionsIconDiv.appendChild(rateIcon);
 
           rateIcon.addEventListener("click", () => {
