@@ -2511,7 +2511,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     const tabsDiv = document.createElement("div");
     tabsDiv.className = "tabs";
 
-    const tabs = ["Browse Function/Industries", "Personal Attributes", "Language Proficiency", "Work Preferences", "Digital Skill"];
+    const tabs = ["Browse Function/Industries", "Personal Attributes", "Language Proficiency", "Digital Skill"];
 
     tabs.forEach((tab, index) => {
       const tabBtn = document.createElement("button");
