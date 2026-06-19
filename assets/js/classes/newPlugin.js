@@ -4814,6 +4814,10 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                           this.saveTheSkillComment(comment, inputData, skillDetail, parentSkillDetailId, pill);
                           ratingBox.style.display = "none";
                           saveButton.style.display = "none";
+                          window.parent.postMessage(
+                            { type: 'NEW_SKILL_ADDED' },
+                            '*'
+                          );
                         }
                     }
                 });
