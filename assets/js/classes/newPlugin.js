@@ -3991,14 +3991,9 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       arrowIcon.className = "fa-solid fa-chevron-right";
       arrowIcon.style.fontSize = "0.438rem";
       const folderIcon = document.createElement("i");
-      if (skill.child_count > 0) {
-          folderIcon.className = "fa-solid fa-folder";
-          folderIcon.innerHTML = ""; 
-          skillName.appendChild(arrowIcon); 
-        } else {
-          folderIcon.className = ""; 
-          folderIcon.innerHTML = `<img src="${imagePath}file.png" alt="file image" />`;
-        }
+      folderIcon.className = "fa-solid fa-folder";
+      folderIcon.innerHTML = ""; 
+      skillName.appendChild(arrowIcon); 
       folderIcon.style.color = "#f4c542";
       folderIcon.style.fontSize = "12px";
       const text = document.createTextNode(skill.name);
