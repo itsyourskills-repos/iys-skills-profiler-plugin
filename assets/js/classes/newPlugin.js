@@ -2328,7 +2328,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
       width: 100%;
       color: #181D27;
       font-weight: 500;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       line-height: 100%;
       letter-spacing: -0.03em;
       margin-bottom: 0.3rem;
@@ -2350,7 +2350,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
     .save-profile-btn{
       border-radius: 3rem;
-      font-family: "Inter", sans-serif !important;
       width: 8rem;
       height: 2.75rem;
       border: none;
@@ -4791,45 +4790,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     }
                 });
 
-                const saveButton = this.createCircleButton({
-                    iconClass: "fa-solid fa-check",
-                    iconColor: "#0be96b",
-                    backgroundColor: "#91FFC1",
-                    onClick: () => {
-                        let inputData = [];
-                        const comment = "";
-                        let hasInvalidRating = false;
-                                
-                        response[0].ratings.forEach((rating) => {
-                            let isChecked = false;
-                            document.getElementsByName(`${rating._id}`).forEach((input) => {
-                                if (input.checked) {
-                                    isChecked = true;
-                                    inputData.push({
-                                        isot_rating_id: rating._id,
-                                        rating: parseInt(input.value),
-                                        comment: comment || "", // Ensure comment is always included
-                                    });
-                                }
-                            });
-                            if (!isChecked) {
-                                hasInvalidRating = true;
-                                toastr.error("Please select an option for " + rating.rating_category);
-                            }
-                        });
-                      
-                        if (!hasInvalidRating) {
-                          this.saveTheSkillComment(comment, inputData, skillDetail, parentSkillDetailId, pill);
-                          ratingBox.style.display = "none";
-                          saveButton.style.display = "none";
-                        }
-                    }
-                });
-
-                saveButton.style.display = "none";
-              
                 buttonsWrapper.appendChild(cancelButton);
-                buttonsWrapper.appendChild(saveButton);
 
         
             response[0].ratings.forEach((rating) => {
@@ -4902,15 +4863,42 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
                     checkboxInput.addEventListener("change", () => {
                         if (checkboxInput.checked) {
                             cancelButton.style.display = "none";
-                            saveButton.style.display = "inline-block";
                             document.getElementsByName(`${rating._id}`).forEach((checkbox) => {
                                 if (checkbox !== checkboxInput) {
                                     checkbox.checked = false;
                                 }
                             });
+
+                            let inputData = [];
+                            const comment = "";
+                            let hasInvalidRating = false;
+                                    
+                            response[0].ratings.forEach((rating) => {
+                                let isChecked = false;
+                                document.getElementsByName(`${rating._id}`).forEach((input) => {
+                                    if (input.checked) {
+                                        isChecked = true;
+                                        inputData.push({
+                                            isot_rating_id: rating._id,
+                                            rating: parseInt(input.value),
+                                            comment: comment || "", // Ensure comment is always included
+                                        });
+                                    }
+                                });
+                                if (!isChecked) {
+                                    hasInvalidRating = true;
+                                    toastr.error("Please select an option for " + rating.rating_category);
+                                }
+                            });
+                          
+                            if (!hasInvalidRating) {
+                              this.saveTheSkillComment(comment, inputData, skillDetail, parentSkillDetailId, pill);
+                              ratingBox.style.display = "none";
+                              saveButton.style.display = "none";
+                            }
+
                         } else {
                             cancelButton.style.display = "inline-block";
-                            saveButton.style.display = "none";
                         }
                     });
                 });
@@ -6575,10 +6563,6 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
           skillContainer.remove();
           this.updateProfileData();
           createSelectedSkillsCount();
-          window.parent.postMessage(
-            { type: 'DELETE_ICON_CLICKED' },
-            '*'
-          );
         });
 
         if(percentage <= 0){
@@ -6835,7 +6819,11 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
     setTimeout(() => {
       const firstHeader = document.querySelector(".accordion-item:first-child > .accordion-header");
       firstHeader.style.paddingRight =  '2rem';
+
+      firstHeader.querySelector(".extra-div")?.remove();
+
       const extraDiv = document.createElement("div");
+      extraDiv.className = "extra-div";
 
       const div1 = document.createElement("div");
       div1.innerText = "Result";
