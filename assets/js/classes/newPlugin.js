@@ -4078,6 +4078,7 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
 
       // Style button
       backBtn.className = "back-btn";
+      backBtn.id = "back-btn";
 
       backBtn.addEventListener("click", () => {
         this.categoryLabelsContainer.innerHTML = "";
