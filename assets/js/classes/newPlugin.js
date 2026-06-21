@@ -6553,7 +6553,13 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         
         deleteIcon.addEventListener("click", () => {
 
-          this.deleteSkillsFromLocalStorage(skill.isot_file.path_addr);  
+          this.deleteSkillsFromLocalStorage(skill.isot_file.path_addr);
+          
+          window.parent.postMessage(
+            { type: 'SKILL_REMOVED' },
+            '*'
+          );
+          
           const tooltipInstance = mdb.Tooltip.getInstance(deleteIcon);
           if (tooltipInstance) {
             tooltipInstance.dispose();
@@ -6793,6 +6799,12 @@ class IysFunctionalAreasPlugin extends IysSearchPlugin {
         deleteIcon.addEventListener("click", () => {
 
           this.deleteSkillsFromLocalStorage(skill.isot_file.path_addr);
+
+          window.parent.postMessage(
+            { type: 'SKILL_REMOVED' },
+            '*'
+          );
+
           skillContainer.remove();
           this.updateProfileData();
           createSelectedSkillsCount();
